@@ -278,6 +278,16 @@
 			</roles>
 		</developer>
 
+		<developer>
+			<id>borvercas</id>
+			<name>Borja Vera</name>
+			<email>borvercas@alum.us.es</email>
+			<url>https://github.com/borvercas</url>
+			<roles>
+				<role>developer</role>
+			</roles>
+		</developer>
+		
 	</developers>
 
 </project>
