@@ -12,7 +12,7 @@
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>2.2.4.RELEASE</version>
     </parent>
-    <name>petclinic</name>
+    <name>starter-proyect</name>
 
     <properties>
 
@@ -255,8 +255,6 @@
         </license>
     </licenses>
 
-	<!-- Developers -->
-	
 	<developers>
 	
 		<developer>
@@ -269,8 +267,17 @@
 			<properties>
 			</properties>
 		</developer>
+		
+		<developer>
+			<id>manoutbar</id>
+			<name>Manuel Outeiriño</name>
+			<email>manoutbar@alum.us.es</email>
+			<url>https://github.com/manoutbar</url>
+			<roles>
+				<role>developer</role>
+			</roles>
+		</developer>
 
-	
 	</developers>
 
 </project>

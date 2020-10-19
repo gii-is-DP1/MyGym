@@ -10,6 +10,9 @@ INSERT INTO authorities(id,username,authority) VALUES (3,'vet1','veterinarian');
 -- manalerod owner
 INSERT INTO users(username,password,enabled) VALUES ('manalerod','1234',TRUE);
 INSERT INTO authorities(id,username,authority) VALUES (8,'manalerod','owner');
+-- developer user, named manoutbar with passwor m4n0utb4r
+INSERT INTO users(username,password,enabled) VALUES ('manoutbar','m4n0utb4r',TRUE);
+INSERT INTO authorities(id,username,authority) VALUES (4,'manoutbar','owner');
 
 INSERT INTO vets VALUES (1, 'James', 'Carter');
 INSERT INTO vets VALUES (2, 'Helen', 'Leary');
@@ -46,6 +49,8 @@ INSERT INTO owners VALUES (8, 'Maria', 'Escobito', '345 Maple St.', 'Madison', '
 INSERT INTO owners VALUES (9, 'David', 'Schroeder', '2749 Blackhawk Trail', 'Madison', '6085559435', 'owner1');
 INSERT INTO owners VALUES (10, 'Carlos', 'Estaban', '2335 Independence La.', 'Waunakee', '6085555487', 'owner1');
 INSERT INTO owners VALUES (15, 'Manuel', 'Ales', 'Dos Hermanas', 'Sevilla', '123789456', 'manalerod');
+INSERT INTO owners VALUES (11, 'Manuel', 'Outeiriño', 'Pastor y Landero, 19', 'Sevilla', '987654321', 'manoutbar');
+
 
 INSERT INTO pets(id,name,birth_date,type_id,owner_id) VALUES (1, 'Leo', '2010-09-07', 1, 1);
 INSERT INTO pets(id,name,birth_date,type_id,owner_id) VALUES (2, 'Basil', '2012-08-06', 6, 2);
@@ -61,6 +66,7 @@ INSERT INTO pets(id,name,birth_date,type_id,owner_id) VALUES (11, 'Freddy', '201
 INSERT INTO pets(id,name,birth_date,type_id,owner_id) VALUES (12, 'Lucky', '2010-06-24', 2, 10);
 INSERT INTO pets(id,name,birth_date,type_id,owner_id) VALUES (13, 'Sly', '2012-06-08', 1, 10);
 INSERT INTO pets(id,name,birth_date,type_id,owner_id) VALUES (17, 'Metralleta', '2015-05-05', 6, 15);
+INSERT INTO pets(id,name,birth_date,type_id,owner_id) VALUES (14, 'Chuky', '2012-06-08', 6, 11);
 
 INSERT INTO visits(id,pet_id,visit_date,description) VALUES (1, 7, '2013-01-01', 'rabies shot');
 INSERT INTO visits(id,pet_id,visit_date,description) VALUES (2, 8, '2013-01-02', 'rabies shot');
