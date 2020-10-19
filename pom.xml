@@ -255,6 +255,22 @@
         </license>
     </licenses>
 
+	<!-- Developers -->
+	
+	<developers>
+	
+		<developer>
+			<id>Manu</id>
+			<name>Manuel Alés Rodríguez</name>
+			<email>manalerod@alum.us.es</email>
+			<roles>
+				<role>Developer</role>
+			</roles>
+			<properties>
+			</properties>
+		</developer>
 
+	
+	</developers>
 
 </project>
