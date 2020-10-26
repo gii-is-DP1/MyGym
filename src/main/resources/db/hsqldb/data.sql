@@ -16,6 +16,9 @@ INSERT INTO authorities(id,username,authority) VALUES (4,'manoutbar','owner');
 -- One owner user, named borvercas with passwor borvercas123
 INSERT INTO users(username,password,enabled) VALUES ('borvercas','borvercas123',TRUE);
 INSERT INTO authorities(id,username,authority) VALUES (6,'borvercas','owner');
+-- One owner user, named joslobtro with passwor joslobtro123
+INSERT INTO users(username,password,enabled) VALUES ('joslobtro','joslobtro123',TRUE);
+INSERT INTO authorities(id,username,authority) VALUES (9,'joslobtro','owner');
 
 INSERT INTO vets VALUES (1, 'James', 'Carter');
 INSERT INTO vets VALUES (2, 'Helen', 'Leary');
@@ -54,6 +57,7 @@ INSERT INTO owners VALUES (10, 'Carlos', 'Estaban', '2335 Independence La.', 'Wa
 INSERT INTO owners VALUES (15, 'Manuel', 'Ales', 'Dos Hermanas', 'Sevilla', '123789456', 'manalerod');
 INSERT INTO owners VALUES (11, 'Manuel', 'Outeiriño', 'Pastor y Landero, 19', 'Sevilla', '987654321', 'manoutbar');
 INSERT INTO owners VALUES (13, 'Borja', 'Vera', 'calle Pureza 16', 'Sevilla', '656326574', 'borvercas');
+INSERT INTO owners VALUES (14, 'José Manuel', 'Lobato', 'calle Carmona 03', 'Sevilla', '987654321', 'joslobtro');
 
 INSERT INTO pets(id,name,birth_date,type_id,owner_id) VALUES (1, 'Leo', '2010-09-07', 1, 1);
 INSERT INTO pets(id,name,birth_date,type_id,owner_id) VALUES (2, 'Basil', '2012-08-06', 6, 2);
@@ -71,6 +75,7 @@ INSERT INTO pets(id,name,birth_date,type_id,owner_id) VALUES (13, 'Sly', '2012-0
 INSERT INTO pets(id,name,birth_date,type_id,owner_id) VALUES (17, 'Metralleta', '2015-05-05', 6, 15);
 INSERT INTO pets(id,name,birth_date,type_id,owner_id) VALUES (14, 'Chuky', '2012-06-08', 6, 11);
 INSERT INTO pets(id,name,birth_date,type_id,owner_id) VALUES (16, 'Tobalito', '2010-09-07', 1, 11);
+INSERT INTO pets(id,name,birth_date,type_id,owner_id) VALUES (18, 'Mike', '2008-08-08', 2, 14);
 
 INSERT INTO visits(id,pet_id,visit_date,description) VALUES (1, 7, '2013-01-01', 'rabies shot');
 INSERT INTO visits(id,pet_id,visit_date,description) VALUES (2, 8, '2013-01-02', 'rabies shot');

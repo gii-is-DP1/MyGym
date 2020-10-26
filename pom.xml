@@ -288,6 +288,17 @@
 			</roles>
 		</developer>
 		
+		
+		<developer>
+			<id>joslobtro</id>
+			<name>José Manuel Lobato Troncoso</name>
+			<email>joslobtro@alum.us.es</email>
+			<url>https://github.com/jmanuellt8</url>
+			<roles>
+				<role>developer</role>
+			</roles>
+		</developer>
+		
 	</developers>
 
 </project>
