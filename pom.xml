@@ -256,6 +256,18 @@
     </licenses>
 
 	<developers>
+	
+		<developer>
+			<id>Manu</id>
+			<name>Manuel Alés Rodríguez</name>
+			<email>manalerod@alum.us.es</email>
+			<roles>
+				<role>Developer</role>
+			</roles>
+			<properties>
+			</properties>
+		</developer>
+		
 		<developer>
 			<id>manoutbar</id>
 			<name>Manuel Outeiriño</name>
@@ -265,6 +277,17 @@
 				<role>developer</role>
 			</roles>
 		</developer>
+
+		<developer>
+			<id>borvercas</id>
+			<name>Borja Vera</name>
+			<email>borvercas@alum.us.es</email>
+			<url>https://github.com/borvercas</url>
+			<roles>
+				<role>developer</role>
+			</roles>
+		</developer>
+		
 	</developers>
 
 </project>
