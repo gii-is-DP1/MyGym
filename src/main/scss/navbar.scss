@@ -1,0 +1,12 @@
+$navbar-background: $mdb-color-darken-2;
+$navbar-color: $white;
+
+.navbar {
+	background: $navbar-background;
+	color: $navbar-color;
+	padding-left: 0.5rem;
+}
+
+.main {
+	padding-top: 64px;
+}
