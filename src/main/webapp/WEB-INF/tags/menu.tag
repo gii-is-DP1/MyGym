@@ -7,103 +7,79 @@
 <%@ attribute name="name" required="true" rtexprvalue="true"
 	description="Name of the active menu: home, owners, vets or error"%>
 
-<nav class="navbar navbar-default" role="navigation">
-	<div class="container">
-		<div class="navbar-header">
-			<a class="navbar-brand"
-				href="<spring:url value="/" htmlEscape="true" />"><span></span></a>
-			<button type="button" class="navbar-toggle" data-toggle="collapse"
-				data-target="#main-navbar">
-				<span class="sr-only"><os-p>Toggle navigation</os-p></span> <span
-					class="icon-bar"></span> <span class="icon-bar"></span> <span
-					class="icon-bar"></span>
-			</button>
-		</div>
-		<div class="navbar-collapse collapse" id="main-navbar">
-			<ul class="nav navbar-nav">
+<nav
+	class="navbar fixed-top navbar-expand-lg navbar-dark scrolling-navbar double-nav"
+	role="navigation">
 
-				<petclinic:menuItem active="${name eq 'home'}" url="/"
-					title="home page">
-					<span class="glyphicon glyphicon-home" aria-hidden="true"></span>
-					<span>Home</span>
+	<!-- SideNav slide-out button
+	<div class="float-left">
+		<a href="#" data-activates="slide-out" class="button-collapse"> <i
+			class="fa fa-bars"></i>
+		</a>
+	</div>  -->
+
+	<!-- Breadcrumb-->
+	<a class="navbar-brand waves-effect pl-3"
+		href="<spring:url value="/" htmlEscape="true" />"> <strong>${name}</strong>
+	</a>
+
+	<!-- Links -->
+	<ul class="nav navbar-nav nav-flex-icons ml-auto">
+		<sec:authorize access="!isAuthenticated()">
+			<li class="nav-item"><a href="<c:url value="/login" />"
+				class="nav-link"> <i class="fa fa-envelope"></i> <span
+					class="clearfix d-none d-sm-inline-block">Login</span>
+			</a></li>
+			<li class="nav-item"><a href="<c:url value="/users/new" />"
+				class="nav-link"> <i class="fa fa-envelope"></i> <span
+					class="clearfix d-none d-sm-inline-block">Register</span>
+			</a></li>
+		</sec:authorize>
+
+		<sec:authorize access="isAuthenticated()">
+			<li class="nav-item dropdown"><a
+				class="nav-link dropdown-toggle" href="#"
+				id="navbarDropdownMenuLink" data-toggle="dropdown"
+				aria-haspopup="true" aria-expanded="false"> <i
+					class="fa fa-user"></i> <span
+					class="clearfix d-none d-sm-inline-block"><sec:authentication
+							property="name" /></span>
+			</a>
+				<div class="dropdown-menu dropdown-menu-right"
+					aria-labelledby="navbarDropdownMenuLink">
+					<a class="dropdown-item" href="#">Profile</a> <a
+						class="dropdown-item" href="<c:url value="/logout" />">Logout</a>
+				</div></li>
+		</sec:authorize>
+	</ul>
+	<!--/.Navbar-->
+
+	<!-- Sidebar navigation -->
+	<div class="sidebar-fixed position-fixed p-0">
+
+		<a class="logo-wrapper waves-effect">
+			<h1>MyGym</h1>
+		</a>
+
+		<ul>
+			<petclinic:menuSection active="${name eq 'home'}" title="Home">
+				<petclinic:menuItem active="${name eq 'home'}" url="/" title="Home">
+					<i class="fa fa-home mr-3"></i>Home
 				</petclinic:menuItem>
-
-				<petclinic:menuItem active="${name eq 'owners'}" url="/owners/find"
-					title="find owners">
-					<span class="glyphicon glyphicon-search" aria-hidden="true"></span>
-					<span>Find owners</span>
-				</petclinic:menuItem>
-
-				<petclinic:menuItem active="${name eq 'vets'}" url="/vets"
-					title="veterinarians">
-					<span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
-					<span>Veterinarians</span>
-				</petclinic:menuItem>
-
-				<petclinic:menuItem active="${name eq 'error'}" url="/oups"
-					title="trigger a RuntimeException to see how it is handled">
-					<span class="glyphicon glyphicon-warning-sign" aria-hidden="true"></span>
-					<span>Error</span>
-				</petclinic:menuItem>
-
-			</ul>
-
-
-
-
-			<ul class="nav navbar-nav navbar-right">
-				<sec:authorize access="!isAuthenticated()">
-					<li><a href="<c:url value="/login" />">Login</a></li>
-					<li><a href="<c:url value="/users/new" />">Register</a></li>
-				</sec:authorize>
-				<sec:authorize access="isAuthenticated()">
-					<li class="dropdown"><a href="#" class="dropdown-toggle"
-						data-toggle="dropdown"> <span class="glyphicon glyphicon-user"></span> 
-							<strong><sec:authentication property="name" /></strong> <span
-							class="glyphicon glyphicon-chevron-down"></span>
-					</a>
-						<ul class="dropdown-menu">
-							<li>
-								<div class="navbar-login">
-									<div class="row">
-										<div class="col-lg-4">
-											<p class="text-center">
-												<span class="glyphicon glyphicon-user icon-size"></span>
-											</p>
-										</div>
-										<div class="col-lg-8">
-											<p class="text-left">
-												<strong><sec:authentication property="name" /></strong>
-											</p>
-											<p class="text-left">
-												<a href="<c:url value="/logout" />"
-													class="btn btn-primary btn-block btn-sm">Logout</a>
-											</p>
-										</div>
-									</div>
-								</div>
-							</li>
-							<li class="divider"></li>
-<!-- 							
-                            <li> 
-								<div class="navbar-login navbar-login-session">
-									<div class="row">
-										<div class="col-lg-12">
-											<p>
-												<a href="#" class="btn btn-primary btn-block">My Profile</a>
-												<a href="#" class="btn btn-danger btn-block">Change
-													Password</a>
-											</p>
-										</div>
-									</div>
-								</div>
-							</li>
--->
-						</ul></li>
-				</sec:authorize>
-			</ul>
-		</div>
-
+			</petclinic:menuSection>
+			
+			<petclinic:menuItem active="${name eq 'owners'}" url="/owners/find" title="Owners">
+				<span class="white-text"><i class="fa fa-pie-chart"></i>Owners</span>
+			</petclinic:menuItem>
+			
+			<petclinic:menuItem active="${name eq 'vets'}" url="/vets" title="Vets">
+				<span class="white-text"><i class="fa fa-pie-chart"></i>Vets</span>
+			</petclinic:menuItem>
+			
+			<petclinic:menuItem active="${name eq 'error'}" url="/oups" title="Error">
+				<span class="white-text"><i class="fa fa-pie-chart"></i>Error</span>
+			</petclinic:menuItem>
+		</ul>
 
 
 	</div>
