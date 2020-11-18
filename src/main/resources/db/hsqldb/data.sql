@@ -79,3 +79,6 @@ INSERT INTO visits(id,pet_id,visit_date,description) VALUES (4, 7, '2013-01-04',
 
 INSERT INTO usuario(id,nombre,apellidos,email,dni,fecha_nacimiento) VALUES (1, 'Juan', 'García Pérez', 'juangarciaperez@gmail.com', '46853215L', '1985-10-01'); 
 
+-- exercises types
+INSERT INTO exercise_type VALUES (1, 'temporary');
+INSERT INTO exercise_type VALUES (2, 'repetitive');
