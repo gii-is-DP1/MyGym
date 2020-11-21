@@ -61,10 +61,10 @@ public class ExerciseController {
 		return this.workoutService.findExerciseTypes();
 	}
 
-	@ModelAttribute("exercise")
+	/*@ModelAttribute("exercise")
 	public Exercise findExercise(@PathVariable("exerciseId") int exerciseId) {
 		return this.workoutService.findExerciseById(exerciseId);
-	}
+	}*/
 
 	/*
 	 * @ModelAttribute("pet") public Pet findPet(@PathVariable("petId") Integer
