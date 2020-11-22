@@ -15,6 +15,7 @@
  */
 package org.springframework.samples.petclinic.repository;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.dao.DataAccessException;
@@ -59,7 +60,6 @@ public interface ExerciseRepository extends Repository<Exercise, Integer> {
 	 * return the <code>Exercise</code> list
 	 * @see BaseEntity#isNew
 	 */
-	@Query("SELECT exercise FROM Exercise exercise inner join fetch exercise.type")
-	List<Exercise> find() throws DataAccessException;
+	Collection<Exercise> findAll() throws DataAccessException;
 
 }

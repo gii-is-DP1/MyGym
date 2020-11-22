@@ -24,6 +24,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.Exercise;
 import org.springframework.samples.petclinic.model.ExerciseType;
+import org.springframework.samples.petclinic.model.Owner;
+import org.springframework.samples.petclinic.model.PetType;
 import org.springframework.samples.petclinic.service.UsuarioService;
 import org.springframework.samples.petclinic.service.WorkoutService;
 import org.springframework.stereotype.Controller;
@@ -35,6 +37,7 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.ModelAndView;
 
 /**
  * @author Juergen Hoeller
@@ -44,7 +47,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 @Controller
 public class ExerciseController {
 
-	private static final String VIEWS_PETS_CREATE_OR_UPDATE_FORM = "exercise/createOrUpdateExerciseForm";
+	private static final String VIEWS_EXERCISES_CREATE_OR_UPDATE_FORM = "exercises/createOrUpdateExerciseForm";
 
 	private final WorkoutService workoutService;
 
@@ -54,11 +57,6 @@ public class ExerciseController {
 	public ExerciseController(WorkoutService workoutService, UsuarioService userService) {
 		this.workoutService = workoutService;
 		this.userService = userService;
-	}
-
-	@ModelAttribute("types")
-	public Collection<ExerciseType> populateExerciseTypes() {
-		return this.workoutService.findExerciseTypes();
 	}
 
 	/*@ModelAttribute("exercise")
@@ -82,6 +80,12 @@ public class ExerciseController {
 	public void initOwnerBinder(WebDataBinder dataBinder) {
 		dataBinder.setDisallowedFields("id");
 	}
+
+
+	@ModelAttribute("types")
+	public Collection<ExerciseType> populatePetTypes() {
+		return this.workoutService.findExerciseTypes();
+	}
 	
 	@GetMapping(value = "/exercises")
 	public String processFindForm(Exercise exercise, BindingResult result, Map<String, Object> model) {
@@ -98,41 +102,54 @@ public class ExerciseController {
 			result.rejectValue("lastName", "notFound", "not found");
 			return "owners/findOwners";
 		}
-		else */
+		else 
 		if (results.size() == 1) {
 			// 1 owner found
 			exercise = results.iterator().next();
 			return "redirect:/exercises/" + exercise.getId();
 		}
-		else {
+		else {*/
 			// multiple owners found
-			model.put("exercises", results);
+			model.put("selections", results);
 			return "exercises/exercisesList";
-		}
+		// }
 	}
 
 	@GetMapping(value = "/exercises/new")
-	public String initCreationForm(Exercise exercise, ModelMap model) {
+	public String initCreationForm(Map<String, Object> model) {
+		Exercise exercise = new Exercise();
 		model.put("exercise", exercise);
-		return VIEWS_PETS_CREATE_OR_UPDATE_FORM;
+		return VIEWS_EXERCISES_CREATE_OR_UPDATE_FORM;
 	}
 
 	@PostMapping(value = "/exercises/new")
 	public String processCreationForm(@Valid Exercise exercise, BindingResult result, ModelMap model) {
 		if (result.hasErrors()) {
 			model.put("exercise", exercise);
-			return VIEWS_PETS_CREATE_OR_UPDATE_FORM;
+			return VIEWS_EXERCISES_CREATE_OR_UPDATE_FORM;
 		} else {
 			this.workoutService.saveExercise(exercise);
-			return "redirect:/exercises/{exerciseId}";
+			return "redirect:/exercises";
 		}
 	}
 
-	@GetMapping(value = "/exercise/{exerciseId}/edit")
+	/**
+	 * Custom handler for displaying an owner.
+	 * @param ownerId the ID of the owner to display
+	 * @return a ModelMap with the model attributes for the view
+	 */
+	@GetMapping("/exercises/{exerciseId}")
+	public ModelAndView showOwner(@PathVariable("exerciseId") int exerciseId) {
+		ModelAndView mav = new ModelAndView("exercises/exerciseDetails");
+		mav.addObject(this.workoutService.findExerciseById(exerciseId));
+		return mav;
+	}
+
+	@GetMapping(value = "/exercises/{exerciseId}/edit")
 	public String initUpdateForm(@PathVariable("exerciseId") int exerciseId, ModelMap model) {
 		Exercise exercise = this.workoutService.findExerciseById(exerciseId);
 		model.put("exercise", exercise);
-		return VIEWS_PETS_CREATE_OR_UPDATE_FORM;
+		return VIEWS_EXERCISES_CREATE_OR_UPDATE_FORM;
 	}
 
 	/**
@@ -150,12 +167,13 @@ public class ExerciseController {
 			@PathVariable("exerciseId") int exerciseId, ModelMap model) {
 		if (result.hasErrors()) {
 			model.put("exercise", exercise);
-			return VIEWS_PETS_CREATE_OR_UPDATE_FORM;
+			return VIEWS_EXERCISES_CREATE_OR_UPDATE_FORM;
 		} else {
 			Exercise exerciseToUpdate = this.workoutService.findExerciseById(exerciseId);
-			BeanUtils.copyProperties(exercise, exerciseToUpdate, "id", "name", "description", "image", "numReps", "time", "type");
+			BeanUtils.copyProperties(exercise, exerciseToUpdate, "id");
+			System.out.println("new type: " + exerciseToUpdate.getType().getName());
 			this.workoutService.saveExercise(exerciseToUpdate);
-			return "redirect:/owners/{ownerId}";
+			return "redirect:/exercises";
 		}
 	}
 

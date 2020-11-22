@@ -6,31 +6,37 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="petclinic" tagdir="/WEB-INF/tags" %>
 
-<petclinic:layout pageName="owners">
+<petclinic:layout pageName="exercises">
     <h2>
-        <c:if test="${owner['new']}">New </c:if> Owner
+        <c:if test="${exercise['new']}">Crear</c:if> Ejercicio
     </h2>
-    <form:form modelAttribute="owner" class="form-horizontal" id="add-owner-form">
+    <form:form modelAttribute="exercise" class="form-horizontal" id="add-exercise-form">
         <div class="form-group has-feedback">
-            <petclinic:inputField label="First Name" name="firstName"/>
-            <petclinic:inputField label="Last Name" name="lastName"/>
-            <petclinic:inputField label="Address" name="address"/>
-            <petclinic:inputField label="City" name="city"/>
-            <petclinic:inputField label="Telephone" name="telephone"/>
-            <petclinic:inputField label="Username" name="user.username"/>
-            <petclinic:inputField label="Password" name="user.password"/>
+            <petclinic:inputField label="First Name" name="name"/>
+            <petclinic:inputField label="Description" name="description"/>
+            <petclinic:inputField label="NumReps" name="numReps"/>
+            <petclinic:inputField label="Time" name="time"/>
+            <petclinic:selectField label="Tipo" name="type" names="${types}" size="1"/>
         </div>
         <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
                 <c:choose>
-                    <c:when test="${owner['new']}">
-                        <button class="btn btn-default" type="submit">Add Owner</button>
+                    <c:when test="${exercise['new']}">
+                        <button class="btn btn-default" type="submit">Crear</button>
                     </c:when>
                     <c:otherwise>
-                        <button class="btn btn-default" type="submit">Update Owner</button>
+                        <button class="btn btn-default" type="submit">Guardar cambios</button>
                     </c:otherwise>
                 </c:choose>
             </div>
         </div>
     </form:form>
 </petclinic:layout>
+
+
+
+
+
+
+
+

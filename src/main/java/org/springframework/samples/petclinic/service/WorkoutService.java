@@ -38,7 +38,7 @@ public class WorkoutService {
 	
 	// private VisitRepository visitRepository;
 	
-
+ 
 	@Autowired
 	public WorkoutService(ExerciseRepository exerciseRepository) {
 		this.exerciseRepository = exerciseRepository;
@@ -70,7 +70,7 @@ public class WorkoutService {
 
 
 	public Collection<Exercise> findExercises() {
-		return exerciseRepository.find();
+		return exerciseRepository.findAll();
 	}
 
 }
