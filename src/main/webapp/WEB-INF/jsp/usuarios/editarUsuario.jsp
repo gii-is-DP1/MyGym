@@ -11,6 +11,8 @@
         <script>
             $(function () {
                 $("#fecha_nacimiento").datepicker({dateFormat: 'yy/mm/dd'});
+                $("#fee.start_date").datepicker({dateFormat: 'yy/mm/dd'});
+                $("#fee.end_date").datepicker({dateFormat: 'yy/mm/dd'});
             });
         </script>
     </jsp:attribute>
@@ -25,6 +27,21 @@
 	            <petclinic:inputField label="Email" name="email"/>
 	            <petclinic:inputField label="Dni" name="dni"/>
 	            <petclinic:inputField label="Fecha de nacimiento" name="fecha_nacimiento"/>
+	        </div>
+	   	    <h3>
+		        Cuota
+		    </h3>
+	        <div class="form-group has-feedback">
+	            <petclinic:inputField label="Fecha de inicio" name="fee.start_date"/>
+	            <petclinic:inputField label="Fecha fin" name="fee.end_date"/>
+	            <petclinic:inputField label="Precio" name="fee.amount"/>
+	            <form:select path="fee.rate">
+
+		            	<form:option value="DAILY">Diario</form:option>
+		            	<form:option value="MONTHLY">Mensual</form:option>
+		            	<form:option value="YEARLY">Anual</form:option>
+
+	            </form:select>
 	        </div>
 	        <div class="form-group">
 	            <div class="col-sm-offset-2 col-sm-10">
