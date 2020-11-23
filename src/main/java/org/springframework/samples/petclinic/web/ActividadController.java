@@ -33,7 +33,7 @@ public class ActividadController {
 	
 	@GetMapping("/new")
 	public String crearActividad(ModelMap modelMap) {
-		String view = "actividad/editarActividad";
+		String view = "actividades/editarActividad";
 		modelMap.addAttribute("actividad", new Actividad());
 		return view;
 	}
@@ -54,7 +54,7 @@ public class ActividadController {
 	
 	@GetMapping(path = "/delete/{actividadId}")
 	public String borrarActividad(@PathVariable("actividadId") int actividadId, ModelMap modelMap) {
-		String view = "actividades/ListadoActividades";
+		String view = "actividades/listadoActividades";
 		Optional<Actividad> actividad = actividadService.findActividadById(actividadId);
 		if(actividad.isPresent()) {
 			actividadService.delete(actividad.get());

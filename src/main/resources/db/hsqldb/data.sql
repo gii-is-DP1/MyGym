@@ -82,3 +82,5 @@ INSERT INTO usuario(id,nombre,apellidos,email,dni,fecha_nacimiento) VALUES (1, '
 INSERT INTO sala(id,nombre,aforo) VALUES (1,'Musculación', 10);
 INSERT INTO sala(id,nombre,aforo) VALUES (2,'Calistenia', 5);
 
+INSERT INTO actividad(id,nombre,descripcion) VALUES (1,'Zumba', 'Clases dirigidas en la que se realizan ejercicios aeróbicos al ritmo de música latina')
+

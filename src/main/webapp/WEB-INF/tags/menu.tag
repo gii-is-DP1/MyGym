@@ -87,6 +87,10 @@
 			<petclinic:menuItem active="${name eq 'error'}" url="/salas" title="Salas">
 				<span class="white-text"><i class="fa fa-pie-chart"></i>Salas</span>
 			</petclinic:menuItem>
+			
+			<petclinic:menuItem active="${name eq 'error'}" url="/actividades" title="Actividades">
+				<span class="white-text"><i class="fa fa-pie-chart"></i>Actividades</span>
+			</petclinic:menuItem>
 		</ul>
 
 
