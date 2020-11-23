@@ -27,6 +27,10 @@ PetClinic :: a Spring Framework demonstration
     <link href="${mdbCss}" rel="stylesheet"/>
     
     <%-- CSS generated from SCSS --%>
+    <spring:url value="/webjars/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" var="bootstrapDatepickerCss"/>
+    <link href="${bootstrapDatepickerCss}" rel="stylesheet"/>
+    
+    <%-- CSS generated from SCSS --%>
     <spring:url value="/resources/css/petclinic.css" var="petclinicCss"/>
     <link href="${petclinicCss}" rel="stylesheet"/>
 

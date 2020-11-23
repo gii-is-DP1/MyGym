@@ -10,7 +10,7 @@
     <jsp:attribute name="customScript">
         <script>
             $(function () {
-                $("#fecha_nacimiento").datepicker({dateFormat: 'yy/mm/dd'});
+                $("#fecha_nacimiento").datepicker({dateFormat: 'yy/mm/dd', language:'es'});
             });
         </script>
     </jsp:attribute>
