@@ -17,7 +17,6 @@ public class Sala extends BaseEntity{
 	@NotBlank
 	String nombre;
 	
-	@NotBlank
 	@Min(1)
 	Integer aforo;
 }
