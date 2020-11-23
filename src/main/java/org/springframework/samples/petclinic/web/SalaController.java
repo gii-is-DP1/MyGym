@@ -40,7 +40,7 @@ public class SalaController {
 	
 	@PostMapping(path = "/save")
 	public String guardarSala(@Valid Sala sala, BindingResult result, ModelMap modelMap) {
-		String view = "salas/ListadoSalas";
+		String view = "salas/listadoSalas";
 		if(result.hasErrors()) {
 			modelMap.addAttribute("sala", sala);
 			return "salas/editarSala";
@@ -53,15 +53,15 @@ public class SalaController {
 	}
 	
 	@GetMapping(path = "/delete/{salaId}")
-	public String borrarSala(@PathVariable("SalaId") int salaId, ModelMap modelMap) {
-		String view = "salas/ListadoSalas";
+	public String borrarSala(@PathVariable("salaId") int salaId, ModelMap modelMap) {
+		String view = "salas/listadoSalas";
 		Optional<Sala> sala = salaService.findSalaById(salaId);
 		if(sala.isPresent()) {
 			salaService.delete(sala.get());
 			modelMap.addAttribute("message", "Sala eliminada correctamente");
 			view = listadoSalas(modelMap);
 		} else {
-			modelMap.addAttribute("message", "Usuaria no encontrada");
+			modelMap.addAttribute("message", "Sala no encontrada");
 		}
 		return view;
 	}
