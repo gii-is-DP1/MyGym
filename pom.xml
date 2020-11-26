@@ -217,9 +217,10 @@
 				<configuration>
 					<wroManagerFactory>ro.isdc.wro.maven.plugin.manager.factory.ConfigurableWroManagerFactory</wroManagerFactory>
 					<cssDestinationFolder>${project.build.directory}/classes/static/resources/css</cssDestinationFolder>
+					<jsDestinationFolder>${project.build.directory}/classes/static/resources/js</jsDestinationFolder>
 					<wroFile>${basedir}/src/main/wro/wro.xml</wroFile>
 					<extraConfigFile>${basedir}/src/main/wro/wro.properties</extraConfigFile>
-					<contextFolder>${basedir}/src/main/scss</contextFolder>
+					<contextFolder>${basedir}/src/main/wro-resources</contextFolder>
 				</configuration>
 				<dependencies>
 					<!-- <dependency> <groupId>org.webjars</groupId> <artifactId>bootstrap</artifactId> 

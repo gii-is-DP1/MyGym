@@ -2,6 +2,7 @@ package org.springframework.samples.petclinic.model;
 
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
@@ -16,6 +17,7 @@ public class Exercise extends BaseEntity {
 	
 	String description;
 	
+	@Lob
 	String image;
 	
 	Integer numReps;
