@@ -1,8 +1,9 @@
 $(function() {
 
-	var buttonSelector = '.button[data-back-btn]';
+	var buttonSelector = '*[data-back-btn]';
 
-	function goBack() {
+	function goBack(evt) {
+		evt.preventDefault();
 		window.history.back();
 	}
 

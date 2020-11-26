@@ -53,6 +53,11 @@ public class WorkoutService {
 	public void saveExercise(Exercise exercise) throws DataAccessException {
 		exerciseRepository.save(exercise);
 	}
+	
+	@Transactional
+	public void deleteExercise(Exercise exercise) throws DataAccessException {
+		exerciseRepository.delete(exercise);
+	}
 
 	@Transactional(readOnly = true)
 	public Exercise findExerciseById(int id) throws DataAccessException {

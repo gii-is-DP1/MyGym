@@ -24,8 +24,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.Exercise;
 import org.springframework.samples.petclinic.model.ExerciseType;
-import org.springframework.samples.petclinic.model.Owner;
-import org.springframework.samples.petclinic.model.PetType;
 import org.springframework.samples.petclinic.service.UsuarioService;
 import org.springframework.samples.petclinic.service.WorkoutService;
 import org.springframework.stereotype.Controller;
@@ -139,7 +137,7 @@ public class ExerciseController {
 	 * @return a ModelMap with the model attributes for the view
 	 */
 	@GetMapping("/exercises/{exerciseId}")
-	public ModelAndView showOwner(@PathVariable("exerciseId") int exerciseId) {
+	public ModelAndView showExercise(@PathVariable("exerciseId") int exerciseId) {
 		ModelAndView mav = new ModelAndView("exercises/exerciseDetails");
 		mav.addObject(this.workoutService.findExerciseById(exerciseId));
 		return mav;
@@ -150,6 +148,15 @@ public class ExerciseController {
 		Exercise exercise = this.workoutService.findExerciseById(exerciseId);
 		model.put("exercise", exercise);
 		return VIEWS_EXERCISES_CREATE_OR_UPDATE_FORM;
+	}
+
+	@GetMapping(value = "/exercises/{exerciseId}/delete")
+	public String deleteExercise(@PathVariable("exerciseId") int exerciseId, ModelMap model) {
+		Exercise exercise = this.workoutService.findExerciseById(exerciseId);
+		if (exercise != null) {
+			this.workoutService.deleteExercise(exercise);
+		}
+		return "redirect:/exercises";
 	}
 
 	/**

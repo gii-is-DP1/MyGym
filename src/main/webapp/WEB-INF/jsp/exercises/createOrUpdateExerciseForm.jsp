@@ -52,8 +52,6 @@
 	        </div>
 	        <div class="form-group mt-5">
 	            <div class="col pl-0 ml-0">
-                    <button class="btn btn-default mr-3" data-back-btn>Volver</button>
-                    
 	                <c:choose>
 	                    <c:when test="${exercise['new']}">
 	                        <button class="btn btn-default" type="submit">Crear</button>
@@ -61,7 +59,9 @@
 	                    <c:otherwise>
 	                        <button class="btn btn-default" type="submit">Guardar cambios</button>
 	                    </c:otherwise>
-	                </c:choose>	                
+	                </c:choose>	          
+	                
+                    <a class="btn btn-default ml-2" data-back-btn>Volver</a>      
 	            </div>
 	        </div>
 	    </form:form>

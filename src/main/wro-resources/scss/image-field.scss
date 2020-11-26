@@ -7,15 +7,14 @@ $img-input-preview-height: 300px;
 /* input style */
 .image-picker {
 	
-	.preview > img {
-		max-width: 100%;
-		max-height: $img-input-preview-height;
-	}
+	.preview {
+		margin-bottom: 1.5rem; 
 	
-	.custom-file {
-		margin-top: 1.5rem;
-	}
-	
+		> img {
+			max-width: 100%;
+			max-height: $img-input-preview-height;
+		}	
+	}	
 }
 
 /* card style */

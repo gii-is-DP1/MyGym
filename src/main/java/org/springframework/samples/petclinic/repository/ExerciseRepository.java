@@ -34,23 +34,23 @@ import org.springframework.samples.petclinic.model.ExerciseType;
 public interface ExerciseRepository extends Repository<Exercise, Integer> {
 
 	/**
-	 * Retrieve all <code>PetType</code>s from the data store.
-	 * @return a <code>Collection</code> of <code>PetType</code>s
+	 * Retrieve all <code>ExerciseType</code>s from the data store.
+	 * @return a <code>Collection</code> of <code>ExerciseType</code>s
 	 */
 	@Query("SELECT etype FROM ExerciseType etype ORDER BY etype.name")
 	List<ExerciseType> findExerciseTypes() throws DataAccessException;
 	
 	/**
-	 * Retrieve a <code>Pet</code> from the data store by id.
+	 * Retrieve a <code>Exercise</code> from the data store by id.
 	 * @param id the id to search for
-	 * @return the <code>Pet</code> if found
+	 * @return the <code>Exercise</code> if found
 	 * @throws org.springframework.dao.DataRetrievalFailureException if not found
 	 */
 	Exercise findById(int id) throws DataAccessException;
 
 	/**
-	 * Save a <code>Pet</code> to the data store, either inserting or updating it.
-	 * @param pet the <code>Pet</code> to save
+	 * Save a <code>Exercise</code> to the data store, either inserting or updating it.
+	 * @param pet the <code>Exercise</code> to save
 	 * @see BaseEntity#isNew
 	 */
 	void save(Exercise exercise) throws DataAccessException;
@@ -61,5 +61,12 @@ public interface ExerciseRepository extends Repository<Exercise, Integer> {
 	 * @see BaseEntity#isNew
 	 */
 	Collection<Exercise> findAll() throws DataAccessException;
+	
+	/**
+	 * Delete a <code>Exercise</code>
+	 * @param exercise
+	 * @throws DataAccessException
+	 */
+	void delete(Exercise exercise) throws DataAccessException;
 
 }
