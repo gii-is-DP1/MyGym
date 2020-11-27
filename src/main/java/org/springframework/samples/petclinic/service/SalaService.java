@@ -30,7 +30,7 @@ public class SalaService {
 	}
 	
 	@Transactional
-	public Optional<Sala> findSalaById(int salaId) {
+	public Sala findSalaById(int salaId) {
 		return salaRepository.findById(salaId);
 	}
 }
