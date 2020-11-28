@@ -82,3 +82,8 @@ INSERT INTO usuario(id,nombre,apellidos,email,dni,fecha_nacimiento) VALUES (1, '
 -- exercises types
 INSERT INTO exercise_type VALUES (1, 'temporary');
 INSERT INTO exercise_type VALUES (2, 'repetitive');
+
+-- products
+INSERT INTO products(id, name, description, stockage, price) VALUES (1, 'Barra de chocolate', 'Esta to wena', 10, 2.50);
+INSERT INTO products(id, name, description, stockage, price) VALUES (2, 'Batidito de Fresa', 'Esta to weno', 23, 3.50);
+INSERT INTO products(id, name, description, stockage, price) VALUES (3, 'Anacardos 50gr', 'Estan to wenos', 10, 3.00);
