@@ -15,7 +15,7 @@ public interface ProductRepository extends CrudRepository<Product, Integer>{
 	
 	Collection<Product> findAll() throws DataAccessException;
 
-	@Query("SELECT product FROM Produtc product WHERE product.name LIKE :name%")
+	@Query("SELECT product FROM Product product WHERE product.name LIKE :name%")
 	public Collection<Product> findByName(String name);
 	
 }

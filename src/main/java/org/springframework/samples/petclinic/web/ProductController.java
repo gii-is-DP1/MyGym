@@ -21,7 +21,7 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 public class ProductController {
 	
-	private static final String VIEWS_PRODUCTS_CREATE_OR_UPDATE_FORM = "products/createOrUpdateSalaForm";
+	private static final String VIEWS_PRODUCTS_CREATE_OR_UPDATE_FORM = "products/createOrUpdateProductForm";
 	
 	private final ProductService service;
 	
@@ -45,7 +45,7 @@ public class ProductController {
 		
 	}
 	
-	@GetMapping(value = "/produtcs/new")
+	@GetMapping(value = "/products/new")
 	public String initCreationForm(Map<String, Object> model) {
 		Product product = new Product();
 		model.put("product", product);

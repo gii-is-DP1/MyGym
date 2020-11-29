@@ -4,13 +4,14 @@ import javax.persistence.Entity;
 import javax.persistence.Lob;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 import lombok.Data;
 
 @Data
 @Entity
 @Table(name = "products")
-public class Product extends BaseEntity{
+public class Product extends BaseEntity {
 	
 	@NotBlank
 	private String name;
@@ -18,14 +19,12 @@ public class Product extends BaseEntity{
 	@NotBlank
 	private String description;
 	
-	@NotBlank
+	@NotNull
 	private Integer stockage;
-	
-	@NotBlank
+
+	@NotNull
 	private Double price;
 	
-	/*Falta imagen
-	 * @Lob 
-	 * private String image;
-	 */
+	@Lob 
+	private String image;
 }
