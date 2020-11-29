@@ -34,7 +34,8 @@ public class ProductService {
 	public Product findById(int productId) {
 		return repository.findById(productId);
 	}
-
+	
+	@Transactional
 	public Collection<Product> findProductByName(String name) {
 		return repository.findByName(name);
 	}
