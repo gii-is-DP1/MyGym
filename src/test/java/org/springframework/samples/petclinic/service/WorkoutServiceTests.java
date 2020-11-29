@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -28,6 +29,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.samples.petclinic.model.Exercise;
 import org.springframework.samples.petclinic.model.ExerciseType;
 import org.springframework.samples.petclinic.model.Training;
+import org.springframework.samples.petclinic.service.exceptions.NoNameException;
 import org.springframework.samples.petclinic.util.EntityUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -131,7 +133,11 @@ class WorkoutServiceTests {
 		training.addExercise(exercise);
 		
 		assertThat(training.getExercises().size()).isEqualTo(1);
-        this.workoutService.saveTraining(training);
+		try {
+			this.workoutService.saveTraining(training);
+		} catch (NoNameException e) {
+			e.printStackTrace();
+		}
 
 
 		training = this.workoutService.findTrainingById(training.getId());
@@ -141,6 +147,23 @@ class WorkoutServiceTests {
     
     @Test
 	@Transactional
+	public void shouldFailInsertingTrainingWithoutName() {
+		Exercise exercise = this.workoutService.findExerciseById(1);
+
+		Training training = new Training();
+		training.setDescription("Circuito de iniciación para usuarios principiantes");
+		
+		training.addExercise(exercise);
+		
+		assertThat(training.getExercises().size()).isEqualTo(1);
+
+		Assertions.assertThrows(NoNameException.class, () -> {
+			this.workoutService.saveTraining(training);
+		});
+	}
+    	
+    @Test
+	@Transactional
 	public void shouldFindTrainingsByName() {
 		Exercise exercise = this.workoutService.findExerciseById(1);
 
@@ -148,8 +171,11 @@ class WorkoutServiceTests {
 		training.setName("Rutina de iniciación");
 		training.setDescription("Circuito de iniciación para usuarios principiantes");
 		training.addExercise(exercise);
-        this.workoutService.saveTraining(training);
-
+		try {
+			this.workoutService.saveTraining(training);
+		} catch (NoNameException e) {
+			e.printStackTrace();
+		}
 
 		Collection<Training> searchResultCollection = this.workoutService.findTrainingsByName("Rutina");
 		assertThat(searchResultCollection.size()).isGreaterThan(0);

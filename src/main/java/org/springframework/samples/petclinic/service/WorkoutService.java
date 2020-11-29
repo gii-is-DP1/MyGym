@@ -24,6 +24,8 @@ import org.springframework.samples.petclinic.model.ExerciseType;
 import org.springframework.samples.petclinic.model.Training;
 import org.springframework.samples.petclinic.repository.ExerciseRepository;
 import org.springframework.samples.petclinic.repository.TrainingRepository;
+import org.springframework.samples.petclinic.service.exceptions.DuplicatedPetNameException;
+import org.springframework.samples.petclinic.service.exceptions.NoNameException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -69,8 +71,11 @@ public class WorkoutService {
 		return exerciseRepository.findById(id);
 	}
 	
-	@Transactional
-	public void saveTraining(Training training) throws DataAccessException {
+	@Transactional(rollbackFor = NoNameException.class)
+	public void saveTraining(Training training) throws DataAccessException, NoNameException {
+		if (training.getName() == null || training.getName().trim().isEmpty()) {
+			throw new NoNameException();
+		}
 		trainingRepository.save(training);
 	}
 	

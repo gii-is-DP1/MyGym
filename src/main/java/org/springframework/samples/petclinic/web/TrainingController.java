@@ -26,15 +26,13 @@ import org.springframework.samples.petclinic.model.Exercise;
 import org.springframework.samples.petclinic.model.Training;
 import org.springframework.samples.petclinic.service.UsuarioService;
 import org.springframework.samples.petclinic.service.WorkoutService;
+import org.springframework.samples.petclinic.service.exceptions.NoNameException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
@@ -122,7 +120,12 @@ public class TrainingController {
 			model.put("training", training);
 			return VIEWS_TRAININGS_CREATE_OR_UPDATE_FORM;
 		} else {
-			this.workoutService.saveTraining(training);
+			try {
+				this.workoutService.saveTraining(training);
+			} catch (NoNameException e) {
+                result.rejectValue("name", "required", "required field");
+                return VIEWS_TRAININGS_CREATE_OR_UPDATE_FORM;
+			}
 			return "redirect:/trainings";
 		}
 	}
@@ -171,7 +174,12 @@ public class TrainingController {
 		} else {
 			Training trainingToUpdate = this.workoutService.findTrainingById(trainingId);
 			BeanUtils.copyProperties(training, trainingToUpdate, "id");
-			this.workoutService.saveTraining(trainingToUpdate);
+			try {
+				this.workoutService.saveTraining(trainingToUpdate);
+			} catch (NoNameException e) {
+                result.rejectValue("name", "required", "required field");
+                return VIEWS_TRAININGS_CREATE_OR_UPDATE_FORM;
+			}
 			return "redirect:/trainings/" + trainingId;
 		}
 	}
@@ -194,7 +202,12 @@ public class TrainingController {
 			Exercise exercise = this.workoutService.findExerciseById(exerciseId);
 			if (exercise != null) {
 				trainingToUpdate.addExercise(exercise);
-				this.workoutService.saveTraining(trainingToUpdate);
+				try {
+					this.workoutService.saveTraining(training);
+				} catch (NoNameException e) {
+	                result.rejectValue("name", "required", "required field");
+	                return VIEWS_TRAININGS_CREATE_OR_UPDATE_FORM;
+				}
 			}
 			return "redirect:/trainings/" + trainingId + "/edit";
 		}
@@ -218,7 +231,12 @@ public class TrainingController {
 			Exercise exercise = this.workoutService.findExerciseById(exerciseId);
 			if (exercise != null) {
 				trainingToUpdate.removeExercise(exercise);
-				this.workoutService.saveTraining(trainingToUpdate);
+				try {
+					this.workoutService.saveTraining(training);
+				} catch (NoNameException e) {
+	                result.rejectValue("name", "required", "required field");
+	                return VIEWS_TRAININGS_CREATE_OR_UPDATE_FORM;
+				}
 			}
 			return "redirect:/trainings/" + trainingId + "/edit";
 		}
