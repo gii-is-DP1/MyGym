@@ -39,8 +39,8 @@
 	    </h2>
 	    <form:form modelAttribute="exercise" class="form-horizontal" id="add-exercise-form">
 	        <div class="form-group has-feedback">
-	            <petclinic:inputField label="First Name" name="name"/>
-	            <petclinic:inputField label="Description" name="description"/>
+	            <petclinic:inputField label="Nombre" name="name"/>
+	            <petclinic:inputField label="Descripción" name="description"/>
 	            <petclinic:imageField label="Imagen" name="image" />
 	            <petclinic:selectField label="Tipo" name="type" names="${types}" size="1"/>
 	            <div data-type="repetitive">

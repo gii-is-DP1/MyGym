@@ -21,7 +21,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.samples.petclinic.model.Exercise;
 import org.springframework.samples.petclinic.model.ExerciseType;
+import org.springframework.samples.petclinic.model.Training;
 import org.springframework.samples.petclinic.repository.ExerciseRepository;
+import org.springframework.samples.petclinic.repository.TrainingRepository;
+import org.springframework.samples.petclinic.service.exceptions.DuplicatedPetNameException;
+import org.springframework.samples.petclinic.service.exceptions.NoNameException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,13 +39,16 @@ import org.springframework.transaction.annotation.Transactional;
 public class WorkoutService {
 
 	private ExerciseRepository exerciseRepository;
+
+	private TrainingRepository trainingRepository;
 	
 	// private VisitRepository visitRepository;
 	
  
 	@Autowired
-	public WorkoutService(ExerciseRepository exerciseRepository) {
+	public WorkoutService(ExerciseRepository exerciseRepository, TrainingRepository trainingRepository) {
 		this.exerciseRepository = exerciseRepository;
+		this.trainingRepository = trainingRepository;
 	}
 
 	@Transactional(readOnly = true)
@@ -63,6 +70,30 @@ public class WorkoutService {
 	public Exercise findExerciseById(int id) throws DataAccessException {
 		return exerciseRepository.findById(id);
 	}
+	
+	@Transactional(rollbackFor = NoNameException.class)
+	public void saveTraining(Training training) throws DataAccessException, NoNameException {
+		if (training.getName() == null || training.getName().trim().isEmpty()) {
+			throw new NoNameException();
+		}
+		trainingRepository.save(training);
+	}
+	
+	@Transactional
+	public void deleteTraining(Training training) throws DataAccessException {
+		trainingRepository.delete(training);
+	}
+
+	@Transactional(readOnly = true)
+	public Training findTrainingById(int id) throws DataAccessException {
+		return trainingRepository.findById(id);
+	}
+	
+	public Collection<Training> findTrainingsByName(String name) {
+		if (name == null)
+			return trainingRepository.findAll();
+		return trainingRepository.findByName(name);
+	}
 
 	/* @Transactional()
 	public void savePet(Pet pet) throws DataAccessException, DuplicatedPetNameException {
@@ -77,5 +108,12 @@ public class WorkoutService {
 	public Collection<Exercise> findExercises() {
 		return exerciseRepository.findAll();
 	}
+
+	public Collection<Exercise> findExercises(String name) {
+		if (name == null)
+			return this.findExercises();
+		return exerciseRepository.findByName(name);
+	}
+
 
 }
