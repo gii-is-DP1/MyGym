@@ -155,80 +155,82 @@
 	        </div>
 	    </form:form>
 	    
-        <div class="form-group">
-        	<div class="col col-sm-10 col-md-6 pl-0 row no-gutters justify-content-between align-items-center">
-        		<label class="control-label mb-0">Ejercicios del entrenamiento</label>
-			   	<a href="" data-toggle="modal" data-target="#modalAssignForm" class="btn btn-blue btn-md">Añadir</a>
-		    </div>
-	        
-           	<div id="exercises" class="row">
-	            <c:forEach var="exercise" items="${training.exercises}" varStatus="loop">
-	            	<div class="col col-sm-6 col-lg-4 mt-2">
-			        	<div class="card">
-							<input class="form-control" name="exercisesList" type="hidden" value="${exercise.id}"/>
-			        		<div class="card-body">
-							    <!-- Title -->
-							    <h4 class="card-title"><c:out value="${exercise.name}"/></h4>
-							    <!-- Text -->
-							    <p class="card-text"><c:out value="${exercise.description}"/></p>
-							    <!-- Button -->
-							    
-								<spring:url value="./deleteExercise/${exerciseId}" var="deleteExercise">
-									<spring:param name="exerciseId" value="${exercise.id}"></spring:param>
-								</spring:url>
-				    			<form:form modelAttribute="exercise" action="./deleteExercise/${exercise.id}" class="form-horizontal" id="add-exercise-form">
-				    				<input type="hidden" name="exerciseId" value="${exercise.id}">
-								    <button type="submit" class="btn btn-primary">Eliminar</button>
-								</form:form>
-							</div>
+	    <c:if test="${not training['new']}">
+	        <div class="form-group">
+	        	<div class="col col-sm-10 col-md-6 pl-0 row no-gutters justify-content-between align-items-center">
+	        		<label class="control-label mb-0">Ejercicios del entrenamiento</label>
+				   	<a href="" data-toggle="modal" data-target="#modalAssignForm" class="btn btn-blue btn-md">Añadir</a>
+			    </div>
+		        
+	           	<div id="exercises" class="row">
+		            <c:forEach var="exercise" items="${training.exercises}" varStatus="loop">
+		            	<div class="col col-sm-6 col-lg-4 mt-2">
+				        	<div class="card">
+								<input class="form-control" name="exercisesList" type="hidden" value="${exercise.id}"/>
+				        		<div class="card-body">
+								    <!-- Title -->
+								    <h4 class="card-title"><c:out value="${exercise.name}"/></h4>
+								    <!-- Text -->
+								    <p class="card-text"><c:out value="${exercise.description}"/></p>
+								    <!-- Button -->
+								    
+									<spring:url value="./deleteExercise/${exerciseId}" var="deleteExercise">
+										<spring:param name="exerciseId" value="${exercise.id}"></spring:param>
+									</spring:url>
+					    			<form:form modelAttribute="exercise" action="./deleteExercise/${exercise.id}" class="form-horizontal" id="add-exercise-form">
+					    				<input type="hidden" name="exerciseId" value="${exercise.id}">
+									    <button type="submit" class="btn btn-primary">Eliminar</button>
+									</form:form>
+								</div>
+				        	</div>
 			        	</div>
-		        	</div>
-	            </c:forEach>
-        	</div>
-        	
-            <c:if test="${empty training.exercises}">
-	            <div class="col col-sm-10 col-md-6 pl-0 mt-2">
-	            	<div class="card">
-	            		<div class="card-body">
-	            			<p class="card-text">Ningún ejercicio asignado</p>
-	            		</div>
+		            </c:forEach>
+	        	</div>
+	        	
+	            <c:if test="${empty training.exercises}">
+		            <div class="col col-sm-10 col-md-6 pl-0 mt-2">
+		            	<div class="card">
+		            		<div class="card-body">
+		            			<p class="card-text">Ningún ejercicio asignado</p>
+		            		</div>
+		            	</div>
 	            	</div>
-            	</div>
-            </c:if>
-        </div>
-			    
-		<div class="modal fade" id="modalAssignForm" tabindex="-1" role="dialog" aria-labelledby="modalAssignFormLabel" aria-hidden="true">
-			<div class="modal-dialog" role="document">
-				<div class="modal-content">
-					<div class="modal-header text-center">
-						<h4 class="modal-title w-100 font-weight-bold">Añadir ejercicio</h4>
-						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-							<span aria-hidden="true">&times;</span>
-						</button>
-					</div>
-					<div class="modal-body mx-3">
-						<div class="md-form mb-5 d-flex flex-row justify-content-space-around align-items-center">
-							<input type="text" id="assignForm-search" class="col form-control" placeholder="Texto de búsqueda...">
-							<button id="search-btn" type="button" class="btn btn-outline-default waves-effect px-3 py-2 mt-0 mb-2">
-								<i class="fas fa-search" aria-hidden="true"></i>
+	            </c:if>
+	        </div>
+				    
+			<div class="modal fade" id="modalAssignForm" tabindex="-1" role="dialog" aria-labelledby="modalAssignFormLabel" aria-hidden="true">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+						<div class="modal-header text-center">
+							<h4 class="modal-title w-100 font-weight-bold">Añadir ejercicio</h4>
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
 							</button>
 						</div>
-						
-						
-					    <form:form modelAttribute="training" class="form-horizontal" id="add-exercise-form">
-						<ul class="list-group mdb-color darken-2 p-2" style="height: 250px;">
-							<li data-loader hidden class="list-group-item">
-								<div class="spinner-border mr-2" role="status">
-									<span class="sr-only">Loading...</span>
-								</div>
-								Cargando...
-							</li>
-						</ul>
-						</form:form>
+						<div class="modal-body mx-3">
+							<div class="md-form mb-5 d-flex flex-row justify-content-space-around align-items-center">
+								<input type="text" id="assignForm-search" class="col form-control" placeholder="Texto de búsqueda...">
+								<button id="search-btn" type="button" class="btn btn-outline-default waves-effect px-3 py-2 mt-0 mb-2">
+									<i class="fas fa-search" aria-hidden="true"></i>
+								</button>
+							</div>
+							
+							
+						    <form:form modelAttribute="training" class="form-horizontal" id="add-exercise-form">
+							<ul class="list-group mdb-color darken-2 p-2" style="height: 250px;">
+								<li data-loader hidden class="list-group-item">
+									<div class="spinner-border mr-2" role="status">
+										<span class="sr-only">Loading...</span>
+									</div>
+									Cargando...
+								</li>
+							</ul>
+							</form:form>
+						</div>
 					</div>
 				</div>
 			</div>
-		</div>
+        </c:if>
 			    
     </jsp:body>
 </petclinic:layout>

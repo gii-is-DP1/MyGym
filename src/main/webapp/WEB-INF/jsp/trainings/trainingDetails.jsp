@@ -20,45 +20,47 @@
         </tr>
     </table>
     
-    <h3>Ejercicios</h3>
-    <c:forEach var="exercise" items="${training.exercises}" varStatus="loop">
-    	<div class="row row-cols-1">
-  			<div class="col mb-4">
-	          	<div class="card row no-gutters flex-row flex-nowrap justify-content-between">
-				
-				    <!--Card image -->
-				    <c:if test="${not empty exercise.image}">
-					    <div class="view overlay p-1">
-					    	<img class="card-img-top" src="${exercise.image}"
-					          alt="Card image cap">
-					        <a href="#!">
-					        	<div class="mask rgba-white-slight"></div>
-					        </a>
-						</div>
-				    </c:if>
-				
-				      <!--Card content-->
-				    <div class="card-body col pl-4">
-				
-						<!--Title-->
-						<h4 class="card-title"><c:out value="${exercise.name}"/></h4>
-						<!--Text-->
-						<p class="card-text"><c:out value="${exercise.description}"/></p>
-						<p class="card-text">
-							<c:if test="${exercise.type.name == 'repetitive' and not empty exercise.numReps}">
-								<strong class="mr-2">Num reps:</strong>
-								<c:out value="${exercise.numReps}"/>
-							</c:if>
-							<c:if test="${exercise.type.name == 'temporary' and not empty exercise.time}">
-								<strong class="mr-2">Time:</strong>
-								<c:out value="${exercise.time}"/>
-							</c:if>
-						</p>
-			   		</div>
+    <c:if test="${not empty training.exercises}">
+	    <h3>Ejercicios</h3>
+	    <c:forEach var="exercise" items="${training.exercises}" varStatus="loop">
+	    	<div class="row row-cols-1">
+	  			<div class="col mb-4">
+		          	<div class="card row no-gutters flex-row flex-nowrap justify-content-between">
+					
+					    <!--Card image -->
+					    <c:if test="${not empty exercise.image}">
+						    <div class="view overlay p-1">
+						    	<img class="card-img-top" src="${exercise.image}"
+						          alt="Card image cap">
+						        <a href="#!">
+						        	<div class="mask rgba-white-slight"></div>
+						        </a>
+							</div>
+					    </c:if>
+					
+					      <!--Card content-->
+					    <div class="card-body col pl-4">
+					
+							<!--Title-->
+							<h4 class="card-title"><c:out value="${exercise.name}"/></h4>
+							<!--Text-->
+							<p class="card-text"><c:out value="${exercise.description}"/></p>
+							<p class="card-text">
+								<c:if test="${exercise.type.name == 'repetitive' and not empty exercise.numReps}">
+									<strong class="mr-2">Num reps:</strong>
+									<c:out value="${exercise.numReps}"/>
+								</c:if>
+								<c:if test="${exercise.type.name == 'temporary' and not empty exercise.time}">
+									<strong class="mr-2">Time:</strong>
+									<c:out value="${exercise.time}"/>
+								</c:if>
+							</p>
+				   		</div>
+		       		</div>
 	       		</div>
-       		</div>
-       	</div>
-    </c:forEach>
+	       	</div>
+	    </c:forEach>
+    </c:if>
     
     <spring:url value="/trainings" var="backUrl">
     </spring:url>
