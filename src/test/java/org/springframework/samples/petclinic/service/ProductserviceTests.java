@@ -56,7 +56,7 @@ public class ProductserviceTests {
 		this.service.save(p);
 		assertThat(p.getId().longValue()).isNotEqualTo(0);
 
-		products = this.service.findProductByName("Example");
+		products = this.service.findAll();
 		assertThat(products.size()).isEqualTo(found + 1);
 	}
 	
