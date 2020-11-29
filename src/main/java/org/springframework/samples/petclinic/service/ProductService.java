@@ -1,5 +1,7 @@
 package org.springframework.samples.petclinic.service;
 
+import java.util.Collection;
+
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +16,7 @@ public class ProductService {
 	private ProductRepository repository;
 	
 	@Transactional
-	public Iterable<Product> findAll() {
+	public Collection<Product> findAll() {
 		return repository.findAll();
 	}
 	
@@ -31,6 +33,10 @@ public class ProductService {
 	@Transactional
 	public Product findById(int productId) {
 		return repository.findById(productId);
+	}
+
+	public Collection<Product> findProductByName(String name) {
+		return repository.findByName(name);
 	}
 
 }
