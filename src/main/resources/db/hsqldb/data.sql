@@ -82,3 +82,13 @@ INSERT INTO usuario(id,nombre,apellidos,email,dni,fecha_nacimiento) VALUES (1, '
 -- exercises types
 INSERT INTO exercise_type VALUES (1, 'temporary');
 INSERT INTO exercise_type VALUES (2, 'repetitive');
+
+-- user types
+INSERT INTO user_type VALUES (1, 'admin');
+INSERT INTO user_type VALUES (2, 'trainer');
+INSERT INTO user_type VALUES (3, 'client');
+
+-- rate
+INSERT INTO rate VALUES (1, 'daily');
+INSERT INTO rate VALUES (2, 'monthly');
+INSERT INTO rate VALUES (3, 'yearly');

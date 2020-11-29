@@ -1,10 +1,13 @@
 package org.springframework.samples.petclinic.web;
 
+import java.util.Collection;
 import java.util.Optional;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.samples.petclinic.model.Rate;
+import org.springframework.samples.petclinic.model.UserType;
 import org.springframework.samples.petclinic.model.Usuario;
 import org.springframework.samples.petclinic.service.UsuarioService;
 import org.springframework.stereotype.Controller;
@@ -12,6 +15,7 @@ import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -101,6 +105,16 @@ public class UsuarioController {
 			model.addAttribute("message", "Usuario no encontrado");
 		}
 		return "usuarios/detalleUsuario";
+	}
+	
+	@ModelAttribute("types")
+	public Collection<UserType> userTypes() {
+		return this.usuarioService.findUserTypes();
+	}
+	
+	@ModelAttribute("rates")
+	public Collection<Rate> rate() {
+		return this.usuarioService.findRates();
 	}
 
 }

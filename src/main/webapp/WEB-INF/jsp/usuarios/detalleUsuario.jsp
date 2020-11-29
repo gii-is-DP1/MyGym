@@ -29,6 +29,10 @@
             <th>Fecha de nacimiento</th>
             <td><c:out value="${user.fecha_nacimiento}"/></td>
         </tr>
+        <tr>
+            <th>Tipo</th>
+            <td><c:out value="${user.type}"/></td>
+        </tr>
     </table>
     
     <h3> Cuota</h3>

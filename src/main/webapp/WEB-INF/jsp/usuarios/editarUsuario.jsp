@@ -25,6 +25,7 @@
 	            <petclinic:inputField label="Email" name="email"/>
 	            <petclinic:inputField label="Dni" name="dni"/>
 	            <petclinic:inputField label="Fecha de nacimiento" name="fecha_nacimiento"/>
+	            <petclinic:selectField label="Tipo" name="type" names="${types}" size="1"/>
 	        </div>
 	   	    <h3>
 		        Cuota
@@ -33,13 +34,7 @@
 	            <petclinic:inputField label="Fecha de inicio" name="fee.start_date"/>
 	            <petclinic:inputField label="Fecha fin" name="fee.end_date"/>
 	            <petclinic:inputField label="Precio" name="fee.amount"/>
-	            <form:select path="fee.rate">
-
-		            	<form:option value="DAILY">Diario</form:option>
-		            	<form:option value="MONTHLY">Mensual</form:option>
-		            	<form:option value="YEARLY">Anual</form:option>
-
-	            </form:select>
+	            <petclinic:selectField label="Tipo" name="fee.rate" names="${rates}" size="1"/>
 	        </div>
 	        <div class="form-group">
 	            <div class="col-sm-offset-2 col-sm-10">
