@@ -209,7 +209,7 @@ public class TrainingController {
 	 * @param model
 	 * @return
 	 */
-	@PostMapping(value = "/trainings/{trainingId}/removeExercise/{exerciseId}")
+	@PostMapping(value = "/trainings/{trainingId}/deleteExercise/{exerciseId}")
 	public String processTrainingExerciseRemoval(@Valid Training training, BindingResult result, @PathVariable("trainingId") int trainingId, @PathVariable("exerciseId") int exerciseId, ModelMap model) {
 		if (result.hasErrors()) {
 			model.put("training", training);
