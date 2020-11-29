@@ -3,12 +3,12 @@ package org.springframework.samples.petclinic.web;
 import java.util.Optional;
 
 import javax.validation.Valid;
-import javax.websocket.server.PathParam;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.Usuario;
 import org.springframework.samples.petclinic.service.UsuarioService;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @RequestMapping("/usuarios")
 public class UsuarioController {
+	
+	private static final String VIEWS_USUARIO_CREATE_OR_UPDATE_FORM = "usuarios/editarUsuario";
 	
 	@Autowired
 	private UsuarioService usuarioService;
@@ -38,7 +40,7 @@ public class UsuarioController {
 		return view;
 	}
 	
-	@PostMapping(path = "/save")
+	@PostMapping(path = "/new")
 	public String guardarUsuario(@Valid Usuario user, BindingResult result, ModelMap modelMap) {
 		String view = "usuarios/ListadoUsuarios";
 		if(result.hasErrors()) {
@@ -50,6 +52,17 @@ public class UsuarioController {
 		view = listadoUsuarios(modelMap);
 		return view;
 		
+	}
+	
+	@GetMapping(value = "/{userId}/edit")
+	public String initUpdateUsuarioForm(@PathVariable("userId") int userId, Model model) {
+		Optional<Usuario> usuario = this.usuarioService.findUserById(userId);
+		if (usuario.isPresent()) {
+			model.addAttribute("user",usuario.get());			
+		} else {
+			model.addAttribute("message", "Usuario no encontrado");
+		}
+		return VIEWS_USUARIO_CREATE_OR_UPDATE_FORM;
 	}
 	
 	@GetMapping(path = "/delete/{userId}")
@@ -64,6 +77,30 @@ public class UsuarioController {
 			modelMap.addAttribute("message", "Usuario no encontrado");
 		}
 		return view;
+	}
+	
+	@PostMapping(value = "/{userId}/edit")
+	public String processUpdateOwnerForm(@Valid Usuario usuario, BindingResult result,
+			@PathVariable("userId") int userId) {
+		if (result.hasErrors()) {
+			return VIEWS_USUARIO_CREATE_OR_UPDATE_FORM;
+		}
+		else {
+			usuario.setId(userId);
+			this.usuarioService.save(usuario);
+			return "redirect:/usuarios/{userId}";
+		}
+	}
+
+	@GetMapping("/{userId}")
+	public String showUser(@PathVariable("userId") int userId, Model model) {
+		Optional<Usuario> usuario = this.usuarioService.findUserById(userId);
+		if (usuario.isPresent()) {
+			model.addAttribute("user",usuario.get());			
+		} else {
+			model.addAttribute("message", "Usuario no encontrado");
+		}
+		return "usuarios/detalleUsuario";
 	}
 
 }

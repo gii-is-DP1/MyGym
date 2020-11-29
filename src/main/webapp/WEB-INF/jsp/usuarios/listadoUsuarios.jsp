@@ -40,10 +40,14 @@
                     <c:out value="${user.fecha_nacimiento}"/>
                 </td>
                 <td>
+                    <spring:url value="/usuarios/{userId}" var="userUrl">
+                        <spring:param name="userId" value="${user.id}"/>
+                    </spring:url>
+                    <a class="btn btn-default btn-sm" href="${fn:escapeXml(userUrl)}">Ver</a>
                    	<spring:url value="/usuarios/delete/{userId}" var="userUrl">
                         <spring:param name="userId" value="${user.id}"/>
                     </spring:url>
-                    <a href="${fn:escapeXml(userUrl)}">Borrar</a>
+                    <a class="btn btn-danger btn-sm" href="${fn:escapeXml(userUrl)}">Borrar</a>
                 </td>
                 
             </tr>
