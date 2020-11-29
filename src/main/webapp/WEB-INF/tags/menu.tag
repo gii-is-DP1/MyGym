@@ -68,6 +68,12 @@
 				</petclinic:menuItem>
 			</petclinic:menuSection>
 			
+			<petclinic:menuSection active="${name eq 'exercises'}" title="Exercises">
+				<petclinic:menuItem active="${name eq 'exercises'}" url="/exercises" title="Exercises">
+					<i class="fa fa-home mr-3"></i>Exercises
+				</petclinic:menuItem>
+			</petclinic:menuSection>
+			
 			<petclinic:menuItem active="${name eq 'owners'}" url="/owners/find" title="Owners">
 				<span class="white-text"><i class="fa fa-pie-chart"></i>Owners</span>
 			</petclinic:menuItem>

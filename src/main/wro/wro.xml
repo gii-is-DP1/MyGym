@@ -43,8 +43,12 @@
 
   <group name="petclinic">
   	<css>classpath:META-INF/resources/webjars/mdbootstrap-bootstrap-material-design/4.5.3/scss/core/_colors.scss</css>
-    <css>/petclinic.scss</css>
-    <css>/sidebar.scss</css>
-    <css>/navbar.scss</css>
+    <css>/scss/petclinic.scss</css>
+    <css>/scss/sidebar.scss</css>
+    <css>/scss/navbar.scss</css>
+    <css>/scss/image-field.scss</css>
+    
+    <js>/js/back-button.js</js>
+    <js>/js/file-upload.js</js>
    </group>
 </groups>
