@@ -3,6 +3,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="petclinic" tagdir="/WEB-INF/tags" %>
 
 <spring:url value="/trainings/new" var="addTraining"></spring:url>
@@ -16,15 +17,31 @@
 	   	</c:if>
     </div>
     
+    <form:form modelAttribute="training" action="trainings" method="get" class="form-horizontal">
+    	<div class="col col-sm-6">
+        <div class="row flex-nowrap justify-content-space-between align-items-center">
+           	<form:input class="form-control" path="name" size="30" maxlength="80" alt="Buscar" />
+           	<div>
+               	<button type="submit" class="btn btn-default">Buscar</button>
+               </div>
+        </div>
+		</div>
+    </form:form>
+    
     <c:if test="${empty selections}">
     	<div class="card mt-4">
     		<div class="card-body">
 		        <!--Title-->
 		        <h4 class="card-title">¡No hay entrenamientos!</h4>
 		        <!--Text-->
-		        <p class="card-text">Hemos detectado que aún no has creado ningún entrenamiento, pulsa en crear para añadir el primero.</p>
-		        <!-- Provides extra visual weight and identifies the primary action in a set of buttons -->
-	   			<a href="${addTraining}" class="btn btn-blue btn-md">Crear</a>
+		        <c:if test="${empty training.name}">
+		        	<p class="card-text">Hemos detectado que aún no has creado ningún entrenamiento, pulsa en crear para añadir el primero.</p>
+			        <!-- Provides extra visual weight and identifies the primary action in a set of buttons -->
+		   			<a href="${addTraining}" class="btn btn-blue btn-md">Crear</a>
+		        </c:if>
+		        <c:if test="${not empty training.name}">
+			        <p class="card-text">No hemos encontrado ninguna coincidencia con "<c:out value="${training.name}"></c:out>"</p>
+		        </c:if>
 	    	</div>
     	</div>
     </c:if>

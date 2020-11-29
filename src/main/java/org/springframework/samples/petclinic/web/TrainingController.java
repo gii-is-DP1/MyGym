@@ -86,19 +86,18 @@ public class TrainingController {
 	@GetMapping(value = "/trainings")
 	public String processFindForm(Training training, BindingResult result, Map<String, Object> model) {
 		
-		Training filterTraining = new Training();
 		String name = training != null && training.getName() != null ? training.getName() : "";
-		filterTraining.setName(name);
+		System.out.println("name = " + name);
 		
 		// find owners by last name
-		Collection<Training> results = this.workoutService.findTrainingsByName(filterTraining.getName());
+		Collection<Training> results = this.workoutService.findTrainingsByName(name);
 		System.out.println("results size: " + results.size());
 		if (results.isEmpty()) {
 			// no exercises found
 			result.rejectValue("name", "notFound", "not found");
 			return VIEWS_TRAININGS_LIST;
 		}
-		else if (!filterTraining.getName().isEmpty() && results.size() == 1) {
+		else if (!name.isEmpty() && results.size() == 1) {
 			// 1 owner found
 			Training uniqueFound = results.iterator().next();
 			return "redirect:/trainings/" + uniqueFound.getId();

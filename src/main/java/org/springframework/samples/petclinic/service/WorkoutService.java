@@ -85,8 +85,9 @@ public class WorkoutService {
 	}
 	
 	public Collection<Training> findTrainingsByName(String name) {
-		// return trainingRepository.findByName(name);
-		return trainingRepository.findAll();
+		if (name == null)
+			return trainingRepository.findAll();
+		return trainingRepository.findByName(name);
 	}
 
 	/* @Transactional()

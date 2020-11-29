@@ -51,7 +51,7 @@
 							</c:if>
 							<c:if test="${exercise.type.name == 'temporary' and not empty exercise.time}">
 								<strong class="mr-2">Time:</strong>
-						<c:out value="${exercise.time}"/>
+								<c:out value="${exercise.time}"/>
 							</c:if>
 						</p>
 			   		</div>
