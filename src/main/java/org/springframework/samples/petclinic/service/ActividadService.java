@@ -30,7 +30,7 @@ public class ActividadService {
 	}
 	
 	@Transactional
-	public Optional<Actividad> findActividadById(int actId) {
+	public Actividad findActividadById(int actId) {
 		return actividadRepository.findById(actId);
 	}
 }
