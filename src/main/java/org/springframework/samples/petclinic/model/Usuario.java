@@ -20,7 +20,7 @@ public class Usuario extends BaseEntity{
 	String email;
 	String dni;
 	
-	@DateTimeFormat(pattern = "yyyy/MM/dd")
+	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	LocalDate fecha_nacimiento;
 	
 	@OneToOne(cascade = CascadeType.ALL)

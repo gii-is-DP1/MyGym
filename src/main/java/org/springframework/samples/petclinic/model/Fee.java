@@ -15,10 +15,10 @@ import lombok.Data;
 @Entity
 public class Fee extends BaseEntity{
 
-	@DateTimeFormat(pattern = "yyyy/MM/dd")
+	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	LocalDate start_date;
 	
-	@DateTimeFormat(pattern = "yyyy/MM/dd")
+	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	LocalDate end_date;
 	
 	Double amount;

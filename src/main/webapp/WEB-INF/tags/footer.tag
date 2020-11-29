@@ -19,6 +19,5 @@
 <spring:url value="/webjars/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.es.min.js" var="bootstrapDatepickerLocale"/>
 <script src="${bootstrapDatepickerLocale}"></script>
 
-<spring:url value="/resources/js/petclinic.js" var="petclinicJS"/>
-<script src="${petclinicJS}"></script>
+
 

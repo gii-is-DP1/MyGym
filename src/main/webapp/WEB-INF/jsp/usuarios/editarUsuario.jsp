@@ -10,9 +10,7 @@
     <jsp:attribute name="customScript">
         <script>
             $(function () {
-                $("#fecha_nacimiento").datepicker({dateFormat: 'yy/mm/dd', language:'es'});
-                $("#fee.start_date").datepicker({dateFormat: 'yy/mm/dd', , language:'es'}});
-                $("#fee.end_date").datepicker({dateFormat: 'yy/mm/dd', , language:'es'}});
+            	$("input[name='fee.start_date'],#fecha_nacimiento,input[name='fee.end_date']").datepicker({language:'es'});
             });
         </script>
     </jsp:attribute>
@@ -20,7 +18,7 @@
 	    <h2>
 	        <c:if test="${user['new']}">Nuevo </c:if> Usuario
 	    </h2>
-	    <form:form modelAttribute="user" class="form-horizontal" action="/usuarios/save">
+	    <form:form modelAttribute="user" class="form-horizontal" >
 	        <div class="form-group has-feedback">
 	            <petclinic:inputField label="Nombre" name="nombre"/>
 	            <petclinic:inputField label="Apellidos" name="apellidos"/>
@@ -47,7 +45,7 @@
 	            <div class="col-sm-offset-2 col-sm-10">
 	                <c:choose>
 	                    <c:when test="${user['new']}">
-	                        <button class="btn btn-default" type="submit">Aï¿½adir usuario</button>
+	                        <button class="btn btn-default" type="submit">Añadir usuario</button>
 	                    </c:when>
 	                    <c:otherwise>
 	                        <button class="btn btn-default" type="submit">Actualizar usuario</button>
