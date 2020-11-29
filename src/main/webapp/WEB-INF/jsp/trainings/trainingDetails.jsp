@@ -4,28 +4,28 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="petclinic" tagdir="/WEB-INF/tags" %>
 
-<petclinic:layout pageName="owners">
+<petclinic:layout pageName="trainingDetails">
 
-    <h2>Información de ejercicio</h2>
+    <h2>Información de entrenamiento</h2>
 
 
     <table class="table table-striped">
         <tr>
             <th>Nombre</th>
-            <td><b><c:out value="${exercise.name}"/></b></td>
+            <td><b><c:out value="${training.name}"/></b></td>
         </tr>
         <tr>
             <th>Descripción</th>
-            <td><c:out value="${exercise.description}"/></td>
+            <td><c:out value="${training.description}"/></td>
         </tr>
     </table>
     
-    <spring:url value="/exercises" var="backUrl">
+    <spring:url value="/trainings" var="backUrl">
     </spring:url>
     <a href="${fn:escapeXml(backUrl)}" class="btn btn-default">Volver</a>
 
-    <spring:url value="{exerciseId}/edit" var="editUrl">
-        <spring:param name="exerciseId" value="${exercise.id}"/>
+    <spring:url value="{trainingId}/edit" var="editUrl">
+        <spring:param name="trainingId" value="${training.id}"/>
     </spring:url>
     <a href="${fn:escapeXml(editUrl)}" class="btn btn-default">Editar</a>
 

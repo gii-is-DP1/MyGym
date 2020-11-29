@@ -82,3 +82,10 @@ INSERT INTO usuario(id,nombre,apellidos,email,dni,fecha_nacimiento) VALUES (1, '
 -- exercises types
 INSERT INTO exercise_type VALUES (1, 'temporary');
 INSERT INTO exercise_type VALUES (2, 'repetitive');
+
+-- execises
+INSERT INTO exercise (id,name,description,type,num_reps) VALUES (1,'Abdominales concentrados','Abdominales tumbados con rodillas flexionadas tocando la parte de atrás de la cabeza y las puntas de los pies', 2, 50);
+
+-- trainings
+INSERT INTO training (id,name,description) VALUES (1,'Circuito metabólico','Circuito de inicicación para trabajar core');
+INSERT INTO training_exercises (training_id, exercise_id) VALUES (1, 1);

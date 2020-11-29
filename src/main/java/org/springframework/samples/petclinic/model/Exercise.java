@@ -1,5 +1,6 @@
 package org.springframework.samples.petclinic.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
@@ -19,7 +20,8 @@ public class Exercise extends BaseEntity {
 	
 	@Lob
 	String image;
-	
+
+	@Column(name = "num_reps")
 	Integer numReps;
 	
 	Integer time;

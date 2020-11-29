@@ -24,10 +24,13 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.Exercise;
 import org.springframework.samples.petclinic.model.ExerciseType;
+import org.springframework.samples.petclinic.model.Exercises;
+import org.springframework.samples.petclinic.model.Vets;
 import org.springframework.samples.petclinic.service.UsuarioService;
 import org.springframework.samples.petclinic.service.WorkoutService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,6 +38,8 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
@@ -83,6 +88,23 @@ public class ExerciseController {
 	@ModelAttribute("types")
 	public Collection<ExerciseType> populatePetTypes() {
 		return this.workoutService.findExerciseTypes();
+	}
+	
+	@GetMapping( 
+		value = { "/exercises"}, 
+		consumes = { "application/json;charset=utf-8" }
+	)
+	public @ResponseBody Exercises getExercisesList(Exercise exercise) {
+		Exercises exercises = new Exercises();
+		
+		String name = null;
+		if (exercise != null) {
+			name = exercise.getName();
+		}
+		
+		exercises.getExerciseList().addAll(this.workoutService.findExercises(name));
+		
+		return exercises;
 	}
 	
 	@GetMapping(value = "/exercises")

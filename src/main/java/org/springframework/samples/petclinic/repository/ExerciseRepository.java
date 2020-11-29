@@ -21,6 +21,7 @@ import java.util.List;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.Repository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.samples.petclinic.model.BaseEntity;
 import org.springframework.samples.petclinic.model.Exercise;
 import org.springframework.samples.petclinic.model.ExerciseType;
@@ -61,6 +62,16 @@ public interface ExerciseRepository extends Repository<Exercise, Integer> {
 	 * @see BaseEntity#isNew
 	 */
 	Collection<Exercise> findAll() throws DataAccessException;
+	
+	/**
+	 * Find a <code>Exercise</code> list.
+	 * return the <code>Exercise</code> list
+	 * @param name the <code>Exercise</code> name
+	 * @return the <code>Exercise</code> list
+	 * @see BaseEntity#isNew
+	 */
+	@Query("SELECT DISTINCT exercise FROM Exercise exercise WHERE exercise.name LIKE :name%")
+	Collection<Exercise> findByName(@Param("name") String name) throws DataAccessException;
 	
 	/**
 	 * Delete a <code>Exercise</code>
