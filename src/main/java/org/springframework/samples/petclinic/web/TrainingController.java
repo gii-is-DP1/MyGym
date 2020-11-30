@@ -203,7 +203,7 @@ public class TrainingController {
 			if (exercise != null) {
 				trainingToUpdate.addExercise(exercise);
 				try {
-					this.workoutService.saveTraining(training);
+					this.workoutService.saveTraining(trainingToUpdate);
 				} catch (NoNameException e) {
 	                result.rejectValue("name", "required", "required field");
 	                return VIEWS_TRAININGS_CREATE_OR_UPDATE_FORM;
@@ -232,7 +232,7 @@ public class TrainingController {
 			if (exercise != null) {
 				trainingToUpdate.removeExercise(exercise);
 				try {
-					this.workoutService.saveTraining(training);
+					this.workoutService.saveTraining(trainingToUpdate);
 				} catch (NoNameException e) {
 	                result.rejectValue("name", "required", "required field");
 	                return VIEWS_TRAININGS_CREATE_OR_UPDATE_FORM;
