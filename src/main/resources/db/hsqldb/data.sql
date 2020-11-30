@@ -77,11 +77,31 @@ INSERT INTO visits(id,pet_id,visit_date,description) VALUES (2, 8, '2013-01-02',
 INSERT INTO visits(id,pet_id,visit_date,description) VALUES (3, 8, '2013-01-03', 'neutered');
 INSERT INTO visits(id,pet_id,visit_date,description) VALUES (4, 7, '2013-01-04', 'spayed');
 
-INSERT INTO usuario(id,nombre,apellidos,email,dni,fecha_nacimiento) VALUES (1, 'Juan', 'García Pérez', 'juangarciaperez@gmail.com', '46853215L', '1985-10-01'); 
+INSERT INTO usuario(id,nombre,apellidos,email,dni,fecha_nacimiento) VALUES (1, 'Juan', 'García Pérez', 'juangarciaperez@gmail.com', '46853215L', '1985-10-01');
+
+INSERT INTO sala(id,nombre,aforo) VALUES (1,'Musculación', 10);
+INSERT INTO sala(id,nombre,aforo) VALUES (2,'Calistenia', 5);
+
+INSERT INTO actividad(id,nombre,descripcion) VALUES (1,'Zumba', 'Clases dirigidas en la que se realizan ejercicios aeróbicos al ritmo de música latina');
 
 -- exercises types
 INSERT INTO exercise_type VALUES (1, 'temporary');
 INSERT INTO exercise_type VALUES (2, 'repetitive');
+
+-- products
+INSERT INTO products(id, name, description, stockage, price) VALUES (1, 'Barra de chocolate', 'Esta to wena', 10, 2.50);
+INSERT INTO products(id, name, description, stockage, price) VALUES (2, 'Batidito de Fresa', 'Esta to weno', 23, 3.50);
+INSERT INTO products(id, name, description, stockage, price) VALUES (3, 'Anacardos 50gr', 'Estan to wenos', 10, 3.00);
+
+-- user types
+INSERT INTO user_type VALUES (1, 'admin');
+INSERT INTO user_type VALUES (2, 'trainer');
+INSERT INTO user_type VALUES (3, 'client');
+
+-- rate
+INSERT INTO rate VALUES (1, 'daily');
+INSERT INTO rate VALUES (2, 'monthly');
+INSERT INTO rate VALUES (3, 'yearly');
 
 -- execises
 INSERT INTO exercise (id,name,description,type,num_reps) VALUES (1,'Abdominales concentrados','Abdominales tumbados con rodillas flexionadas tocando la parte de atrás de la cabeza y las puntas de los pies', 2, 50);

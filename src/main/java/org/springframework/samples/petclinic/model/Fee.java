@@ -14,21 +14,20 @@ import lombok.Data;
 
 @Data
 @Entity
-public class Usuario extends BaseEntity{
+public class Fee extends BaseEntity{
 
-	String nombre;
-	String apellidos;
-	String email;
-	String dni;
+	@DateTimeFormat(pattern = "dd/MM/yyyy")
+	LocalDate start_date;
 	
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
-	LocalDate fecha_nacimiento;
+	LocalDate end_date;
 	
-	@OneToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "fee")
-	private Fee fee;
+	Double amount;
 	
-	@ManyToOne
-	@JoinColumn(name = "type")
-	private UserType type;
+	@ManyToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "rate")
+	private Rate rate;
+	
+	@OneToOne(mappedBy = "fee")
+	private Usuario usuario;
 }
