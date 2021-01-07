@@ -28,8 +28,6 @@ public class Training extends BaseEntity {
 	
 	String description;
 	
-	Integer weekDay;
-	
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "training_exercises", joinColumns = @JoinColumn(name = "training_id"),
 		inverseJoinColumns = @JoinColumn(name = "exercise_id"))

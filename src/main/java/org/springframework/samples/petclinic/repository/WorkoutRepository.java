@@ -22,52 +22,53 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.samples.petclinic.model.BaseEntity;
-import org.springframework.samples.petclinic.model.Training;
+import org.springframework.samples.petclinic.model.Usuario;
+import org.springframework.samples.petclinic.model.Workout;
 
 /**
- * Spring Data JPA specialization of the {@link TrainingRepository} interface
+ * Spring Data JPA specialization of the {@link WorkoutRepository} interface
  *
  * @author Michael Isvy
  * @since 15.1.2013
  */
-public interface TrainingRepository extends Repository<Training, Integer> {
+public interface WorkoutRepository extends Repository<Workout, Integer> {
 	
 	/**
-	 * Retrieve a <code>Training</code> from the data store by id.
+	 * Retrieve a <code>Workout</code> from the data store by id.
 	 * @param id the id to search for
-	 * @return the <code>Training</code> if found
+	 * @return the <code>Workout</code> if found
 	 * @throws org.springframework.dao.DataRetrievalFailureException if not found
 	 */
-	Training findById(int id) throws DataAccessException;
+	Workout findById(int id) throws DataAccessException;
 
 	/**
-	 * Save a <code>Training</code> to the data store, either inserting or updating it.
-	 * @param pet the <code>Training</code> to save
+	 * Save a <code>Workout</code> to the data store, either inserting or updating it.
+	 * @param pet the <code>Workout</code> to save
 	 * @see BaseEntity#isNew
 	 */
-	void save(Training training) throws DataAccessException;
+	void save(Workout workout) throws DataAccessException;
 	
 	/**
-	 * Find a <code>Training</code> list.
-	 * @param name the <code>Training</code> name
-	 * @return the <code>Training</code> list filtered by name
+	 * Find a <code>Workout</code> list.
+	 * @param name the <code>Workout</code> name
+	 * @return the <code>Workout</code> list filtered by name
 	 * @see BaseEntity#isNew
 	 */
-	@Query("SELECT DISTINCT training FROM Training training WHERE training.name LIKE %:name%")
-	Collection<Training> findByName(String name) throws DataAccessException;
+	@Query("SELECT DISTINCT workout FROM Workout workout inner join workout.user user WHERE user.username = :username")
+	Collection<Workout> findByUser(@Param("username") String username) throws DataAccessException;
 	
 	/**
-	 * Find a <code>Training</code> list.
-	 * @return the <code>Training</code> list
+	 * Find a <code>Workout</code> list.
+	 * @return the <code>Workout</code> list
 	 * @see BaseEntity#isNew
 	 */
-	Collection<Training> findAll() throws DataAccessException;
+	Collection<Workout> findAll() throws DataAccessException;
 	
 	/**
-	 * Delete a <code>Training</code>
+	 * Delete a <code>Workout</code>
 	 * @param exercise
 	 * @throws DataAccessException
 	 */
-	void delete(Training training) throws DataAccessException;
+	void delete(Workout workout) throws DataAccessException;
 
 }
