@@ -5,6 +5,5 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "user_type")
-public class UserType extends NamedEntity{
-
+public class UserType extends NamedEntity {
 }

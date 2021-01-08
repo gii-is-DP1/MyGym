@@ -24,7 +24,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.Exercise;
 import org.springframework.samples.petclinic.model.Training;
-import org.springframework.samples.petclinic.service.UsuarioService;
 import org.springframework.samples.petclinic.service.WorkoutService;
 import org.springframework.samples.petclinic.service.exceptions.NoNameException;
 import org.springframework.stereotype.Controller;
@@ -51,12 +50,9 @@ public class TrainingController {
 
 	private final WorkoutService workoutService;
 
-	private final UsuarioService userService;
-
 	@Autowired
-	public TrainingController(WorkoutService workoutService, UsuarioService userService) {
+	public TrainingController(WorkoutService workoutService) {
 		this.workoutService = workoutService;
-		this.userService = userService;
 	}
 	
 	/* @ModelAttribute("training")

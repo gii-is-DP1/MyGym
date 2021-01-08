@@ -16,11 +16,14 @@
 package org.springframework.samples.petclinic.service;
 
 
+import java.util.Collection;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.samples.petclinic.model.Rate;
 import org.springframework.samples.petclinic.model.User;
+import org.springframework.samples.petclinic.model.UserType;
 import org.springframework.samples.petclinic.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,12 +45,37 @@ public class UserService {
 	}
 
 	@Transactional
-	public void saveUser(User user) throws DataAccessException {
+	public void save(User user) throws DataAccessException {
 		user.setEnabled(true);
 		userRepository.save(user);
 	}
 	
 	public Optional<User> findUser(String username) {
-		return userRepository.findById(username);
+		return userRepository.findByUsername(username);
+	}
+	
+	@Transactional
+	public Iterable<User> findAll() {
+		return userRepository.findAll();
+	}
+	
+	@Transactional
+	public void delete(User user) {
+		userRepository.delete(user);
+	}
+	
+	@Transactional
+	public Optional<User> findUserById(int userId) {
+		return userRepository.findById(userId);
+	}
+	
+	@Transactional(readOnly = true)
+	public Collection<UserType> findUserTypes() throws DataAccessException {
+		return userRepository.findUserTypes();
+	}
+	
+	@Transactional(readOnly = true)
+	public Collection<Rate> findRates() throws DataAccessException {
+		return userRepository.findRates();
 	}
 }

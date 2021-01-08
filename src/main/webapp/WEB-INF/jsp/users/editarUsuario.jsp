@@ -20,6 +20,8 @@
 	    </h2>
 	    <form:form modelAttribute="user" class="form-horizontal" >
 	        <div class="form-group has-feedback">
+	            <petclinic:inputField label="Usuario" name="username"/>
+	            <petclinic:inputField label="Contraseña" name="password" type="password"/>
 	            <petclinic:inputField label="Nombre" name="nombre"/>
 	            <petclinic:inputField label="Apellidos" name="apellidos"/>
 	            <petclinic:inputField label="Email" name="email"/>
