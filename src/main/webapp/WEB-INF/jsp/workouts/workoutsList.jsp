@@ -3,6 +3,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="petclinic" tagdir="/WEB-INF/tags" %>
 
 <spring:url value="/workouts/assign" var="assignWorkout"></spring:url>
@@ -24,6 +25,21 @@
 	    	</div>
     	</div>
     </c:if>-->
+    
+    <c:if test="${viewUsersWorkoutsAllowed}">
+    	<form:form method="get" modelAttribute="user" class="${cssGroup}" id="assign-workout-form">
+	    	<div class="row no-gutters mt-4">
+	    		<h4 class="mb-4">Ver las rutinas de un usuario</h4>
+	    		<div class="d-flex flexrow flex-nowrap align-items-center" style="width:100%;">
+		    		<form:select class="form-control" path="nombre" size="1">
+		       			<form:option value="" label="Ninguno" />
+		       			<form:options items="${users}" itemValue="nombre" itemLabel="nombre" />
+		    		</form:select>
+		    		<button type="submit" class="btn btn-blue btn-md" style="white-space: nowrap;">Ver</button>
+	    		</div> 
+	    	</div>
+    	</form:form>
+    </c:if>
     
     <div class="row no-gutters mt-4">
  

@@ -35,8 +35,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	
 	@SuppressWarnings("serial")
 	private static final Map<String, Collection<String>> PERMISSIONS = new HashMap<String, Collection<String>>() {{
-		
+
 		put("assign-workouts", Collections.unmodifiableCollection(Arrays.asList("admin")));
+
+		put("view-users-workouts", Collections.unmodifiableCollection(Arrays.asList("admin")));
 		
 	}};
 	

@@ -131,13 +131,25 @@ public class WorkoutController {
 	}
 	
 	@GetMapping(value = "/workouts")
-	public String processFindForm(Workout workout, BindingResult result, Map<String, Object> model, Principal principal) {
+	public String processFindForm(Usuario user, Workout workout, BindingResult result, Map<String, Object> model, Principal principal) {
 		
 		Collection<SimpleGrantedAuthority> authorities = (Collection<SimpleGrantedAuthority>) SecurityContextHolder.getContext().getAuthentication().getAuthorities();
+		final boolean viewUserWorkoutsAllowed = SecurityConfiguration.isAllowedTo("view-users-workouts", authorities);
+		
 		model.put("assignWorkoutsAllowed", SecurityConfiguration.isAllowedTo("assign-workouts", authorities));
+		model.put("viewUsersWorkoutsAllowed", viewUserWorkoutsAllowed);
+		
+		if (user == null) {
+			user = new Usuario();
+		}
+		if (!viewUserWorkoutsAllowed) { 
+			user.setNombre(principal.getName());
+		} else { // add user model for filtering purposes	
+			model.put("user", user);
+		}
 		
 		// find owners by last name
-		Collection<Workout> results = this.workoutService.findWorkoutsByUser(principal.getName());
+		Collection<Workout> results = this.workoutService.findWorkoutsByUser(user.getNombre());
 		
 		final LocalDate today = LocalDate.now();
 		
