@@ -28,10 +28,10 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.configuration.SecurityConfiguration;
 import org.springframework.samples.petclinic.model.Training;
-import org.springframework.samples.petclinic.model.Usuario;
+import org.springframework.samples.petclinic.model.User;
 import org.springframework.samples.petclinic.model.Workout;
 import org.springframework.samples.petclinic.model.Workouts;
-import org.springframework.samples.petclinic.service.UsuarioService;
+import org.springframework.samples.petclinic.service.UserService;
 import org.springframework.samples.petclinic.service.WorkoutService;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -47,8 +47,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import antlr.collections.List;
-
 /**
  * @author Juergen Hoeller
  * @author Ken Krebs
@@ -63,10 +61,10 @@ public class WorkoutController {
 
 	private final WorkoutService workoutService;
 
-	private final UsuarioService userService;
+	private final UserService userService;
 
 	@Autowired
-	public WorkoutController(WorkoutService workoutService, UsuarioService userService) {
+	public WorkoutController(WorkoutService workoutService, UserService userService) {
 		this.workoutService = workoutService;
 		this.userService = userService;
 	}
@@ -100,8 +98,8 @@ public class WorkoutController {
 
 
 	@ModelAttribute("users")
-	public Collection<Usuario> populateUsers() {
-		return (Collection<Usuario>) this.userService.findAll(); 
+	public Collection<User> populateUsers() {
+		return (Collection<User>) this.userService.findAll(); 
 	}
 
 
@@ -131,16 +129,18 @@ public class WorkoutController {
 	}
 	
 	@GetMapping(value = "/workouts")
-	public String processFindForm(Usuario user, Workout workout, BindingResult result, Map<String, Object> model, Principal principal) {
+	public String processFindForm(User user, Workout workout, BindingResult result, Map<String, Object> model, Principal principal) {
 		
 		Collection<SimpleGrantedAuthority> authorities = (Collection<SimpleGrantedAuthority>) SecurityContextHolder.getContext().getAuthentication().getAuthorities();
+		
+		System.out.println("authorities: " + authorities);
 		final boolean viewUserWorkoutsAllowed = SecurityConfiguration.isAllowedTo("view-users-workouts", authorities);
 		
 		model.put("assignWorkoutsAllowed", SecurityConfiguration.isAllowedTo("assign-workouts", authorities));
 		model.put("viewUsersWorkoutsAllowed", viewUserWorkoutsAllowed);
 		
 		if (user == null) {
-			user = new Usuario();
+			user = new User();
 		}
 		if (!viewUserWorkoutsAllowed) { 
 			user.setNombre(principal.getName());
@@ -177,9 +177,14 @@ public class WorkoutController {
 	}
 
 	@PostMapping(value = "/workouts/assign")
-	public String processCreationForm(@Valid Workout workout, BindingResult result, ModelMap model) {
+	public String processCreationForm(@Valid Workout workout, HttpServletRequest request, BindingResult result, ModelMap model) {
 		System.out.println("ASSIGN POST");
 		System.out.println("workout trainings = " + workout.getWorkoutTrainings());
+		
+		Map<?,?> map = request.getParameterMap();
+		System.out.println("workout trainings = " + map.keySet().stream()
+			      .map(key -> key + "=" + map.get(key))
+			      .collect(Collectors.joining(", ", "{", "}")));
 		if (result.hasErrors()) {
 			model.put("workout", workout);
 			return VIEWS_ASSIGN_WORKOUT;

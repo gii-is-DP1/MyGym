@@ -22,7 +22,6 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.samples.petclinic.model.Exercise;
 import org.springframework.samples.petclinic.model.ExerciseType;
 import org.springframework.samples.petclinic.model.Training;
-import org.springframework.samples.petclinic.model.Usuario;
 import org.springframework.samples.petclinic.model.Workout;
 import org.springframework.samples.petclinic.repository.ExerciseRepository;
 import org.springframework.samples.petclinic.repository.TrainingRepository;

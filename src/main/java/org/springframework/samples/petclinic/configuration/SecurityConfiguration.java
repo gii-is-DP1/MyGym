@@ -33,12 +33,16 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	
+	private static final String ADMIN = "1";
+	private static final String MONITOR = "2";
+	private static final String CLIENT = "3";
+	
 	@SuppressWarnings("serial")
 	private static final Map<String, Collection<String>> PERMISSIONS = new HashMap<String, Collection<String>>() {{
 
-		put("assign-workouts", Collections.unmodifiableCollection(Arrays.asList("admin")));
+		put("assign-workouts", Collections.unmodifiableCollection(Arrays.asList(ADMIN)));
 
-		put("view-users-workouts", Collections.unmodifiableCollection(Arrays.asList("admin")));
+		put("view-users-workouts", Collections.unmodifiableCollection(Arrays.asList(ADMIN)));
 		
 	}};
 	
@@ -106,9 +110,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	        + "from users "
 	        + "where username = ?")
 	      .authoritiesByUsernameQuery(
-	       "select username,type "
-	        + "from users "
-	        + "where username = ?")	      	      
+	       "select user.username, type.name "
+	        + "from users user "
+	        + "inner join type type "
+	        + "where user.username = ?")	      	      
 	      .passwordEncoder(passwordEncoder());	
 	}
 	

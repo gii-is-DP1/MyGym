@@ -1,6 +1,6 @@
-INSERT INTO user_type VALUES (1, 'admin');
-INSERT INTO user_type VALUES (2, 'trainer');
-INSERT INTO user_type VALUES (3, 'client');
+INSERT INTO user_type VALUES (1,'admin');
+INSERT INTO user_type VALUES (2,'trainer');
+INSERT INTO user_type VALUES (3,'client');
 
 -- One admin user, named admin1 with passwor 4dm1n and authority admin
 INSERT INTO users(id,username,password,enabled,type,nombre,apellidos,email,dni,fecha_nacimiento) VALUES (1,'admin1','4dm1n',TRUE, 1, 'Administrador', 'Primero', null, null, null);
