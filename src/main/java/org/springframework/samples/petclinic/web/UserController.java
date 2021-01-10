@@ -1,75 +1,117 @@
-/*
- * Copyright 2002-2013 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.springframework.samples.petclinic.web;
 
-import java.util.Map;
+import java.util.Collection;
+import java.util.Optional;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.samples.petclinic.model.Owner;
-import org.springframework.samples.petclinic.service.AuthoritiesService;
-import org.springframework.samples.petclinic.service.OwnerService;
-import org.springframework.samples.petclinic.service.VetService;
+import org.springframework.samples.petclinic.model.Rate;
+import org.springframework.samples.petclinic.model.UserType;
+import org.springframework.samples.petclinic.model.User;
 import org.springframework.samples.petclinic.service.UserService;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
-/**
- * @author Juergen Hoeller
- * @author Ken Krebs
- * @author Arjen Poutsma
- * @author Michael Isvy
- */
 @Controller
+@RequestMapping("/usuarios")
 public class UserController {
-
-	private static final String VIEWS_OWNER_CREATE_FORM = "users/createOwnerForm";
-
-	private final OwnerService ownerService;
-
+	
+	private static final String VIEWS_USUARIO_CREATE_OR_UPDATE_FORM = "users/editarUsuario";
+	private static final String VIEWS_USUARIO_LIST = "users/listadoUsuarios";
+	private static final String VIEWS_USUARIO_DETAIL = "users/detalleUsuario";
+	
 	@Autowired
-	public UserController(OwnerService clinicService) {
-		this.ownerService = clinicService;
+	private UserService usuarioService;
+	
+	@GetMapping()
+	public String listadoUsers(ModelMap modelMap) {
+		Iterable<User> users = usuarioService.findAll();
+		modelMap.addAttribute("users", users);
+		return VIEWS_USUARIO_LIST;
 	}
-
-	@InitBinder
-	public void setAllowedFields(WebDataBinder dataBinder) {
-		dataBinder.setDisallowedFields("id");
+	
+	@GetMapping("/new")
+	public String crearUser(ModelMap modelMap) {
+		modelMap.addAttribute("user", new User());
+		return VIEWS_USUARIO_CREATE_OR_UPDATE_FORM;
 	}
-
-	@GetMapping(value = "/users/new")
-	public String initCreationForm(Map<String, Object> model) {
-		Owner owner = new Owner();
-		model.put("owner", owner);
-		return VIEWS_OWNER_CREATE_FORM;
+	
+	@PostMapping(path = "/new")
+	public String guardarUser(@Valid User user, BindingResult result, ModelMap modelMap) {
+		if(result.hasErrors()) {
+			modelMap.addAttribute("user", user);
+			return VIEWS_USUARIO_CREATE_OR_UPDATE_FORM;
+		}
+		usuarioService.save(user);
+		modelMap.addAttribute("message", "usuario guardado correctamente");
+		return listadoUsers(modelMap);
 	}
-
-	@PostMapping(value = "/users/new")
-	public String processCreationForm(@Valid Owner owner, BindingResult result) {
+	
+	@GetMapping(value = "/{userId}/edit")
+	public String initUpdateUserForm(@PathVariable("userId") int userId, Model model) {
+		Optional<User> usuario = this.usuarioService.findUserById(userId);
+		if (usuario.isPresent()) {
+			model.addAttribute("user",usuario.get());			
+		} else {
+			model.addAttribute("message", "User no encontrado");
+		}
+		return VIEWS_USUARIO_CREATE_OR_UPDATE_FORM;
+	}
+	
+	@GetMapping(path = "/delete/{userId}")
+	public String borrarUser(@PathVariable("userId") int userId, ModelMap modelMap) {
+		String view = VIEWS_USUARIO_LIST;
+		Optional<User> user = usuarioService.findUserById(userId);
+		if(user.isPresent()) {
+			usuarioService.delete(user.get());
+			modelMap.addAttribute("message", "User eliminado correctamente");
+			view = listadoUsers(modelMap);
+		} else {
+			modelMap.addAttribute("message", "User no encontrado");
+		}
+		return view;
+	}
+	
+	@PostMapping(value = "/{userId}/edit")
+	public String processUpdateOwnerForm(@Valid User usuario, BindingResult result,
+			@PathVariable("userId") int userId) {
 		if (result.hasErrors()) {
-			return VIEWS_OWNER_CREATE_FORM;
+			return VIEWS_USUARIO_CREATE_OR_UPDATE_FORM;
 		}
 		else {
-			//creating owner, user, and authority
-			this.ownerService.saveOwner(owner);
-			return "redirect:/";
+			usuario.setId(userId);
+			this.usuarioService.save(usuario);
+			return "redirect:/usuarios/{userId}";
 		}
+	}
+
+	@GetMapping("/{userId}")
+	public String showUser(@PathVariable("userId") int userId, Model model) {
+		Optional<User> usuario = this.usuarioService.findUserById(userId);
+		if (usuario.isPresent()) {
+			model.addAttribute("user",usuario.get());			
+		} else {
+			model.addAttribute("message", "User no encontrado");
+		}
+		return VIEWS_USUARIO_DETAIL;
+	}
+	
+	@ModelAttribute("types")
+	public Collection<UserType> userTypes() {
+		return this.usuarioService.findUserTypes();
+	}
+	
+	@ModelAttribute("rates")
+	public Collection<Rate> rate() {
+		return this.usuarioService.findRates();
 	}
 
 }
