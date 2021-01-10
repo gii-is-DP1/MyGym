@@ -33,9 +33,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	
-	private static final String ADMIN = "1";
-	private static final String MONITOR = "2";
-	private static final String CLIENT = "3";
+	private static final String ADMIN = "admin";
+	private static final String TRAINER = "trainer";
+	private static final String CLIENT = "client";
 	
 	@SuppressWarnings("serial")
 	private static final Map<String, Collection<String>> PERMISSIONS = new HashMap<String, Collection<String>>() {{
@@ -110,10 +110,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	        + "from users "
 	        + "where username = ?")
 	      .authoritiesByUsernameQuery(
-	       "select user.username, type.name "
-	        + "from users user "
-	        + "inner join type type "
-	        + "where user.username = ?")	      	      
+	       "select username, type "
+	        + "from users "
+	        + "where username = ?")	      	      
 	      .passwordEncoder(passwordEncoder());	
 	}
 	

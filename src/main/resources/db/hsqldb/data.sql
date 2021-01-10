@@ -1,14 +1,14 @@
-INSERT INTO user_type VALUES (1,'admin');
-INSERT INTO user_type VALUES (2,'trainer');
-INSERT INTO user_type VALUES (3,'client');
+INSERT INTO user_type VALUES ('admin');
+INSERT INTO user_type VALUES ('trainer');
+INSERT INTO user_type VALUES ('client');
 
 -- One admin user, named admin1 with passwor 4dm1n and authority admin
-INSERT INTO users(id,username,password,enabled,type,nombre,apellidos,email,dni,fecha_nacimiento) VALUES (1,'admin1','4dm1n',TRUE, 1, 'Administrador', 'Primero', null, null, null);
-INSERT INTO users(id,username,password,enabled,type,nombre,apellidos,email,dni,fecha_nacimiento) VALUES (2,'trainer1','trainer1',TRUE, 2, 'Entrenador', 'Primero', null, null, null);
-INSERT INTO users(id,username,password,enabled,type,nombre,apellidos,email,dni,fecha_nacimiento) VALUES (3,'client1','client1',TRUE, 3, 'Cliente', 'Primero', null, null, null);
-INSERT INTO users(id,username,password,enabled,type,nombre,apellidos,email,dni,fecha_nacimiento) VALUES (4,'manalerod','1234',TRUE, 1, 'Manuel', 'Rodriguez Ales', 'manalerod@alum.us.es', '11111111H', '1990-01-01');
-INSERT INTO users(id,username,password,enabled,type,nombre,apellidos,email,dni,fecha_nacimiento) VALUES (5,'manoutbar','manoutbar1234',TRUE, 1, 'Manuel', 'Outeiriño Barneto', 'manoutbar@alum.us.es', '11111111H', '1990-01-01');
-INSERT INTO users(id,username,password,enabled,type,nombre,apellidos,email,dni,fecha_nacimiento) VALUES (6,'borvercas','borvercas123',TRUE, 1, 'Borja', 'Vera Casal', 'borvercas@alum.us.es', '11111111H', '1990-01-01');
+INSERT INTO users(id,username,password,enabled,type,nombre,apellidos,email,dni,fecha_nacimiento) VALUES (1,'admin1','4dm1n',TRUE, 'admin', 'Administrador', 'Primero', null, null, null);
+INSERT INTO users(id,username,password,enabled,type,nombre,apellidos,email,dni,fecha_nacimiento) VALUES (2,'trainer1','trainer1',TRUE, 'trainer', 'Entrenador', 'Primero', null, null, null);
+INSERT INTO users(id,username,password,enabled,type,nombre,apellidos,email,dni,fecha_nacimiento) VALUES (3,'client1','client1',TRUE, 'client', 'Cliente', 'Primero', null, null, null);
+INSERT INTO users(id,username,password,enabled,type,nombre,apellidos,email,dni,fecha_nacimiento) VALUES (4,'manalerod','1234',TRUE, 'admin', 'Manuel', 'Rodriguez Ales', 'manalerod@alum.us.es', '11111111H', '1990-01-01');
+INSERT INTO users(id,username,password,enabled,type,nombre,apellidos,email,dni,fecha_nacimiento) VALUES (5,'manoutbar','manoutbar1234',TRUE, 'admin', 'Manuel', 'Outeiriño Barneto', 'manoutbar@alum.us.es', '11111111H', '1990-01-01');
+INSERT INTO users(id,username,password,enabled,type,nombre,apellidos,email,dni,fecha_nacimiento) VALUES (6,'borvercas','borvercas123',TRUE, 'admin', 'Borja', 'Vera Casal', 'borvercas@alum.us.es', '11111111H', '1990-01-01');
 
 INSERT INTO sala(id,nombre,aforo) VALUES (1,'Musculación', 10);
 INSERT INTO sala(id,nombre,aforo) VALUES (2,'Calistenia', 5);
