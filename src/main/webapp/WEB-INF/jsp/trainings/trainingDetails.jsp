@@ -62,6 +62,48 @@
 	    </c:forEach>
     </c:if>
     
+    
+    <div class="row no-gutters justify-content-between align-items-center mb-2">
+		<h5 class="mt-4">Memorias del entrenamiento</h5>
+		
+	 	<spring:url value="{trainingId}/memory/new" var="addMemory">
+	        <spring:param name="trainingId" value="${training.id}"/>
+	    </spring:url>
+	    <a href="${fn:escapeXml(addMemory)}" class="btn btn-blue btn-md right">Nueva</a>
+    </div>
+    
+    <c:choose>
+    	<c:when test="${empty training.memories}">
+    		<div class="mb-4">No se ha incluido ninguna memoria</div>
+    	</c:when>
+    	<c:otherwise>
+			<table class="table table-striped mb-4">
+				<thead>
+		        	<tr>
+		            	<th>Fecha</th>
+		            	<th>Texto</th>
+		            	<th></th>
+		        	</tr>
+		       	</thead>
+		       	<tbody>
+		       		<c:forEach items="${training.memories}" var="memory">
+		       			<tr>
+		       				<td><c:out value="${memory.date}" /></td>
+		       				<td><c:out value="${memory.text}" /></td>
+		       				<td style="width: 40px;">
+								<spring:url value="{trainingId}/memory/{memoryId}/delete" var="deleteMemory">
+							        <spring:param name="trainingId" value="${training.id}"/>
+							        <spring:param name="memoryId" value="${memory.id}"/>
+							    </spring:url>
+							    <a href="${fn:escapeXml(deleteMemory)}" class="btn btn-default">Borrar</a>
+							</td>
+		       			</tr>
+		       		</c:forEach>
+		       	</tbody>
+		    </table>
+	    </c:otherwise>
+    </c:choose>
+    	
     <spring:url value="/trainings" var="backUrl">
     </spring:url>
     <a href="${fn:escapeXml(backUrl)}" class="btn btn-default">Volver</a>

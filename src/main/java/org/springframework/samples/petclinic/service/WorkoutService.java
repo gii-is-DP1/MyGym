@@ -21,9 +21,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.samples.petclinic.model.Exercise;
 import org.springframework.samples.petclinic.model.ExerciseType;
+import org.springframework.samples.petclinic.model.Memory;
 import org.springframework.samples.petclinic.model.Training;
 import org.springframework.samples.petclinic.model.Workout;
 import org.springframework.samples.petclinic.repository.ExerciseRepository;
+import org.springframework.samples.petclinic.repository.MemoryRepository;
 import org.springframework.samples.petclinic.repository.TrainingRepository;
 import org.springframework.samples.petclinic.repository.WorkoutRepository;
 import org.springframework.samples.petclinic.repository.WorkoutTrainingRepository;
@@ -50,14 +52,18 @@ public class WorkoutService {
 	
 	private WorkoutRepository workoutRepository;
 	
+	private MemoryRepository memoryRepository;
+	
  
 	@Autowired
 	public WorkoutService(ExerciseRepository exerciseRepository, TrainingRepository trainingRepository,
-			WorkoutTrainingRepository workoutTrainingRepository, WorkoutRepository workoutRepository) {
+			WorkoutTrainingRepository workoutTrainingRepository, WorkoutRepository workoutRepository,
+			MemoryRepository memoryRepository) {
 		this.exerciseRepository = exerciseRepository;
 		this.trainingRepository = trainingRepository;
 		this.workoutRepository = workoutRepository;
 		this.workoutTrainingRepository = workoutTrainingRepository;
+		this.memoryRepository = memoryRepository;
 	}
 
 	@Transactional(readOnly = true)
@@ -104,7 +110,6 @@ public class WorkoutService {
 		return trainingRepository.findByName(name);
 	}
 
-
 	public Collection<Exercise> findExercises() {
 		return exerciseRepository.findByIsGenericTrue();
 	}
@@ -142,9 +147,6 @@ public class WorkoutService {
 		Collection<Workout> existingWorkoutsInDateRange = workoutRepository.findActiveWorkoutsForUser(workout.getUser(), workout.getStartDate(), workout.getEndDate());
 		if (!existingWorkoutsInDateRange.isEmpty()) {
 			Workout existingWorkout = existingWorkoutsInDateRange.iterator().next();
-			System.out.println("workout id " + workout.getId());
-			System.out.println("workout is new " + workout.isNew());
-			System.out.println("existing workout id " + existingWorkout.getId());
 			if (workout.getId() == null || !existingWorkout.getId().equals(workout.getId())) {
 				throw new ExistingWorkoutInDateRangeException(existingWorkout.getStartDate(), existingWorkout.getEndDate());
 			}
@@ -160,5 +162,16 @@ public class WorkoutService {
 	public Workout findWorkoutById(int workoutId) {
 		return workoutRepository.findById(workoutId);
 	}
-
+	
+	public Memory findMemoryById(int memoryId) {
+		return memoryRepository.findById(memoryId);
+	}
+	
+	public void saveMemory(Memory memory) {
+		this.memoryRepository.save(memory);
+	}
+	
+	public void deleteMemory(Memory memory) {
+		this.memoryRepository.delete(memory);
+	}
 }
