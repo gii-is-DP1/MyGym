@@ -117,6 +117,7 @@ public class TrainingController {
 			return VIEWS_TRAININGS_CREATE_OR_UPDATE_FORM;
 		} else {
 			try {
+				training.setIsGeneric(Boolean.TRUE);
 				this.workoutService.saveTraining(training);
 			} catch (NoNameException e) {
                 result.rejectValue("name", "required", "required field");
@@ -169,7 +170,7 @@ public class TrainingController {
 			return VIEWS_TRAININGS_CREATE_OR_UPDATE_FORM;
 		} else {
 			Training trainingToUpdate = this.workoutService.findTrainingById(trainingId);
-			BeanUtils.copyProperties(training, trainingToUpdate, "id");
+			BeanUtils.copyProperties(training, trainingToUpdate, "id", "isGeneric");
 			try {
 				this.workoutService.saveTraining(trainingToUpdate);
 			} catch (NoNameException e) {

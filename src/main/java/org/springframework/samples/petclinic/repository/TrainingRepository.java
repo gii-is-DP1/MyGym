@@ -53,8 +53,10 @@ public interface TrainingRepository extends Repository<Training, Integer> {
 	 * @return the <code>Training</code> list filtered by name
 	 * @see BaseEntity#isNew
 	 */
-	@Query("SELECT DISTINCT training FROM Training training WHERE training.name LIKE %:name%")
+	@Query("SELECT DISTINCT training FROM Training training WHERE training.name LIKE %:name% AND isGeneric = true")
 	Collection<Training> findByName(String name) throws DataAccessException;
+	
+	Collection<Training> findByIsGenericTrue() throws DataAccessException;
 	
 	/**
 	 * Find a <code>Training</code> list.

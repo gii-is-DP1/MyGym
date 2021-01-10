@@ -1,4 +1,4 @@
-<%@ page session="false" trimDirectiveWhitespaces="true" %>
+<%@ page contentType="text/html;charset=UTF-8" session="false" trimDirectiveWhitespaces="true" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -66,12 +66,12 @@
             	}
             	
             	$startDate.on('change', function() {
-            		var valid = validateStartDate() && validateEndDate();
+            		var valid = validateStartDate() &&Â validateEndDate();
         			$form.find('button[type=submit]').prop('disabled', !valid);
             	});
             	
             	$endDate.on('change', function() {
-            		var valid = validateStartDate() && validateEndDate();
+            		var valid = validateEndDate() && validateStartDate();
             		$form.find('button[type=submit]').prop('disabled', !valid);
             	});
             });
@@ -85,35 +85,48 @@
 	    <c:set var="cssGroup" value="form-horizontal ${status.error ? 'was-validated invalid' : '' }"/>
 	    <form:form modelAttribute="workout" class="${cssGroup}" id="assign-workout-form">
 	        <div class="form-group has-feedback">
-	            <petclinic:selectField label="Usuario" name="user" names="${users}" size="1" itemLabel="nombre"/>
+	            <petclinic:selectField label="Usuario" name="user" names="${users}" size="1" itemLabel="completeName"/>
 	            <petclinic:inputField label="Nombre" name="name"/>
-	            <petclinic:inputField label="Descripción" name="description"/>
+	            <petclinic:inputField label="DescripciÃ³n" name="description"/>
 	            <petclinic:inputField label="Fecha de inicio" name="startDate"/>
 	            <petclinic:inputField label="Fecha de fin" name="endDate"/>
 	        </div>
 	        
 	        <div class="form-group has-feedback mt-4">
-	        	<h4 class="mb-4">Entrenamientos para los días de la semana</h4>
+	        	<h4 class="mb-4">Entrenamientos para los dÃ­as de la semana</h4>
 	        	<div class="row">
 	        		<div class="col">Lunes</div>
 	        		<div class="col">Martes</div>
-	        		<div class="col">Miércoles</div>
+	        		<div class="col">MiÃ©rcoles</div>
 	        		<div class="col">Jueves</div>
 	        		<div class="col">Viernes</div>
-	        		<div class="col">Sábado</div>
+	        		<div class="col">SÃ¡bado</div>
 	        	</div>
 	        	<div class="row mt-2">
-	        		<c:forEach begin="1" end="6" varStatus="loop">
-	        		<div data-week-day="${loop.index}" class="col">
-       					<form:input type="hidden" path="workoutTrainings[${loop.index - 1}].weekDay" value="${loop.index}" />
-       					<form:select class="form-control" path="workoutTrainings[${loop.index - 1}].training" size="1" itemLabel="name">
-       						<form:option value="" label="Descanso" />
-       						<form:options items="${trainings}" itemLabel="name" />
-       					</form:select>
+	        		<c:forEach items="${workoutTrainings}" var="workoutTraining" varStatus="loop">
+	        		<div class="col">
+	        			<select name="wt-training-${workoutTraining.weekDay}" class="form-control">
+	        				<option value="">Descanso></option>
+	        				<c:forEach items="${trainings}" var="training">
+	        					<c:choose>
+	        						<c:when test="${not empty workoutTraining.training and workoutTraining.training.id == training.id}">
+	        							<option value="${training.id}" selected>${training.name}</option>
+	        						</c:when>
+	        						<c:otherwise>
+	        							<option value="${training.id}">${training.name}</option>
+	        						</c:otherwise>
+	        					</c:choose>
+	        				</c:forEach>
+	        			</select>
 	        		</div>
 	        		</c:forEach>
 	        	</div>
+	        	<c:set var="nameHasBindError">
+			        <form:errors path="workoutTrainings"/>
+			    </c:set>
+			    ${nameHasBindError}
 	        </div>
+	        
 	        
 	        <div class="form-group mt-5">
 	            <div class="col pl-0 ml-0">
