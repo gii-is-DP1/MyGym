@@ -3,10 +3,7 @@ package org.springframework.samples.petclinic.configuration;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.Converter;
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,14 +47,10 @@ public final class GenericIdToEntityConverter implements ConditionalGenericConve
             System.out.println("Returning NULL { source = " + source + ", sourceType = " + sourceType + "}");
         	return null;
         }
-        
-
-        System.out.println("Converting { source = " + source + ", sourceType = " + sourceType + ", targetType = " + targetType + "}");
 
         Integer id = (Integer) this.conversionService.convert(source, sourceType, TypeDescriptor.valueOf(Integer.class));
 
         Object entity = entityManager.find(targetType.getType(), id);
-        System.out.println("Found entity: " + entity);
         if (entity == null) {
             log.info("Did not find an entity with id {} of type {}", id,  targetType.getType());
             return null;

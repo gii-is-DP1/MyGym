@@ -17,22 +17,35 @@ package org.springframework.samples.petclinic.web;
 
 import java.security.Principal;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import org.h2.util.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.samples.petclinic.configuration.SecurityConfiguration;
+import org.springframework.samples.petclinic.model.Exercise;
 import org.springframework.samples.petclinic.model.Training;
 import org.springframework.samples.petclinic.model.User;
 import org.springframework.samples.petclinic.model.Workout;
+import org.springframework.samples.petclinic.model.WorkoutTraining;
 import org.springframework.samples.petclinic.model.Workouts;
 import org.springframework.samples.petclinic.service.UserService;
 import org.springframework.samples.petclinic.service.WorkoutService;
+import org.springframework.samples.petclinic.service.exceptions.ExistingWorkoutInDateRangeException;
+import org.springframework.samples.petclinic.service.exceptions.NoNameException;
+import org.springframework.samples.petclinic.util.WorkoutValidator;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -58,6 +71,10 @@ public class WorkoutController {
 	private static final String VIEWS_WORKOUTS_CREATE_OR_UPDATE_FORM = "workouts/createOrUpdateWorkoutForm";
 	
 	private static final String VIEWS_ASSIGN_WORKOUT = "workouts/assignWorkout";
+	
+	private static final String VIEWS_WORKOUT_DETAILS = "workouts/workoutDetails";
+	
+	private static final String VIEWS_FORBIDDEN_ACCESS = "workouts/forbidden";
 
 	private final WorkoutService workoutService;
 
@@ -94,6 +111,7 @@ public class WorkoutController {
 	@InitBinder("workout")
 	public void initWorkoutBinder(WebDataBinder dataBinder) {
 		dataBinder.setDisallowedFields("id");
+		dataBinder.setValidator(new WorkoutValidator());
 	}
 
 
@@ -131,25 +149,22 @@ public class WorkoutController {
 	@GetMapping(value = "/workouts")
 	public String processFindForm(User user, Workout workout, BindingResult result, Map<String, Object> model, Principal principal) {
 		
-		Collection<SimpleGrantedAuthority> authorities = (Collection<SimpleGrantedAuthority>) SecurityContextHolder.getContext().getAuthentication().getAuthorities();
+		final boolean viewUserWorkoutsAllowed = isAllowedTo("view-users-workouts");
 		
-		System.out.println("authorities: " + authorities);
-		final boolean viewUserWorkoutsAllowed = SecurityConfiguration.isAllowedTo("view-users-workouts", authorities);
-		
-		model.put("assignWorkoutsAllowed", SecurityConfiguration.isAllowedTo("assign-workouts", authorities));
+		model.put("assignWorkoutsAllowed", isAllowedTo("assign-workouts"));
 		model.put("viewUsersWorkoutsAllowed", viewUserWorkoutsAllowed);
 		
 		if (user == null) {
 			user = new User();
 		}
-		if (!viewUserWorkoutsAllowed) { 
-			user.setNombre(principal.getName());
+		if (!viewUserWorkoutsAllowed || StringUtils.isNullOrEmpty(user.getUsername())) {
+			user.setUsername(principal.getName());
 		} else { // add user model for filtering purposes	
 			model.put("user", user);
 		}
 		
 		// find owners by last name
-		Collection<Workout> results = this.workoutService.findWorkoutsByUser(user.getNombre());
+		Collection<Workout> results = this.workoutService.findWorkoutsByUser(user.getUsername());
 		
 		final LocalDate today = LocalDate.now();
 		
@@ -172,26 +187,135 @@ public class WorkoutController {
 	public String initCreationForm(Map<String, Object> model) {
 		Workout workout = new Workout();
 		model.put("workout", workout);
-		model.put("workoutTrainings", workout.getWorkoutTrainings());
+		model.put("workoutTrainings", populateWorkoutTrainings(workout));
 		return VIEWS_ASSIGN_WORKOUT;
 	}
 
 	@PostMapping(value = "/workouts/assign")
-	public String processCreationForm(@Valid Workout workout, HttpServletRequest request, BindingResult result, ModelMap model) {
-		System.out.println("ASSIGN POST");
-		System.out.println("workout trainings = " + workout.getWorkoutTrainings());
+	public String processCreationForm(@Valid Workout workout, BindingResult result, ModelMap model, HttpServletRequest request) {
+		Set<WorkoutTraining> sentWorkoutTrainings = populateWorkoutTrainings(request);
+		if (!sentWorkoutTrainings.stream().anyMatch(wt -> wt.getTraining() != null)) {
+			result.rejectValue("workoutTrainings", "notEmpty", "Debe seleccionar algún entrenamiento para la rutina");
+		}
 		
-		Map<?,?> map = request.getParameterMap();
-		System.out.println("workout trainings = " + map.keySet().stream()
-			      .map(key -> key + "=" + map.get(key))
-			      .collect(Collectors.joining(", ", "{", "}")));
+		System.out.println("Workout trainings = " + sentWorkoutTrainings);
+		
 		if (result.hasErrors()) {
 			model.put("workout", workout);
+			model.put("workoutTrainings", sentWorkoutTrainings);
 			return VIEWS_ASSIGN_WORKOUT;
 		} else {
-			this.workoutService.saveWorkout(workout);
+			
+			Collection<Training> trainings = this.populateTrainings();
+			Set<WorkoutTraining> workoutTrainings = workout.getWorkoutTrainings();
+			for (int i = 1; i <= 6; i++) {
+				final int weekday = i;
+				WorkoutTraining workoutTraining = workoutTrainings.stream()
+						.filter(wt -> wt.getWeekDay().equals(weekday))
+						.findFirst().orElse(null);
+				String tmpId = request.getParameter("wt-training-" + weekday);	
+				Training training = null;
+				if (tmpId != null && !tmpId.isEmpty()) {
+					Integer trainingId = new Integer(tmpId);
+					training = trainings.stream().filter(t -> t.getId().equals(trainingId)).findFirst().orElse(null);
+				}
+				
+				if (workoutTraining != null && training == null) {
+					workout.removeWorkoutTraining(workoutTraining);
+				} else if (training != null) {
+					if (workoutTraining == null) {
+						workoutTraining = new WorkoutTraining();
+						workoutTraining.setWeekDay(weekday);
+					}
+					Training trainingToAssign = new Training();
+					BeanUtils.copyProperties(training, trainingToAssign, "id");
+					trainingToAssign.setIsGeneric(Boolean.FALSE);
+
+					training.getExercises().forEach(ex -> {
+						Exercise exercise = new Exercise();
+						BeanUtils.copyProperties(ex, exercise, "id");
+						exercise.setIsGeneric(Boolean.FALSE);
+						
+						trainingToAssign.addExercise(exercise);
+					});
+					workoutTraining.setTraining(trainingToAssign);
+					workout.addWorkoutTraining(workoutTraining);
+				}
+			}
+			
+			try {
+				workout.getWorkoutTrainings().forEach(wt -> {
+					Training training = wt.getTraining();
+					
+					System.out.println("EXERCISES: " + training.getExercises());
+					training.getExercises().forEach(ex -> {
+						this.workoutService.saveExercise(ex);
+						System.out.println("ex id " + ex.getId());
+					});
+					
+					try {
+						this.workoutService.saveTraining(training);
+					} catch (NoNameException e) {
+						e.printStackTrace();
+					}
+				});
+					
+				this.workoutService.saveWorkout(workout);
+			} catch (ExistingWorkoutInDateRangeException e) {
+				model.put("workout", workout);
+				model.put("workoutTrainings", sentWorkoutTrainings);
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("DD/MM/YYYY");
+				
+				LocalDate wStartDate = workout.getStartDate();
+				if (!e.getStartDate().isAfter(wStartDate) && !e.getEndDate().isBefore(wStartDate)) {
+					result.rejectValue("startDate", "invalidDate", "Ya existe una rutina asignada para el periodo " + e.getStartDate().format(formatter) + " - " + e.getEndDate().format(formatter));					
+				}
+				LocalDate wEndDate = workout.getEndDate();
+				if (!e.getStartDate().isAfter(wEndDate) && !e.getEndDate().isBefore(wEndDate)) {
+					result.rejectValue("endDate", "invalidDate", "Ya existe una rutina asignada para el periodo " + e.getStartDate().format(formatter) + " - " + e.getEndDate().format(formatter));					
+				}
+				
+                return VIEWS_ASSIGN_WORKOUT;
+			}
 			return "redirect:/workouts";
 		}
+	}
+	
+
+	private Set<WorkoutTraining> populateWorkoutTrainings(Workout workout) {
+		return populateWorkoutTrainings(workout.getWorkoutTrainings().stream()
+				.collect(Collectors.toMap(
+						wt -> wt.getWeekDay().toString(),
+						wt -> wt.getTraining().getId()
+				)));
+	}
+	
+	private Set<WorkoutTraining> populateWorkoutTrainings(HttpServletRequest request) {
+ 		return populateWorkoutTrainings(
+ 			IntStream.rangeClosed(1, 6).boxed()
+ 				.filter(weekday -> !StringUtils.isNullOrEmpty(request.getParameter("wt-training-" + weekday)))
+ 				.collect(Collectors.toMap(
+ 					weekday -> weekday.toString(),
+ 					weekday -> new Integer(request.getParameter("wt-training-" + weekday))
+ 		)));
+	}
+	
+	private Set<WorkoutTraining> populateWorkoutTrainings(Map<String, Integer> wtMap) {
+		Supplier<TreeSet<WorkoutTraining>> trainings = () -> new TreeSet<>(Comparator.comparing(WorkoutTraining::getWeekDay));
+		return IntStream.rangeClosed(1, 6).boxed()
+				.map(weekday -> {
+					WorkoutTraining workoutTraining = new WorkoutTraining();
+					workoutTraining.setWeekDay(weekday);
+					Integer trainingId = wtMap.get(String.valueOf(weekday));
+					
+					if (trainingId != null) {
+						Training t = new Training();
+						t.setId(trainingId);
+						workoutTraining.setTraining(t);
+					}
+					return workoutTraining;
+				})
+				.collect(Collectors.toCollection(trainings));
 	}
 
 	/**
@@ -200,17 +324,30 @@ public class WorkoutController {
 	 * @return a ModelMap with the model attributes for the view
 	 */
 	@GetMapping("/workouts/{workoutId}")
-	public ModelAndView showWorkout(@PathVariable("workoutId") int workoutId) {
-		ModelAndView mav = new ModelAndView("workouts/workoutDetails");
-		mav.addObject(this.workoutService.findExerciseById(workoutId));
-		return mav;
+	public ModelAndView workoutDetails(@PathVariable("workoutId") int workoutId, Principal principal) {
+		Workout workout = this.workoutService.findWorkoutById(workoutId);
+		final boolean viewUserWorkoutsAllowed = isAllowedTo("view-users-workouts");
+		
+		ModelAndView mav;
+		if (viewUserWorkoutsAllowed || workout.getUser().getUsername().equals(principal.getName())) {
+			mav = new ModelAndView(VIEWS_WORKOUT_DETAILS);
+			mav.addObject(workout);
+		} else {
+			mav = new ModelAndView(VIEWS_FORBIDDEN_ACCESS);
+			mav.addObject("message", "No tiene permiso para visualizar el contenido");
+		}
+		
+		mav.addObject("assignWorkoutAllowed", isAllowedTo("assign-workouts"));
+		
+		return mav;		
 	}
 
 	@GetMapping(value = "/workouts/{workoutId}/edit")
-	public String initUpdateForm(@PathVariable("workoutId") int workoutId, ModelMap model) {
+	public String initUpdateForm(@PathVariable("workoutId") int workoutId, ModelMap model, Principal principal) {
 		Workout workout = this.workoutService.findWorkoutById(workoutId);
 		model.put("workout", workout);
-		return VIEWS_WORKOUTS_CREATE_OR_UPDATE_FORM;
+		model.put("workoutTrainings", populateWorkoutTrainings(workout));
+		return VIEWS_ASSIGN_WORKOUT;
 	}
 
 	@GetMapping(value = "/workouts/{workoutId}/delete")
@@ -223,17 +360,87 @@ public class WorkoutController {
 	}
 
 	@PostMapping(value = "/workouts/{workoutId}/edit")
-	public String processUpdateForm(@Valid Workout workout, BindingResult result,
-			@PathVariable("workoutId") int workoutId, ModelMap model) {
+	public String processUpdateForm(@Valid Workout workout, BindingResult result, @PathVariable("workoutId") int workoutId, ModelMap model, HttpServletRequest request) {
+		Set<WorkoutTraining> sentWorkoutTrainings = populateWorkoutTrainings(request);
+		if (!sentWorkoutTrainings.stream().anyMatch(wt -> wt.getTraining() != null)) {
+			result.rejectValue("workoutTrainings", "notEmpty", "Debe seleccionar algún entrenamiento para la rutina");
+		}
+				
 		if (result.hasErrors()) {
 			model.put("workout", workout);
-			return VIEWS_WORKOUTS_CREATE_OR_UPDATE_FORM;
+			model.put("workoutTrainings", sentWorkoutTrainings);
+			return VIEWS_ASSIGN_WORKOUT;
 		} else {
 			Workout workoutToUpdate = this.workoutService.findWorkoutById(workoutId);
 			BeanUtils.copyProperties(workout, workoutToUpdate, "id");
-			this.workoutService.saveWorkout(workoutToUpdate);
-			return "redirect:/workouts";
+			
+			Collection<Training> trainings = this.populateTrainings();
+			Set<WorkoutTraining> workoutTrainings = workout.getWorkoutTrainings();
+			for (int i = 1; i <= 6; i++) {
+				final int weekday = i;
+				WorkoutTraining workoutTraining = workoutTrainings.stream()
+						.filter(wt -> wt.getWeekDay().equals(weekday))
+						.findFirst().orElse(null);
+				String tmpId = request.getParameter("wt-training-" + weekday);	
+				Training training = null;
+				if (tmpId != null && !tmpId.isEmpty()) {
+					Integer trainingId = new Integer(tmpId);
+					training = trainings.stream().filter(t -> t.getId().equals(trainingId)).findFirst().orElse(null);
+				}
+				
+				if (workoutTraining != null && training == null) {
+					// delete custom training
+					workoutTraining.getTraining().getExercises().forEach(ex -> this.workoutService.deleteExercise(ex));
+					this.workoutService.deleteTraining(workoutTraining.getTraining());
+					workoutToUpdate.removeWorkoutTraining(workoutTraining);
+				} else if (training != null) {
+					if (workoutTraining == null) {
+						workoutTraining = new WorkoutTraining();
+						workoutTraining.setWeekDay(weekday);
+					}
+					Training trainingToAssign = new Training();
+					BeanUtils.copyProperties(training, trainingToAssign, "id");
+					trainingToAssign.setIsGeneric(Boolean.FALSE);
+					
+					trainingToAssign.setExercises(
+						trainingToAssign.getExercises().stream().map(ex -> {
+							Exercise exercise = new Exercise();
+							BeanUtils.copyProperties(ex, exercise, "id");
+							exercise.setIsGeneric(Boolean.FALSE);
+							return exercise;
+						}).collect(Collectors.toSet())
+					);
+					workoutTraining.setTraining(trainingToAssign);
+					workoutToUpdate.addWorkoutTraining(workoutTraining);
+				}
+			}
+			
+			try {
+				this.workoutService.saveWorkout(workoutToUpdate);
+			} catch (ExistingWorkoutInDateRangeException e) {
+				model.put("workout", workout);
+				model.put("workoutTrainings", sentWorkoutTrainings);
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("DD/MM/YYYY");
+				
+				LocalDate wStartDate = workout.getStartDate();
+				if (!e.getStartDate().isAfter(wStartDate) && !e.getEndDate().isBefore(wStartDate)) {
+					result.rejectValue("startDate", "invalidDate", "Ya existe una rutina asignada para el periodo " + e.getStartDate().format(formatter) + " - " + e.getEndDate().format(formatter));					
+				}
+				LocalDate wEndDate = workout.getEndDate();
+				if (!e.getStartDate().isAfter(wEndDate) && !e.getEndDate().isBefore(wEndDate)) {
+					result.rejectValue("endDate", "invalidDate", "Ya existe una rutina asignada para el periodo " + e.getStartDate().format(formatter) + " - " + e.getEndDate().format(formatter));					
+				}
+				
+                return VIEWS_ASSIGN_WORKOUT;
+			}
+			return "redirect:/workouts?username=" + workout.getUser().getUsername();
 		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	private boolean isAllowedTo(String permission) {
+		Collection<SimpleGrantedAuthority> authorities = (Collection<SimpleGrantedAuthority>) SecurityContextHolder.getContext().getAuthentication().getAuthorities();
+		return SecurityConfiguration.isAllowedTo(permission, authorities);
 	}
 
 }

@@ -35,14 +35,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	
 	private static final String ADMIN = "admin";
 	private static final String TRAINER = "trainer";
-	private static final String CLIENT = "client";
 	
 	@SuppressWarnings("serial")
 	private static final Map<String, Collection<String>> PERMISSIONS = new HashMap<String, Collection<String>>() {{
 
-		put("assign-workouts", Collections.unmodifiableCollection(Arrays.asList(ADMIN)));
+		put("assign-workouts", Collections.unmodifiableCollection(Arrays.asList(ADMIN, TRAINER)));
 
-		put("view-users-workouts", Collections.unmodifiableCollection(Arrays.asList(ADMIN)));
+		put("view-users-workouts", Collections.unmodifiableCollection(Arrays.asList(ADMIN, TRAINER)));
 		
 	}};
 	

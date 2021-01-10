@@ -15,6 +15,7 @@
  */
 package org.springframework.samples.petclinic.repository;
 
+import java.time.LocalDate;
 import java.util.Collection;
 
 import org.springframework.dao.DataAccessException;
@@ -22,6 +23,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.samples.petclinic.model.BaseEntity;
+import org.springframework.samples.petclinic.model.User;
 import org.springframework.samples.petclinic.model.Workout;
 
 /**
@@ -55,6 +57,15 @@ public interface WorkoutRepository extends Repository<Workout, Integer> {
 	 */
 	@Query("SELECT DISTINCT workout FROM Workout workout inner join workout.user user WHERE user.username = :username")
 	Collection<Workout> findByUser(@Param("username") String username) throws DataAccessException;
+	
+	/**
+	 * Find a <code>Workout</code> list into a date range.
+	 * @param startDate the <code>Workout</code> start date
+	 * @param endDate the <code>Workout</code> end date
+	 * @return the <code>Workout</code> list filtered
+	 */
+	@Query("SELECT workout FROM Workout workout WHERE user = :user and (startDate between :start and :end or endDate between :start and :end)")
+	Collection<Workout> findActiveWorkoutsForUser(@Param("user") User user, @Param("start") LocalDate start, @Param("end") LocalDate end) throws DataAccessException;
 	
 	/**
 	 * Find a <code>Workout</code> list.

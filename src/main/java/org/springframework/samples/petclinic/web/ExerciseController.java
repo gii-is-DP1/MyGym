@@ -124,6 +124,7 @@ public class ExerciseController {
 			model.put("exercise", exercise);
 			return VIEWS_EXERCISES_CREATE_OR_UPDATE_FORM;
 		} else {
+			exercise.setIsGeneric(Boolean.TRUE);
 			this.workoutService.saveExercise(exercise);
 			return "redirect:/exercises";
 		}
@@ -175,8 +176,7 @@ public class ExerciseController {
 			return VIEWS_EXERCISES_CREATE_OR_UPDATE_FORM;
 		} else {
 			Exercise exerciseToUpdate = this.workoutService.findExerciseById(exerciseId);
-			BeanUtils.copyProperties(exercise, exerciseToUpdate, "id");
-			System.out.println("new type: " + exerciseToUpdate.getType().getName());
+			BeanUtils.copyProperties(exercise, exerciseToUpdate, "id", "isGeneric");
 			this.workoutService.saveExercise(exerciseToUpdate);
 			return "redirect:/exercises";
 		}

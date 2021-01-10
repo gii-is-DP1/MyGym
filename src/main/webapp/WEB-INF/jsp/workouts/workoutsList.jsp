@@ -31,9 +31,9 @@
 	    	<div class="row no-gutters mt-4">
 	    		<h4 class="mb-4">Ver las rutinas de un usuario</h4>
 	    		<div class="d-flex flexrow flex-nowrap align-items-center" style="width:100%;">
-		    		<form:select class="form-control" path="nombre" size="1">
+		    		<form:select class="form-control" path="username" size="1">
 		       			<form:option value="" label="Ninguno" />
-		       			<form:options items="${users}" itemValue="nombre" itemLabel="nombre" />
+		       			<form:options items="${users}" itemValue="username" itemLabel="completeName" />
 		    		</form:select>
 		    		<button type="submit" class="btn btn-blue btn-md" style="white-space: nowrap;">Ver</button>
 	    		</div> 
@@ -56,12 +56,12 @@
 			        <p class="card-text"><c:out value="${current.description}" /></p>
 			        </c:if>
 			        <p class="card-text text-nowrap">
-			        		<strong>La empezaste el día:</strong>
-			        		<c:out value="${current.startDate}" />
+		        		<strong>La empezaste el día:</strong>
+		        		<c:out value="${current.startDate}" />
 			        </p>
 			        <p class="card-text text-nowrap">
-			        		<strong>La terminas el día:</strong>
-			        		<c:out value="${current.endDate}" />
+		        		<strong>La terminas el día:</strong>
+		        		<c:out value="${current.endDate}" />
 			        </p>
 
 				    <spring:url value="workouts/{workoutId}" var="detailUrl">
@@ -76,7 +76,7 @@
     		</c:if>
     		
     		<c:if test="${empty current}">
-   			<h6>No hemos encontrado ninguna rutina activa para ti en este momento.</h6>
+   			<h6>No hemos encontrado ninguna rutina activa en este momento.</h6>
     		</c:if>
     	</div>
     </div>

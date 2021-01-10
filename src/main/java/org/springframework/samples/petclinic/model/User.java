@@ -12,6 +12,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -46,4 +47,9 @@ public class User extends BaseEntity {
 	@ManyToOne
 	@JoinColumn(name = "type")
 	private UserType type;
+	
+	@Transient
+	public String getCompleteName() {
+		return this.nombre + " " + this.apellidos;
+	}
 }
