@@ -33,7 +33,6 @@ import javax.validation.Valid;
 import org.h2.util.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.samples.petclinic.configuration.SecurityConfiguration;
 import org.springframework.samples.petclinic.model.Exercise;
 import org.springframework.samples.petclinic.model.Training;
@@ -68,8 +67,6 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 public class WorkoutController {
 
-	private static final String VIEWS_WORKOUTS_CREATE_OR_UPDATE_FORM = "workouts/createOrUpdateWorkoutForm";
-	
 	private static final String VIEWS_ASSIGN_WORKOUT = "workouts/assignWorkout";
 	
 	private static final String VIEWS_WORKOUT_DETAILS = "workouts/workoutDetails";

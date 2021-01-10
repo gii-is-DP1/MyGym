@@ -181,6 +181,11 @@
 					    				<input type="hidden" name="exerciseId" value="${exercise.id}">
 									    <button type="submit" class="btn btn-primary">Eliminar</button>
 									</form:form>
+									
+									<spring:url value="/exercises/{exerciseId}/edit" var="editExercise">
+										<spring:param name="exerciseId" value="${exercise.id}"></spring:param>
+									</spring:url>
+				    				<a href="${fn:escapeXml(editExercise)}" class="btn btn-default">Editar</a>
 								</div>
 				        	</div>
 			        	</div>

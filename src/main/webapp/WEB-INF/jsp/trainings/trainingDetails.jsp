@@ -1,4 +1,4 @@
-<%@ page session="false" trimDirectiveWhitespaces="true" %>
+<%@ page contentType="text/html;charset=UTF-8" session="false" trimDirectiveWhitespaces="true" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -6,7 +6,7 @@
 
 <petclinic:layout pageName="trainingDetails">
 
-    <h2>Información de entrenamiento</h2>
+    <h2>InformaciÃ³n de entrenamiento</h2>
 
 
     <table class="table table-striped">
@@ -15,7 +15,7 @@
             <td><b><c:out value="${training.name}"/></b></td>
         </tr>
         <tr>
-            <th>Descripción</th>
+            <th>DescripciÃ³n</th>
             <td><c:out value="${training.description}"/></td>
         </tr>
     </table>
