@@ -25,6 +25,7 @@ import org.springframework.samples.petclinic.model.Rate;
 import org.springframework.samples.petclinic.model.User;
 import org.springframework.samples.petclinic.model.UserType;
 import org.springframework.samples.petclinic.repository.UserRepository;
+import org.springframework.samples.petclinic.service.exceptions.StartDateAfterEndDateException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,8 +45,11 @@ public class UserService {
 		this.userRepository = userRepository;
 	}
 
-	@Transactional
-	public void save(User user) throws DataAccessException {
+	@Transactional(rollbackFor =  StartDateAfterEndDateException.class)
+	public void save(User user) throws DataAccessException, StartDateAfterEndDateException {
+		if(user.getFee().getStart_date().isAfter(user.getFee().getEnd_date())) {
+			throw new StartDateAfterEndDateException();
+		}
 		user.setEnabled(true);
 		userRepository.save(user);
 	}

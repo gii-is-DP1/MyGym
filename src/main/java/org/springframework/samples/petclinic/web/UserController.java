@@ -6,10 +6,12 @@ import java.util.Optional;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.samples.petclinic.model.Rate;
 import org.springframework.samples.petclinic.model.UserType;
 import org.springframework.samples.petclinic.model.User;
 import org.springframework.samples.petclinic.service.UserService;
+import org.springframework.samples.petclinic.service.exceptions.StartDateAfterEndDateException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
@@ -50,7 +52,12 @@ public class UserController {
 			modelMap.addAttribute("user", user);
 			return VIEWS_USUARIO_CREATE_OR_UPDATE_FORM;
 		}
-		usuarioService.save(user);
+		try {
+			usuarioService.save(user);
+		} catch (StartDateAfterEndDateException e) {
+			result.rejectValue("fee.start_date", "invalidDate", "La fecha de inicio es posterior a la fecha final de la cuota");
+			return VIEWS_USUARIO_CREATE_OR_UPDATE_FORM;
+		}
 		modelMap.addAttribute("message", "usuario guardado correctamente");
 		return listadoUsers(modelMap);
 	}
@@ -88,7 +95,12 @@ public class UserController {
 		}
 		else {
 			usuario.setId(userId);
-			this.usuarioService.save(usuario);
+			try {
+				this.usuarioService.save(usuario);
+			} catch (StartDateAfterEndDateException e) {
+				result.rejectValue("fee.start_date", "invalidDate", "La fecha de inicio es posterior a la fecha final de la cuota");
+				return VIEWS_USUARIO_CREATE_OR_UPDATE_FORM;
+			}
 			return "redirect:/usuarios/{userId}";
 		}
 	}

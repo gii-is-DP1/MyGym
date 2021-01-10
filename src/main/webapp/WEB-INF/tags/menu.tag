@@ -80,11 +80,11 @@
 				</petclinic:menuItem>
 			</petclinic:menuSection>
 			
-			<petclinic:menuItem active="${name eq 'error'}" url="/products" title="Products">
+			<petclinic:menuItem active="${name eq 'products'}" url="/products" title="Products">
 				<span class="white-text"><i class="fa fa-pie-chart"></i>Products</span>
 			</petclinic:menuItem>
 			
-			<petclinic:menuItem active="${name eq 'owners'}" url="/owners/find" title="Owners">
+			<!--<petclinic:menuItem active="${name eq 'owners'}" url="/owners/find" title="Owners">
 				<span class="white-text"><i class="fa fa-pie-chart"></i>Owners</span>
 			</petclinic:menuItem>
 			
@@ -94,7 +94,7 @@
 			
 			<petclinic:menuItem active="${name eq 'error'}" url="/oups" title="Error">
 				<span class="white-text"><i class="fa fa-pie-chart"></i>Error</span>
-			</petclinic:menuItem>
+			</petclinic:menuItem>-->
 			
 			<petclinic:menuItem active="${name eq 'error'}" url="/usuarios" title="Usuarios">
 				<span class="white-text"><i class="fa fa-pie-chart"></i>Usuarios</span>
