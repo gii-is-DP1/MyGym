@@ -1,5 +1,11 @@
 package org.springframework.samples.petclinic.configuration;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +16,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -26,6 +32,28 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+	
+	private static final String ADMIN = "admin";
+	private static final String TRAINER = "trainer";
+	private static final String CLIENT = "client";
+	
+	@SuppressWarnings("serial")
+	private static final Map<String, Collection<String>> PERMISSIONS = new HashMap<String, Collection<String>>() {{
+
+		put("assign-workouts", Collections.unmodifiableCollection(Arrays.asList(ADMIN)));
+
+		put("view-users-workouts", Collections.unmodifiableCollection(Arrays.asList(ADMIN)));
+		
+	}};
+	
+	public static boolean isAllowedTo(String action, Collection<SimpleGrantedAuthority> authorities) {
+		if (!PERMISSIONS.containsKey(action)) {
+			return false;
+		}
+		Collection<String> permissions = PERMISSIONS.get(action);
+		
+		return authorities.stream().anyMatch(authority -> permissions.contains(authority.getAuthority()));
+	}
 
 	@Autowired
 	DataSource dataSource;
@@ -36,10 +64,25 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 				.antMatchers("/resources/**","/webjars/**","/h2-console/**").permitAll()
 				.antMatchers(HttpMethod.GET, "/","/oups").permitAll()
 				.antMatchers("/users/new").permitAll()
-				.antMatchers("/usuarios").permitAll()
-				.antMatchers("/usuarios/**").permitAll()
+				// exercises
+				.antMatchers("/exercises").hasAnyAuthority("admin")
+				.antMatchers("/exercises/**").hasAnyAuthority("admin")
+				// trainings
+				.antMatchers("/trainings").hasAnyAuthority("admin")
+				.antMatchers("/trainings/**").hasAnyAuthority("admin")
+				// workouts
+				.antMatchers("/workouts").authenticated()
+				.antMatchers("/workouts/assign").hasAnyAuthority("admin")
+				.antMatchers("/workouts/**").authenticated()
+				
+				.antMatchers("/products").hasAnyAuthority("admin")
+				.antMatchers("/products/**").hasAnyAuthority("admin")
+				.antMatchers("/usuarios/**").hasAnyAuthority("admin")
+				.antMatchers("/salas").permitAll()
+				.antMatchers("/salas/**").permitAll()
+				.antMatchers("/actividades").permitAll()
+				.antMatchers("/actividades/**").permitAll()
 				.antMatchers("/admin/**").hasAnyAuthority("admin")
-				.antMatchers("/owners/**").hasAnyAuthority("owner","admin")				
 				.antMatchers("/vets/**").authenticated()
 				.anyRequest().denyAll()
 				.and()
@@ -66,8 +109,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	        + "from users "
 	        + "where username = ?")
 	      .authoritiesByUsernameQuery(
-	       "select username, authority "
-	        + "from authorities "
+	       "select username, type "
+	        + "from users "
 	        + "where username = ?")	      	      
 	      .passwordEncoder(passwordEncoder());	
 	}
