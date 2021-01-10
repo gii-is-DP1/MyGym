@@ -183,5 +183,29 @@ class WorkoutServiceTests {
 		searchResultCollection = this.workoutService.findTrainingsByName("anInventedWorkoutName");
 		assertThat(searchResultCollection.size()).isEqualTo(0);
 	}
+	
+    @Test
+	@Transactional
+	public void shouldFindWorkoutsByName() {
+		// TODO 
+	}
+	
+    @Test
+	@Transactional
+	public void shouldAssignWorkout() {
+		// TODO 
+	}
+	
+    @Test
+	@Transactional
+	public void shouldFailInsertingWorkoutIntoExistingRangeDate() {
+		// TODO 
+	}
+	
+    @Test
+	@Transactional
+	public void shouldCreateWorkoutWithTrainingCopy() {
+		// TODO 
+	}
 
 }
