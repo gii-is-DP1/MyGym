@@ -63,7 +63,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 				.antMatchers("/resources/**","/webjars/**","/h2-console/**").permitAll()
 				.antMatchers(HttpMethod.GET, "/","/oups").permitAll()
 				.antMatchers("/users/new").permitAll()
-				.antMatchers("/usuarios").permitAll()
 				// exercises
 				.antMatchers("/exercises").hasAnyAuthority("admin")
 				.antMatchers("/exercises/**").hasAnyAuthority("admin")
@@ -77,7 +76,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 				
 				.antMatchers("/products").hasAnyAuthority("admin")
 				.antMatchers("/products/**").hasAnyAuthority("admin")
-				.antMatchers("/usuarios/**").permitAll()
+				.antMatchers("/usuarios/**").hasAnyAuthority("admin")
 				.antMatchers("/salas").permitAll()
 				.antMatchers("/salas/**").permitAll()
 				.antMatchers("/actividades").permitAll()

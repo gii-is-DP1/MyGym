@@ -13,6 +13,7 @@ import org.springframework.samples.petclinic.model.UserType;
 
 public interface UserRepository extends CrudRepository<User, Integer>{
 
+	@Query("SELECT DISTINCT user FROM User user WHERE user.username = :username")
 	Optional<User> findByUsername(String username) throws DataAccessException;
 
 	@Query("SELECT utype FROM UserType utype ORDER BY utype.name")
