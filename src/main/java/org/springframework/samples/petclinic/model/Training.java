@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -28,7 +29,8 @@ public class Training extends BaseEntity {
 	
 	String description;
 	
-	Integer weekDay;
+	@Column(name="is_generic")
+	Boolean isGeneric;
 	
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "training_exercises", joinColumns = @JoinColumn(name = "training_id"),

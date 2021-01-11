@@ -5,6 +5,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="petclinic" tagdir="/WEB-INF/tags" %>
+<%@ page contentType="text/html;charset=UTF-8" session="false" trimDirectiveWhitespaces="true" %>
 
 <petclinic:layout pageName="users">
     <jsp:attribute name="customScript">
@@ -20,6 +21,8 @@
 	    </h2>
 	    <form:form modelAttribute="user" class="form-horizontal" >
 	        <div class="form-group has-feedback">
+	            <petclinic:inputField label="Usuario" name="username"/>
+	            <petclinic:inputField label="Contraseña" name="password" type="password"/>
 	            <petclinic:inputField label="Nombre" name="nombre"/>
 	            <petclinic:inputField label="Apellidos" name="apellidos"/>
 	            <petclinic:inputField label="Email" name="email"/>
@@ -40,7 +43,7 @@
 	            <div class="col-sm-offset-2 col-sm-10">
 	                <c:choose>
 	                    <c:when test="${user['new']}">
-	                        <button class="btn btn-default" type="submit">A�adir usuario</button>
+	                        <button class="btn btn-default" type="submit">Añadir usuario</button>
 	                    </c:when>
 	                    <c:otherwise>
 	                        <button class="btn btn-default" type="submit">Actualizar usuario</button>

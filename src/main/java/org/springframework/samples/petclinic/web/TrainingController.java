@@ -24,7 +24,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.Exercise;
 import org.springframework.samples.petclinic.model.Training;
-import org.springframework.samples.petclinic.service.UsuarioService;
 import org.springframework.samples.petclinic.service.WorkoutService;
 import org.springframework.samples.petclinic.service.exceptions.NoNameException;
 import org.springframework.stereotype.Controller;
@@ -51,12 +50,9 @@ public class TrainingController {
 
 	private final WorkoutService workoutService;
 
-	private final UsuarioService userService;
-
 	@Autowired
-	public TrainingController(WorkoutService workoutService, UsuarioService userService) {
+	public TrainingController(WorkoutService workoutService) {
 		this.workoutService = workoutService;
-		this.userService = userService;
 	}
 	
 	/* @ModelAttribute("training")
@@ -121,6 +117,7 @@ public class TrainingController {
 			return VIEWS_TRAININGS_CREATE_OR_UPDATE_FORM;
 		} else {
 			try {
+				training.setIsGeneric(Boolean.TRUE);
 				this.workoutService.saveTraining(training);
 			} catch (NoNameException e) {
                 result.rejectValue("name", "required", "required field");
@@ -173,7 +170,7 @@ public class TrainingController {
 			return VIEWS_TRAININGS_CREATE_OR_UPDATE_FORM;
 		} else {
 			Training trainingToUpdate = this.workoutService.findTrainingById(trainingId);
-			BeanUtils.copyProperties(training, trainingToUpdate, "id");
+			BeanUtils.copyProperties(training, trainingToUpdate, "id", "isGeneric");
 			try {
 				this.workoutService.saveTraining(trainingToUpdate);
 			} catch (NoNameException e) {

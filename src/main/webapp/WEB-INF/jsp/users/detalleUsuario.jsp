@@ -3,12 +3,17 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="petclinic" tagdir="/WEB-INF/tags" %>
+<%@ page contentType="text/html;charset=UTF-8" session="false" trimDirectiveWhitespaces="true" %>
 
 <petclinic:layout pageName="users">
 
     <h2>Ficha de usuario</h2>
     
     <table class="table table-striped">
+        <tr>
+            <th>Usuario</th>
+            <td><c:out value="${user.username}"/></td>
+        </tr>
         <tr>
             <th>Nombre</th>
             <td><b><c:out value="${user.nombre}"/></b></td>

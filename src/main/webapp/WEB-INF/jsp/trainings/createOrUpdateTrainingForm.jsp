@@ -1,4 +1,4 @@
-<%@ page session="false" trimDirectiveWhitespaces="true" %>
+<%@ page contentType="text/html;charset=UTF-8" session="false" trimDirectiveWhitespaces="true" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -136,7 +136,7 @@
 	    <form:form modelAttribute="training" class="form-horizontal" id="add-training-form">
 	        <div class="form-group has-feedback">
 	            <petclinic:inputField label="Nombre" name="name"/>
-	            <petclinic:inputField label="Descripción" name="description"/>
+	            <petclinic:inputField label="DescripciÃ³n" name="description"/>
 	        </div>
 	        
 	        <div class="form-group mt-5">
@@ -159,7 +159,7 @@
 	        <div class="form-group">
 	        	<div class="col col-sm-10 col-md-6 pl-0 row no-gutters justify-content-between align-items-center">
 	        		<label class="control-label mb-0">Ejercicios del entrenamiento</label>
-				   	<a href="" data-toggle="modal" data-target="#modalAssignForm" class="btn btn-blue btn-md">Añadir</a>
+				   	<a href="" data-toggle="modal" data-target="#modalAssignForm" class="btn btn-blue btn-md">AÃ±adir</a>
 			    </div>
 		        
 	           	<div id="exercises" class="row">
@@ -181,6 +181,11 @@
 					    				<input type="hidden" name="exerciseId" value="${exercise.id}">
 									    <button type="submit" class="btn btn-primary">Eliminar</button>
 									</form:form>
+									
+									<spring:url value="/exercises/{exerciseId}/edit" var="editExercise">
+										<spring:param name="exerciseId" value="${exercise.id}"></spring:param>
+									</spring:url>
+				    				<a href="${fn:escapeXml(editExercise)}" class="btn btn-default">Editar</a>
 								</div>
 				        	</div>
 			        	</div>
@@ -191,7 +196,7 @@
 		            <div class="col col-sm-10 col-md-6 pl-0 mt-2">
 		            	<div class="card">
 		            		<div class="card-body">
-		            			<p class="card-text">Ningún ejercicio asignado</p>
+		            			<p class="card-text">NingÃºn ejercicio asignado</p>
 		            		</div>
 		            	</div>
 	            	</div>
@@ -202,14 +207,14 @@
 				<div class="modal-dialog" role="document">
 					<div class="modal-content">
 						<div class="modal-header text-center">
-							<h4 class="modal-title w-100 font-weight-bold">Añadir ejercicio</h4>
+							<h4 class="modal-title w-100 font-weight-bold">AÃ±adir ejercicio</h4>
 							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 								<span aria-hidden="true">&times;</span>
 							</button>
 						</div>
 						<div class="modal-body mx-3">
 							<div class="md-form mb-5 d-flex flex-row justify-content-space-around align-items-center">
-								<input type="text" id="assignForm-search" class="col form-control" placeholder="Texto de búsqueda...">
+								<input type="text" id="assignForm-search" class="col form-control" placeholder="Texto de bÃºsqueda...">
 								<button id="search-btn" type="button" class="btn btn-outline-default waves-effect px-3 py-2 mt-0 mb-2">
 									<i class="fas fa-search" aria-hidden="true"></i>
 								</button>

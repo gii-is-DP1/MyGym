@@ -29,5 +29,5 @@ public class Fee extends BaseEntity{
 	private Rate rate;
 	
 	@OneToOne(mappedBy = "fee")
-	private Usuario usuario;
+	private User usuario;
 }

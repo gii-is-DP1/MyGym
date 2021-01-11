@@ -9,6 +9,8 @@
               description="Names in the list" %>
 <%@ attribute name="size" required="true" rtexprvalue="true"
               description="Size of Select" %>
+<%@ attribute name="itemLabel" required="false" rtexprvalue="true"
+              description="Item label in select option" %>
 
 <spring:bind path="${name}">
     <c:set var="cssGroup" value="form-group ${status.error ? 'error' : '' }"/>
@@ -17,7 +19,14 @@
         <label class="control-label">${label}</label>
 
         <div class="col col-sm-10 col-md-6 pl-0">
-            <form:select class="form-control" path="${name}" items="${names}" size="${size}"/>
+        	<c:choose>
+                <c:when test="${not empty itemLabel}">
+            		<form:select class="form-control" path="${name}" items="${names}" size="${size}" itemLabel="${itemLabel}" />
+                </c:when>
+                <c:otherwise>
+           			<form:select class="form-control" path="${name}" items="${names}" size="${size}" />
+                </c:otherwise>
+            </c:choose>
             <c:if test="${valid}">
                 <span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true"></span>
             </c:if>

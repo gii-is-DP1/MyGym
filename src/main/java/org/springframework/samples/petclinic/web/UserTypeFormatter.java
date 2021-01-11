@@ -7,16 +7,16 @@ import java.util.Locale;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.Formatter;
 import org.springframework.samples.petclinic.model.UserType;
-import org.springframework.samples.petclinic.service.UsuarioService;
+import org.springframework.samples.petclinic.service.UserService;
 import org.springframework.stereotype.Component;
 
 @Component
 public class UserTypeFormatter implements Formatter<UserType> {
 
-	private final UsuarioService usuarioService;
+	private final UserService usuarioService;
 
 	@Autowired
-	public UserTypeFormatter(UsuarioService usuarioService) {
+	public UserTypeFormatter(UserService usuarioService) {
 		this.usuarioService = usuarioService;
 	}
 

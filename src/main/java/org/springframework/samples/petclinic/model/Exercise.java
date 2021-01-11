@@ -26,6 +26,9 @@ public class Exercise extends BaseEntity {
 	
 	Integer time;
 	
+	@Column(name = "is_generic")
+	Boolean isGeneric;
+	
 	@ManyToOne
 	@JoinColumn(name = "type")
 	private ExerciseType type;
