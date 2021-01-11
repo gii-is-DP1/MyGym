@@ -1,0 +1,29 @@
+$img-card-with: 215px;
+$img-card-height: 215px;
+
+$img-input-preview-height: 300px;
+
+
+/* input style */
+.image-picker {
+	
+	.preview {
+		margin-bottom: 1.5rem; 
+	
+		> img {
+			max-width: 100%;
+			max-height: $img-input-preview-height;
+		}	
+	}	
+}
+
+/* card style */
+.card .view.overlay {
+	overflow: initial;
+	
+	> img {
+		width: $img-card-with;
+		height: $img-card-height;
+		object-fit: cover;
+	}
+}

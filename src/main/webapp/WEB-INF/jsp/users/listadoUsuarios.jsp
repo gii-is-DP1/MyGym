@@ -1,11 +1,10 @@
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-    pageEncoding="ISO-8859-1"%>
 <%@ page session="false" trimDirectiveWhitespaces="true" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="petclinic" tagdir="/WEB-INF/tags" %>
+<%@ page contentType="text/html;charset=UTF-8" session="false" trimDirectiveWhitespaces="true" %>
 
 <petclinic:layout pageName="users">
     <h2>Usuarios</h2>
@@ -40,10 +39,14 @@
                     <c:out value="${user.fecha_nacimiento}"/>
                 </td>
                 <td>
+                    <spring:url value="/usuarios/{userId}" var="userUrl">
+                        <spring:param name="userId" value="${user.id}"/>
+                    </spring:url>
+                    <a class="btn btn-default btn-sm" href="${fn:escapeXml(userUrl)}">Ver</a>
                    	<spring:url value="/usuarios/delete/{userId}" var="userUrl">
                         <spring:param name="userId" value="${user.id}"/>
                     </spring:url>
-                    <a href="${fn:escapeXml(userUrl)}">Borrar</a>
+                    <a class="btn btn-danger btn-sm" href="${fn:escapeXml(userUrl)}">Borrar</a>
                 </td>
                 
             </tr>
