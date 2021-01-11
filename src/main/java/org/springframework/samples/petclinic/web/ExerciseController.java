@@ -25,12 +25,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.Exercise;
 import org.springframework.samples.petclinic.model.ExerciseType;
 import org.springframework.samples.petclinic.model.Exercises;
-import org.springframework.samples.petclinic.model.Vets;
-import org.springframework.samples.petclinic.service.UsuarioService;
 import org.springframework.samples.petclinic.service.WorkoutService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,7 +35,6 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -54,30 +50,10 @@ public class ExerciseController {
 
 	private final WorkoutService workoutService;
 
-	private final UsuarioService userService;
-
 	@Autowired
-	public ExerciseController(WorkoutService workoutService, UsuarioService userService) {
+	public ExerciseController(WorkoutService workoutService) {
 		this.workoutService = workoutService;
-		this.userService = userService;
 	}
-
-	/*@ModelAttribute("exercise")
-	public Exercise findExercise(@PathVariable("exerciseId") int exerciseId) {
-		return this.workoutService.findExerciseById(exerciseId);
-	}*/
-
-	/*
-	 * @ModelAttribute("pet") public Pet findPet(@PathVariable("petId") Integer
-	 * petId) { Pet result=null; if(petId!=null)
-	 * result=this.clinicService.findPetById(petId); else result=new Pet(); return
-	 * result; }
-	 */
-
-	/*
-	 * @InitBinder("pet") public void initPetBinder(WebDataBinder dataBinder) {
-	 * dataBinder.setValidator(new PetValidator()); }
-	 */
 
 	@InitBinder("exercise")
 	public void initOwnerBinder(WebDataBinder dataBinder) {
@@ -148,6 +124,7 @@ public class ExerciseController {
 			model.put("exercise", exercise);
 			return VIEWS_EXERCISES_CREATE_OR_UPDATE_FORM;
 		} else {
+			exercise.setIsGeneric(Boolean.TRUE);
 			this.workoutService.saveExercise(exercise);
 			return "redirect:/exercises";
 		}
@@ -199,8 +176,7 @@ public class ExerciseController {
 			return VIEWS_EXERCISES_CREATE_OR_UPDATE_FORM;
 		} else {
 			Exercise exerciseToUpdate = this.workoutService.findExerciseById(exerciseId);
-			BeanUtils.copyProperties(exercise, exerciseToUpdate, "id");
-			System.out.println("new type: " + exerciseToUpdate.getType().getName());
+			BeanUtils.copyProperties(exercise, exerciseToUpdate, "id", "isGeneric");
 			this.workoutService.saveExercise(exerciseToUpdate);
 			return "redirect:/exercises";
 		}

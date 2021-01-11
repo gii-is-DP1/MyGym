@@ -66,11 +66,18 @@ public interface ExerciseRepository extends Repository<Exercise, Integer> {
 	/**
 	 * Find a <code>Exercise</code> list.
 	 * return the <code>Exercise</code> list
+	 * @see BaseEntity#isNew
+	 */
+	Collection<Exercise> findByIsGenericTrue() throws DataAccessException;
+	
+	/**
+	 * Find a <code>Exercise</code> list.
+	 * return the <code>Exercise</code> list
 	 * @param name the <code>Exercise</code> name
 	 * @return the <code>Exercise</code> list
 	 * @see BaseEntity#isNew
 	 */
-	@Query("SELECT DISTINCT exercise FROM Exercise exercise WHERE exercise.name LIKE :name%")
+	@Query("SELECT DISTINCT exercise FROM Exercise exercise WHERE exercise.name LIKE :name% AND exercise.isGeneric = true")
 	Collection<Exercise> findByName(@Param("name") String name) throws DataAccessException;
 	
 	/**

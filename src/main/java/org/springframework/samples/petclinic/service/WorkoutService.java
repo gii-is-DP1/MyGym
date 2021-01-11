@@ -22,10 +22,14 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.samples.petclinic.model.Exercise;
 import org.springframework.samples.petclinic.model.ExerciseType;
 import org.springframework.samples.petclinic.model.Training;
+import org.springframework.samples.petclinic.model.Workout;
 import org.springframework.samples.petclinic.repository.ExerciseRepository;
 import org.springframework.samples.petclinic.repository.TrainingRepository;
-import org.springframework.samples.petclinic.service.exceptions.DuplicatedPetNameException;
+import org.springframework.samples.petclinic.repository.WorkoutRepository;
+import org.springframework.samples.petclinic.repository.WorkoutTrainingRepository;
+import org.springframework.samples.petclinic.service.exceptions.ExistingWorkoutInDateRangeException;
 import org.springframework.samples.petclinic.service.exceptions.NoNameException;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,13 +46,18 @@ public class WorkoutService {
 
 	private TrainingRepository trainingRepository;
 	
-	// private VisitRepository visitRepository;
+	private WorkoutTrainingRepository workoutTrainingRepository;
+	
+	private WorkoutRepository workoutRepository;
 	
  
 	@Autowired
-	public WorkoutService(ExerciseRepository exerciseRepository, TrainingRepository trainingRepository) {
+	public WorkoutService(ExerciseRepository exerciseRepository, TrainingRepository trainingRepository,
+			WorkoutTrainingRepository workoutTrainingRepository, WorkoutRepository workoutRepository) {
 		this.exerciseRepository = exerciseRepository;
 		this.trainingRepository = trainingRepository;
+		this.workoutRepository = workoutRepository;
+		this.workoutTrainingRepository = workoutTrainingRepository;
 	}
 
 	@Transactional(readOnly = true)
@@ -91,8 +100,31 @@ public class WorkoutService {
 	
 	public Collection<Training> findTrainingsByName(String name) {
 		if (name == null)
-			return trainingRepository.findAll();
+			return trainingRepository.findByIsGenericTrue();
 		return trainingRepository.findByName(name);
+	}
+
+
+	public Collection<Exercise> findExercises() {
+		return exerciseRepository.findByIsGenericTrue();
+	}
+
+	public Collection<Exercise> findExercises(String name) {
+		if (name == null)
+			return this.findExercises();
+		return exerciseRepository.findByName(name);
+	}
+	
+	public Collection<Workout> findWorkouts() {
+		return workoutRepository.findAll();
+	}
+	
+	public Collection<Workout> findWorkoutsByUser(User user) {
+		return workoutRepository.findByUser(user.getUsername());
+	}
+	
+	public Collection<Workout> findWorkoutsByUser(String username) {
+		return workoutRepository.findByUser(username);
 	}
 
 	/* @Transactional()
@@ -103,17 +135,30 @@ public class WorkoutService {
             }else
                 petRepository.save(pet);                
 	} */
-
-
-	public Collection<Exercise> findExercises() {
-		return exerciseRepository.findAll();
+	
+	@Transactional(rollbackFor = ExistingWorkoutInDateRangeException.class)
+	public void saveWorkout(Workout workout) throws DataAccessException, ExistingWorkoutInDateRangeException {
+		
+		Collection<Workout> existingWorkoutsInDateRange = workoutRepository.findActiveWorkoutsForUser(workout.getUser(), workout.getStartDate(), workout.getEndDate());
+		if (!existingWorkoutsInDateRange.isEmpty()) {
+			Workout existingWorkout = existingWorkoutsInDateRange.iterator().next();
+			System.out.println("workout id " + workout.getId());
+			System.out.println("workout is new " + workout.isNew());
+			System.out.println("existing workout id " + existingWorkout.getId());
+			if (workout.getId() == null || !existingWorkout.getId().equals(workout.getId())) {
+				throw new ExistingWorkoutInDateRangeException(existingWorkout.getStartDate(), existingWorkout.getEndDate());
+			}
+		}
+		
+		workoutRepository.save(workout);
+	}
+	
+	public void deleteWorkout(Workout workout) {
+		workoutRepository.delete(workout);
 	}
 
-	public Collection<Exercise> findExercises(String name) {
-		if (name == null)
-			return this.findExercises();
-		return exerciseRepository.findByName(name);
+	public Workout findWorkoutById(int workoutId) {
+		return workoutRepository.findById(workoutId);
 	}
-
 
 }
