@@ -18,6 +18,7 @@ package org.springframework.samples.petclinic.repository;
 import java.util.Collection;
 
 import org.springframework.dao.DataAccessException;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.Repository;
 import org.springframework.samples.petclinic.model.BaseEntity;
 import org.springframework.samples.petclinic.model.Memory;
@@ -52,11 +53,14 @@ public interface MemoryRepository extends Repository<Memory, Integer> {
 	 */
 	Collection<Memory> findAll() throws DataAccessException;
 	
+	@Query("DELETE FROM Memory m Where m.id = :id")
+	void deleteById(int id) throws DataAccessException;
+	
 	/**
 	 * Delete a <code>Memory</code>
-	 * @param exercise
+	 * @param memory
 	 * @throws DataAccessException
 	 */
-	void delete(Memory exercise) throws DataAccessException;
+	void delete(Memory memory) throws DataAccessException;
 
 }

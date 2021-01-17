@@ -20,6 +20,7 @@ public class MemoryValidator implements Validator {
 		
 		String text = memory.getText();
 		LocalDate date = memory.getDate();
+		Double weight = memory.getWeight();
 		
 		if (StringUtils.isNullOrEmpty(text)) {
 			errors.rejectValue("text", "notEmpty", "No puede estar vacío");
@@ -27,6 +28,10 @@ public class MemoryValidator implements Validator {
 		
 		if (date == null) {
 			errors.rejectValue("date", "required");
+		}
+		
+		if (weight != null && weight <= 0) {
+			errors.rejectValue("weight", "invalid", "Introduzca un peso válido");
 		}
 	}
 }

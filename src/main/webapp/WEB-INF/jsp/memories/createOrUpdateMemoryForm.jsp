@@ -1,4 +1,4 @@
-<%@ page session="false" trimDirectiveWhitespaces="true" %>
+<%@ page contentType="text/html;charset=UTF-8" session="false" trimDirectiveWhitespaces="true" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -25,6 +25,7 @@
 	        <div class="form-group has-feedback">
 	            <petclinic:inputField label="Fecha" name="date"/>
 	            <petclinic:inputField label="Texto" name="text"/>
+	            <petclinic:inputField label="Peso" name="weight"/>
 	        </div>
 	        <div class="form-group mt-5">
 	            <div class="col pl-0 ml-0">

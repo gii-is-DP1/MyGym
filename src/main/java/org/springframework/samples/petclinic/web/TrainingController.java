@@ -15,6 +15,7 @@
  */
 package org.springframework.samples.petclinic.web;
 
+import java.security.Principal;
 import java.util.Collection;
 import java.util.Map;
 
@@ -22,10 +23,14 @@ import javax.validation.Valid;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.samples.petclinic.configuration.SecurityConfiguration;
 import org.springframework.samples.petclinic.model.Exercise;
 import org.springframework.samples.petclinic.model.Training;
+import org.springframework.samples.petclinic.model.User;
 import org.springframework.samples.petclinic.service.WorkoutService;
 import org.springframework.samples.petclinic.service.exceptions.NoNameException;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -47,6 +52,8 @@ public class TrainingController {
 	private static final String VIEWS_TRAININGS_DETAIL = "trainings/trainingDetails";
 
 	private static final String VIEWS_TRAININGS_LIST = "trainings/trainingsList";
+	
+	private static final String VIEWS_ERROR = "exception";
 
 	private final WorkoutService workoutService;
 
@@ -133,9 +140,31 @@ public class TrainingController {
 	 * @return a ModelMap with the model attributes for the view
 	 */
 	@GetMapping("/trainings/{trainingId}")
-	public ModelAndView showTraining(@PathVariable("trainingId") int trainingId) {
-		ModelAndView mav = new ModelAndView(VIEWS_TRAININGS_DETAIL);
-		mav.addObject(this.workoutService.findTrainingById(trainingId));
+	public ModelAndView showTraining(@PathVariable("trainingId") int trainingId, Principal principal) {
+		Training training = this.workoutService.findTrainingById(trainingId);
+		System.out.println("training " + training);
+		ModelAndView mav;
+		if (training == null) {
+			mav = new ModelAndView(VIEWS_ERROR);
+			mav.addObject("exception", new Exception("El entrenamiento solicitado no existe"));
+		} else {
+			boolean allowed = hasAuthority(SecurityConfiguration.ADMIN);
+			System.out.println("is admin: " + allowed);
+			if (!allowed) {
+				User user = new User();
+				user.setUsername(principal.getName());
+				Collection<Training> userTrainings = this.workoutService.findTrainingsByUser(user);
+				allowed = userTrainings.stream().anyMatch(t -> t.getId().equals(trainingId));
+				System.out.println("training owned by user: " + allowed);
+			}
+			if (allowed) {
+				mav = new ModelAndView(VIEWS_TRAININGS_DETAIL);
+				mav.addObject("training", training);
+			} else {
+				mav = new ModelAndView(VIEWS_ERROR);
+				mav.addObject("exception", new Exception("No tiene permiso para visualizar el entrenamiento"));
+			}
+		}
 		return mav;
 	}
 
@@ -237,6 +266,19 @@ public class TrainingController {
 			}
 			return "redirect:/trainings/" + trainingId + "/edit";
 		}
+	}
+
+	
+	@SuppressWarnings("unchecked")
+	private boolean hasAuthority(String authority) {
+		Collection<SimpleGrantedAuthority> authorities = (Collection<SimpleGrantedAuthority>) SecurityContextHolder.getContext().getAuthentication().getAuthorities();
+		return authorities.stream().anyMatch(auth -> auth.getAuthority().equals(authority));
+	}
+	
+	@SuppressWarnings("unchecked")
+	private boolean isAllowedTo(String permission) {
+		Collection<SimpleGrantedAuthority> authorities = (Collection<SimpleGrantedAuthority>) SecurityContextHolder.getContext().getAuthentication().getAuthorities();
+		return SecurityConfiguration.isAllowedTo(permission, authorities);
 	}
 
 }

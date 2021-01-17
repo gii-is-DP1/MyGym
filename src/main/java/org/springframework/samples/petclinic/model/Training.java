@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -41,7 +40,7 @@ public class Training extends BaseEntity {
 		inverseJoinColumns = @JoinColumn(name = "exercise_id"))
 	private Set<Exercise> exercises;
 	
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "training", fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "training", fetch = FetchType.EAGER)
 	private Set<Memory> memories;
 	
 	protected Set<Memory> getMemoriesInternal() {
@@ -102,6 +101,7 @@ public class Training extends BaseEntity {
 	}
 	
 	public void removeMemory(Memory memory) {
+		memory.setTraining(null);
 		getMemoriesInternal().remove(memory);
 	}
 	

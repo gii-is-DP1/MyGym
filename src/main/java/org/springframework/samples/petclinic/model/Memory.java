@@ -21,6 +21,8 @@ public class Memory extends BaseEntity {
 
 	String text;
 
+	Double weight;
+
 	@ManyToOne
 	@JoinColumn(name = "training_id")
 	private Training training;

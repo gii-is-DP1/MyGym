@@ -23,7 +23,9 @@ import org.springframework.samples.petclinic.model.Exercise;
 import org.springframework.samples.petclinic.model.ExerciseType;
 import org.springframework.samples.petclinic.model.Memory;
 import org.springframework.samples.petclinic.model.Training;
+import org.springframework.samples.petclinic.model.User;
 import org.springframework.samples.petclinic.model.Workout;
+import org.springframework.samples.petclinic.model.WorkoutTraining;
 import org.springframework.samples.petclinic.repository.ExerciseRepository;
 import org.springframework.samples.petclinic.repository.MemoryRepository;
 import org.springframework.samples.petclinic.repository.TrainingRepository;
@@ -31,7 +33,6 @@ import org.springframework.samples.petclinic.repository.WorkoutRepository;
 import org.springframework.samples.petclinic.repository.WorkoutTrainingRepository;
 import org.springframework.samples.petclinic.service.exceptions.ExistingWorkoutInDateRangeException;
 import org.springframework.samples.petclinic.service.exceptions.NoNameException;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -96,12 +97,24 @@ public class WorkoutService {
 	
 	@Transactional
 	public void deleteTraining(Training training) throws DataAccessException {
+		Collection<WorkoutTraining> workoutTrainings = workoutTrainingRepository.findByTraining(training);
+		workoutTrainings.forEach(wt -> {
+			System.out.println("deleting workout training " + wt);
+			workoutTrainingRepository.delete(wt);
+		});
+		
+		training.getMemories().forEach(m -> memoryRepository.delete(m));
 		trainingRepository.delete(training);
 	}
 
 	@Transactional(readOnly = true)
 	public Training findTrainingById(int id) throws DataAccessException {
 		return trainingRepository.findById(id);
+	}
+
+	@Transactional(readOnly = true)
+	public Collection<Training> findTrainingsByUser(User user) throws DataAccessException {
+		return trainingRepository.findByUsername(user.getUsername());
 	}
 	
 	public Collection<Training> findTrainingsByName(String name) {
@@ -171,6 +184,7 @@ public class WorkoutService {
 		this.memoryRepository.save(memory);
 	}
 	
+	@Transactional
 	public void deleteMemory(Memory memory) {
 		this.memoryRepository.delete(memory);
 	}

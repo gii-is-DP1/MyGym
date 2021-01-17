@@ -20,9 +20,9 @@ import java.util.Collection;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.Repository;
-import org.springframework.data.repository.query.Param;
 import org.springframework.samples.petclinic.model.BaseEntity;
 import org.springframework.samples.petclinic.model.Training;
+import org.springframework.samples.petclinic.model.User;
 
 /**
  * Spring Data JPA specialization of the {@link TrainingRepository} interface
@@ -57,6 +57,13 @@ public interface TrainingRepository extends Repository<Training, Integer> {
 	Collection<Training> findByName(String name) throws DataAccessException;
 	
 	Collection<Training> findByIsGenericTrue() throws DataAccessException;
+	
+	@Query("SELECT DISTINCT training FROM WorkoutTraining wt "
+			+ "INNER JOIN wt.training training "
+			+ "INNER JOIN wt.workout w "
+			+ "INNER JOIN w.user user "
+			+ "WHERE training.isGeneric = false AND user.username = :username")
+	Collection<Training> findByUsername(String username) throws DataAccessException;
 	
 	/**
 	 * Find a <code>Training</code> list.

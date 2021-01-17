@@ -126,23 +126,6 @@ public class WorkoutController {
 				.collect(Collectors.toSet());
 	}
 	
-	@GetMapping( 
-		value = { "/workouts"}, 
-		consumes = { "application/json;charset=utf-8" }
-	)
-	public @ResponseBody Workouts getWorkoutsList() {
-		Workouts workouts = new Workouts();
-		
-		/*String name = null;
-		if (exercise != null) { 
-			name = exercise.getName();
-		}
-		
-		exercises.getExerciseList().addAll(this.workoutService.findExercises(name));*/
-		
-		return workouts;
-	}
-	
 	@GetMapping(value = "/workouts")
 	public String processFindForm(User user, Workout workout, BindingResult result, Map<String, Object> model, Principal principal) {
 		

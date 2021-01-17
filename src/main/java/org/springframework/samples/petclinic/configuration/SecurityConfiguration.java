@@ -33,8 +33,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	
-	private static final String ADMIN = "admin";
-	private static final String TRAINER = "trainer";
+	public static final String ADMIN = "admin";
+	public static final String TRAINER = "trainer";
 	
 	@SuppressWarnings("serial")
 	private static final Map<String, Collection<String>> PERMISSIONS = new HashMap<String, Collection<String>>() {{
@@ -42,6 +42,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		put("assign-workouts", Collections.unmodifiableCollection(Arrays.asList(ADMIN, TRAINER)));
 
 		put("view-users-workouts", Collections.unmodifiableCollection(Arrays.asList(ADMIN, TRAINER)));
+
+		put("edit-user-memories", Collections.unmodifiableCollection(Arrays.asList(ADMIN)));
 		
 	}};
 	
@@ -64,14 +66,19 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 				.antMatchers(HttpMethod.GET, "/","/oups").permitAll()
 				.antMatchers("/users/new").permitAll()
 				// exercises
-				.antMatchers("/exercises").hasAnyAuthority("admin")
-				.antMatchers("/exercises/**").hasAnyAuthority("admin")
+				.antMatchers("/exercises").hasAnyAuthority("admin", "trainer")
+				.antMatchers("/exercises/**").hasAnyAuthority("admin", "trainer")
 				// trainings
-				.antMatchers("/trainings").hasAnyAuthority("admin")
-				.antMatchers("/trainings/**").hasAnyAuthority("admin")
+				.antMatchers("/trainings").permitAll()
+				.antMatchers("/trainings/{trainingId}").permitAll()
+				.antMatchers("/trainings/{trainingId}/new").hasAnyAuthority("admin", "trainer")
+				.antMatchers("/trainings/{trainingId}/edit").hasAnyAuthority("admin", "trainer")
+				.antMatchers("/trainings/**/memories").permitAll()
+				.antMatchers("/trainings/**/memories/**").permitAll()
+				.antMatchers("/memories").authenticated()
 				// workouts
 				.antMatchers("/workouts").authenticated()
-				.antMatchers("/workouts/assign").hasAnyAuthority("admin")
+				.antMatchers("/workouts/assign").hasAnyAuthority("admin", "trainer")
 				.antMatchers("/workouts/**").authenticated()
 				
 				.antMatchers("/products").hasAnyAuthority("admin")
