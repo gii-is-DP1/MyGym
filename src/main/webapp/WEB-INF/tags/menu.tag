@@ -72,7 +72,7 @@
 				<petclinic:menuItem active="${name eq 'workout'}" url="/workouts" title="Workouts">
 					<i class="fa fa-calendar-alt mr-3"></i>Rutinas
 				</petclinic:menuItem>
-				<sec:authorize access="hasAnyAuthority('admin', 'trainner')">
+				<sec:authorize access="hasAnyAuthority('admin', 'trainer')">
 					<petclinic:menuItem active="${name eq 'trainings'}" url="/trainings" title="Trainings">
 						<i class="fa fa-stopwatch mr-3"></i>Entrenamientos
 					</petclinic:menuItem>
@@ -103,7 +103,7 @@
 					<span class="white-text"><i class="fa fa-pie-chart"></i>Usuarios</span>
 				</petclinic:menuItem>
 			</sec:authorize>
-			<sec:authorize access="hasAnyAuthority('admin', 'trainner')">
+			<sec:authorize access="hasAnyAuthority('admin', 'trainer')">
 				<petclinic:menuItem active="${name eq 'error'}" url="/salas" title="Salas">
 					<span class="white-text"><i class="fa fa-pie-chart"></i>Salas</span>
 				</petclinic:menuItem>

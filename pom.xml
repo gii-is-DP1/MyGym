@@ -24,6 +24,7 @@
 		<!-- Web dependencies -->
 		<webjars-mdbootstrap.version>4.5.3</webjars-mdbootstrap.version>
 		<webjars-bootstrap-datepicker.version>1.9.0</webjars-bootstrap-datepicker.version>
+		<webjars-chartjs-version>2.9.3</webjars-chartjs-version>
 		<wro4j.version>1.8.0</wro4j.version>
 
 		<jacoco.version>0.8.5</jacoco.version>
@@ -101,6 +102,12 @@
 			<groupId>org.webjars</groupId>
 			<artifactId>bootstrap-datepicker</artifactId>
 			<version>${webjars-bootstrap-datepicker.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.webjars</groupId>
+			<artifactId>chartjs</artifactId>
+			<version>${webjars-chartjs-version}</version>
 		</dependency>
 
 
