@@ -12,15 +12,18 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlElement;
 
 import org.springframework.beans.support.MutableSortDefinition;
 import org.springframework.beans.support.PropertyComparator;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Setter
+@Getter
 @Entity
 @Table(name = "training")
 public class Training extends BaseEntity {
@@ -36,6 +39,20 @@ public class Training extends BaseEntity {
 	@JoinTable(name = "training_exercises", joinColumns = @JoinColumn(name = "training_id"),
 		inverseJoinColumns = @JoinColumn(name = "exercise_id"))
 	private Set<Exercise> exercises;
+	
+	@OneToMany(mappedBy = "training", fetch = FetchType.EAGER)
+	private Set<Memory> memories;
+	
+	protected Set<Memory> getMemoriesInternal() {
+		if (this.memories == null) {
+			this.memories = new HashSet<>();
+		}
+		return this.memories;
+	}
+
+	protected void setMemoriesInternal(Set<Memory> memories) {
+		this.memories = memories;
+	}
 	
 	protected Set<Exercise> getExercisesInternal() {
 		if (this.exercises == null) {
@@ -65,6 +82,27 @@ public class Training extends BaseEntity {
 	
 	public void removeExercise(Exercise exercise) {
 		getExercisesInternal().remove(exercise);
+	}
+
+	@XmlElement
+	public List<Memory> getMemories() {
+		List<Memory> memories = new ArrayList<>(getMemoriesInternal());
+		PropertyComparator.sort(memories, new MutableSortDefinition("date", true, true));
+		return Collections.unmodifiableList(memories);
+	}
+
+	public int getMemoriesSize() {
+		return getMemoriesInternal().size();
+	}
+
+	public void addMemory(Memory memory) {
+		getMemoriesInternal().add(memory);
+		memory.setTraining(this);
+	}
+	
+	public void removeMemory(Memory memory) {
+		memory.setTraining(null);
+		getMemoriesInternal().remove(memory);
 	}
 	
 }

@@ -22,6 +22,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.samples.petclinic.model.BaseEntity;
+import org.springframework.samples.petclinic.model.Training;
+import org.springframework.samples.petclinic.model.Workout;
 import org.springframework.samples.petclinic.model.WorkoutTraining;
 
 /**
@@ -53,8 +55,17 @@ public interface WorkoutTrainingRepository extends Repository<WorkoutTraining, I
 	 * @return the <code>WorkoutTraining</code> list filtered by name
 	 * @see BaseEntity#isNew
 	 */
+	@Query("SELECT DISTINCT workoutTraining FROM WorkoutTraining workoutTraining WHERE workout = :workout")
+	Collection<WorkoutTraining> findByWorkout(@Param("workout") Workout workout) throws DataAccessException;
+
+	/**
+	 * Find a <code>WorkoutTraining</code> list.
+	 * @param name the <code>WorkoutTraining</code> name
+	 * @return the <code>WorkoutTraining</code> list filtered by name
+	 * @see BaseEntity#isNew
+	 */
 	@Query("SELECT DISTINCT workoutTraining FROM WorkoutTraining workoutTraining WHERE training = :training")
-	Collection<WorkoutTraining> findByWorkout(@Param("training") WorkoutTraining training) throws DataAccessException;
+	Collection<WorkoutTraining> findByTraining(@Param("training") Training training) throws DataAccessException;
 	
 	/**
 	 * Find a <code>WorkoutTraining</code> list.
