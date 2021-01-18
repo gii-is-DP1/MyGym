@@ -1,5 +1,44 @@
 @charset "UTF-8";
 
+$spinner-size: 2rem;
+
+
 body {
 	background-color: #eee;
+}
+
+
+.spinner-border {
+    display: inline-block;
+    width: $spinner-size;
+    height: $spinner-size;
+    vertical-align: text-bottom;
+    border: .25em solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    -webkit-animation: spinner-border .75s linear infinite;
+    animation: spinner-border .75s linear infinite;	
+}
+
+@-webkit-keyframes spinner-border{
+	to {
+		-webkit-transform:rotate(360deg);
+		transform:rotate(360deg);
+	}
+}
+@keyframes spinner-border{
+	to {
+		-webkit-transform:rotate(360deg);
+		transform:rotate(360deg);
+	}
+}
+
+*[data-loader] {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.c-pointer {
+	cursor: pointer !important;
 }

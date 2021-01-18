@@ -1,6 +1,7 @@
 <groups xmlns="http://www.isdc.ro/wro">
   <group name="vendor">
     <css>classpath:META-INF/resources/webjars/mdbootstrap-bootstrap-material-design/4.5.3/css/bootstrap.min.css</css>
+    <css>classpath:META-INF/resources/webjars/chartjs/2.9.3/Chart.min.css</css>
   </group>
   
  
