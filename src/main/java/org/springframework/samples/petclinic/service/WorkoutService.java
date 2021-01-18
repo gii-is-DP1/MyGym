@@ -32,6 +32,7 @@ import org.springframework.samples.petclinic.repository.TrainingRepository;
 import org.springframework.samples.petclinic.repository.WorkoutRepository;
 import org.springframework.samples.petclinic.repository.WorkoutTrainingRepository;
 import org.springframework.samples.petclinic.service.exceptions.ExistingWorkoutInDateRangeException;
+import org.springframework.samples.petclinic.service.exceptions.MemoryOutOfTimeException;
 import org.springframework.samples.petclinic.service.exceptions.NoNameException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -180,7 +181,12 @@ public class WorkoutService {
 		return memoryRepository.findById(memoryId);
 	}
 	
-	public void saveMemory(Memory memory) {
+	public void saveMemory(Memory memory) throws MemoryOutOfTimeException {
+		Workout workout = memory.getTraining().getWorkoutTraining().getWorkout();
+		
+		if (memory.getDate().isBefore(workout.getStartDate()) || memory.getDate().isAfter(workout.getEndDate())) {
+			throw new MemoryOutOfTimeException();
+		}
 		this.memoryRepository.save(memory);
 	}
 	
