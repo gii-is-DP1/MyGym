@@ -42,11 +42,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * @author Juergen Hoeller
  * @author Ken Krebs
  * @author Arjen Poutsma
  */
+@Slf4j
 @Controller
 public class MemoryController {
 
@@ -91,7 +94,7 @@ public class MemoryController {
 
 	// Spring MVC calls method loadPetWithVisit(...) before processNewVisitForm is called
 	@PostMapping(value = "/trainings/{trainingId}/memories/new")
-	public String processNewMemoryForm(@PathVariable("trainingId") int trainingId, @Valid Memory memory, BindingResult result) {
+	public String processNewMemoryForm(@PathVariable("trainingId") int trainingId, @Valid Memory memory, BindingResult result, Principal principal) {
 		if (result.hasErrors()) {
 			return VIEWS_CREATE_OR_UPDATE_MEMORY;
 		}
@@ -99,6 +102,7 @@ public class MemoryController {
 			Training training = this.workoutService.findTrainingById(trainingId);
 			memory.setTraining(training);
 			this.workoutService.saveMemory(memory);
+			log.info("added memory with ID=" + memory.getId() + " to training with ID=" + trainingId + " by " + principal.getName());
 			return "redirect:/trainings/{trainingId}";
 		}
 	}
@@ -111,7 +115,7 @@ public class MemoryController {
 
 	// Spring MVC calls method loadPetWithVisit(...) before processNewVisitForm is called
 	@PostMapping(value = "/trainings/{trainingId}/memories/{memoryId}/edit")
-	public String processEditMemoryForm(@PathVariable("memoryId") int memoryId, @Valid Memory memory, BindingResult result) {
+	public String processEditMemoryForm(@PathVariable("memoryId") int memoryId, @Valid Memory memory, BindingResult result, Principal principal) {
 		if (result.hasErrors()) {
 			return VIEWS_CREATE_OR_UPDATE_MEMORY;
 		}
@@ -119,6 +123,7 @@ public class MemoryController {
 			Memory memoryToUpdate = this.workoutService.findMemoryById(memoryId);
 			BeanUtils.copyProperties(memory, memoryToUpdate, "id", "training");
 			this.workoutService.saveMemory(memoryToUpdate);
+			log.info("memory with ID=" + memoryId + " has been updated by " + principal.getName());
 			return "redirect:/trainings/{trainingId}";
 		}
 	}

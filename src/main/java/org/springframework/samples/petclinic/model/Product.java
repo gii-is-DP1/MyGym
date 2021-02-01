@@ -6,9 +6,11 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "products")
 public class Product extends BaseEntity {
@@ -16,7 +18,6 @@ public class Product extends BaseEntity {
 	@NotBlank
 	private String name;
 	
-	@NotBlank
 	private String description;
 	
 	@NotNull
