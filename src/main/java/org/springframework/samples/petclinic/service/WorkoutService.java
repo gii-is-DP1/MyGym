@@ -36,12 +36,15 @@ import org.springframework.samples.petclinic.service.exceptions.NoNameException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * Mostly used as a facade for all Petclinic controllers Also a placeholder
  * for @Transactional and @Cacheable annotations
  *
  * @author Michael Isvy
  */
+@Slf4j
 @Service
 public class WorkoutService {
 
@@ -93,6 +96,7 @@ public class WorkoutService {
 			throw new NoNameException();
 		}
 		trainingRepository.save(training);
+		log.info("saved training with ID = " + training.getId());
 	}
 	
 	@Transactional
@@ -114,6 +118,7 @@ public class WorkoutService {
 
 	@Transactional(readOnly = true)
 	public Collection<Training> findTrainingsByUser(User user) throws DataAccessException {
+		log.info("getting trainings for user " + user.getUsername());
 		return trainingRepository.findByUsername(user.getUsername());
 	}
 	

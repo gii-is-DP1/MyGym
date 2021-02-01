@@ -39,7 +39,6 @@ import org.springframework.samples.petclinic.model.Training;
 import org.springframework.samples.petclinic.model.User;
 import org.springframework.samples.petclinic.model.Workout;
 import org.springframework.samples.petclinic.model.WorkoutTraining;
-import org.springframework.samples.petclinic.model.Workouts;
 import org.springframework.samples.petclinic.service.UserService;
 import org.springframework.samples.petclinic.service.WorkoutService;
 import org.springframework.samples.petclinic.service.exceptions.ExistingWorkoutInDateRangeException;
@@ -56,14 +55,16 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author Juergen Hoeller
  * @author Ken Krebs
  * @author Arjen Poutsma
  */
+@Slf4j
 @Controller
 public class WorkoutController {
 
@@ -143,6 +144,8 @@ public class WorkoutController {
 			model.put("user", user);
 		}
 		
+		log.debug("getting workouts for user " + user.getUsername());
+		
 		// find owners by last name
 		Collection<Workout> results = this.workoutService.findWorkoutsByUser(user.getUsername());
 		
@@ -159,6 +162,8 @@ public class WorkoutController {
 			model.put("current", currentWorkout);
 			model.put("next", nextWorkouts);			
 		}
+		
+		log.info("workouts list [user=" + user.getUsername() + ", principal=" + principal.getName() + "]");
 		
 		return "workouts/workoutsList";
 	}
@@ -177,8 +182,6 @@ public class WorkoutController {
 		if (!sentWorkoutTrainings.stream().anyMatch(wt -> wt.getTraining() != null)) {
 			result.rejectValue("workoutTrainings", "notEmpty", "Debe seleccionar algún entrenamiento para la rutina");
 		}
-		
-		System.out.println("Workout trainings = " + sentWorkoutTrainings);
 		
 		if (result.hasErrors()) {
 			model.put("workout", workout);
@@ -227,10 +230,8 @@ public class WorkoutController {
 				workout.getWorkoutTrainings().forEach(wt -> {
 					Training training = wt.getTraining();
 					
-					System.out.println("EXERCISES: " + training.getExercises());
 					training.getExercises().forEach(ex -> {
 						this.workoutService.saveExercise(ex);
-						System.out.println("ex id " + ex.getId());
 					});
 					
 					try {
@@ -239,9 +240,13 @@ public class WorkoutController {
 						e.printStackTrace();
 					}
 				});
-					
+				
 				this.workoutService.saveWorkout(workout);
+				
+				log.info("workout with ID " + workout.getId() + " was assigned to user " + workout.getUser().getUsername());
 			} catch (ExistingWorkoutInDateRangeException e) {
+				log.error("error on workout assignment", e);
+				
 				model.put("workout", workout);
 				model.put("workoutTrainings", sentWorkoutTrainings);
 				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("DD/MM/YYYY");
@@ -310,9 +315,11 @@ public class WorkoutController {
 		
 		ModelAndView mav;
 		if (viewUserWorkoutsAllowed || workout.getUser().getUsername().equals(principal.getName())) {
+			log.info("workout " + workoutId + " details access allowed for user " + principal.getName());
 			mav = new ModelAndView(VIEWS_WORKOUT_DETAILS);
 			mav.addObject(workout);
 		} else {
+			log.warn("workout " + workoutId + " details access has been denied for user " + principal.getName());
 			mav = new ModelAndView(VIEWS_FORBIDDEN_ACCESS);
 			mav.addObject("message", "No tiene permiso para visualizar el contenido");
 		}
@@ -340,7 +347,7 @@ public class WorkoutController {
 	}
 
 	@PostMapping(value = "/workouts/{workoutId}/edit")
-	public String processUpdateForm(@Valid Workout workout, BindingResult result, @PathVariable("workoutId") int workoutId, ModelMap model, HttpServletRequest request) {
+	public String processUpdateForm(@Valid Workout workout, BindingResult result, @PathVariable("workoutId") int workoutId, ModelMap model, HttpServletRequest request, Principal principal) {
 		Set<WorkoutTraining> sentWorkoutTrainings = populateWorkoutTrainings(request);
 		if (!sentWorkoutTrainings.stream().anyMatch(wt -> wt.getTraining() != null)) {
 			result.rejectValue("workoutTrainings", "notEmpty", "Debe seleccionar algún entrenamiento para la rutina");
@@ -397,7 +404,10 @@ public class WorkoutController {
 			
 			try {
 				this.workoutService.saveWorkout(workoutToUpdate);
+				
+				log.info("workout with ID " + workout.getId() + " has been updated by user " + principal.getName());
 			} catch (ExistingWorkoutInDateRangeException e) {
+				log.error("error updating workout", e);
 				model.put("workout", workout);
 				model.put("workoutTrainings", sentWorkoutTrainings);
 				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("DD/MM/YYYY");
