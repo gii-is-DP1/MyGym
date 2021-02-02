@@ -26,6 +26,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Controller
 public class PurchaseController {
 
@@ -75,7 +78,7 @@ public class PurchaseController {
 	}
 
 	@PostMapping(value = "/purchases/new")
-	public String processCreationForm(@Valid Purchase purchase, BindingResult result, ModelMap model) {
+	public String processCreationForm(@Valid Purchase purchase, BindingResult result, ModelMap model, Principal principal) {
 		System.out.println("result.hasErrors: " + result.hasErrors());
 		System.out.println("result: " + result);
 		System.out.println("productPurchases: " + purchase.getProductPurchases());
@@ -92,6 +95,7 @@ public class PurchaseController {
 			purchase.getProductPurchases().forEach(productPurchase -> productPurchase.setPurchase(purchase));
 			
 			this.productService.savePurchase(purchase);
+			log.info("purchase with ID=" + purchase.getId() + " has been created by " + principal.getName());
 			return "redirect:/purchases";
 		}
 	}

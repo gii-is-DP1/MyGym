@@ -1,5 +1,6 @@
 package org.springframework.samples.petclinic.web;
 
+import java.security.Principal;
 import java.util.Collection;
 import java.util.Map;
 
@@ -19,6 +20,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Controller
 public class ProductController {
 
@@ -58,12 +62,13 @@ public class ProductController {
 	}
 
 	@PostMapping(value = "/products/new")
-	public String processCreationForm(@Valid Product product, BindingResult result, ModelMap model) {
+	public String processCreationForm(@Valid Product product, BindingResult result, ModelMap model, Principal principal) {
 		if (result.hasErrors()) {
 			model.put("product", product);
 			return VIEWS_PRODUCTS_CREATE_OR_UPDATE_FORM;
 		} else {
 			this.productService.saveProduct(product);
+			log.info("product with ID=" + product.getId() + " has been created by " + principal.getName());
 			return "redirect:/products";
 		}
 	}
@@ -76,10 +81,11 @@ public class ProductController {
 	}
 
 	@GetMapping(value = "/products/{productId}/delete")
-	public String deleteSala(@PathVariable("productId") int productId, ModelMap model) {
+	public String deleteSala(@PathVariable("productId") int productId, ModelMap model, Principal principal) {
 		Product product = this.productService.findProductById(productId);
 		if (product != null) {
 			this.productService.deleteProduct(product);
+			log.info("product with ID=" + product.getId() + " has been deleted by " + principal.getName());
 		}
 		return "redirect:/products";
 	}

@@ -14,6 +14,9 @@ import org.springframework.samples.petclinic.repository.PurchaseRepository;
 import org.springframework.samples.petclinic.repository.SaleRepository;
 import org.springframework.stereotype.Service;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 public class ProductService {
 	
@@ -38,6 +41,7 @@ public class ProductService {
 	@Transactional
 	public void saveProduct(Product product) {
 		productRepository.save(product);
+		log.info("saved product with ID = " + product.getId()); 
 	}
 	
 	@Transactional
@@ -46,6 +50,7 @@ public class ProductService {
 		// TODO si falla el borrado revisar que hacer con product purchase
 		
 		productRepository.delete(product);
+		log.info("deleted product with ID = " + product.getId()); 
 	}
 	
 	@Transactional
@@ -69,11 +74,13 @@ public class ProductService {
 	@Transactional
 	public void savePurchase(Purchase purchase) {
 		purchaseRepository.save(purchase);
+		log.info("saved purchase with ID = " + purchase.getId()); 
 	}
 	
 	@Transactional
 	public void deletePurchase(Purchase purchase) {
 		purchaseRepository.delete(purchase);
+		log.info("deleted purchase with ID = " + purchase.getId()); 
 	}
 	
 	@Transactional
@@ -89,11 +96,13 @@ public class ProductService {
 	@Transactional
 	public void savePurchase(Sale sale) {
 		saleRepository.save(sale);
+		log.info("saved sale with ID = " + sale.getId()); 
 	}
 	
 	@Transactional
 	public void deletePurchase(Sale sale) {
 		saleRepository.delete(sale);
+		log.info("deleted sale with ID = " + sale.getId()); 
 	}
 	
 	@Transactional
