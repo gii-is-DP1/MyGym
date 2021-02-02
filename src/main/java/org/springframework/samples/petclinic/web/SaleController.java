@@ -8,13 +8,11 @@ import java.util.Set;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.samples.petclinic.configuration.SecurityConfiguration;
 import org.springframework.samples.petclinic.model.Product;
 import org.springframework.samples.petclinic.model.Purchase;
-import org.springframework.samples.petclinic.model.Training;
-import org.springframework.samples.petclinic.model.User;
+import org.springframework.samples.petclinic.model.Sale;
 import org.springframework.samples.petclinic.service.ProductService;
-import org.springframework.samples.petclinic.util.ProductPurchaseCollectionEditor;
+import org.springframework.samples.petclinic.util.ProductSaleCollectionEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -27,11 +25,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
-public class PurchaseController {
+public class SaleController {
 
-	private static final String VIEWS_PURCHASES_CREATE_OR_UPDATE_FORM = "purchases/createOrUpdatePurchaseForm";
+	private static final String VIEWS_SALES_CREATE_OR_UPDATE_FORM = "sales/createOrUpdateSaleForm";
 	
-	private static final String VIEWS_PURCHASES_LIST = "purchases/purchasesList";
+	private static final String VIEWS_SALES_LIST = "sales/salesList";
 
 	private final ProductService productService;
 	
@@ -39,17 +37,17 @@ public class PurchaseController {
 	
 	private static final String VIEWS_ERROR = "exception";
 	
-	private static final String VIEWS_PURCHASES_DETAIL = "purchases/purchaseDetails";
+	private static final String VIEWS_SALES_DETAIL = "sales/saleDetails";
 
 	@Autowired
-	public PurchaseController(ProductService productService) {
+	public SaleController(ProductService productService) {
 		this.productService = productService;
 	}
 
-	@InitBinder("purchase")
+	@InitBinder("sale")
 	public void initOwnerBinder(WebDataBinder dataBinder) {
 		dataBinder.setDisallowedFields("id");
-		dataBinder.registerCustomEditor(Set.class, "productPurchases", new ProductPurchaseCollectionEditor(Set.class, productService));
+		dataBinder.registerCustomEditor(Set.class, "productSales", new ProductSaleCollectionEditor(Set.class, productService));
 	}
 
 	@ModelAttribute("products")
@@ -57,53 +55,53 @@ public class PurchaseController {
 		return (Collection<Product>) this.productService.findAllProducts(); 
 	}
 
-	@GetMapping(value = "/purchases")
+	@GetMapping(value = "/sales")
 	public String processFindForm(Map<String, Object> model) {
 		
-		Collection<Purchase> results = this.productService.findAllPurchases();
+		Collection<Sale> results = this.productService.findAllSales();
 
 		model.put("selections", results);
-		return VIEWS_PURCHASES_LIST;
+		return VIEWS_SALES_LIST;
 	}
 
-	@GetMapping(value = "/purchases/new")
+	@GetMapping(value = "/sales/new")
 	public String initCreationForm(Map<String, Object> model) {
-		Purchase purchase = new Purchase();
-		purchase.setVat(DEFAULT_VAT);
-		model.put("purchase", purchase);
-		return VIEWS_PURCHASES_CREATE_OR_UPDATE_FORM;
+		Sale sale = new Sale();
+		sale.setVat(DEFAULT_VAT);
+		model.put("sale", sale);
+		return VIEWS_SALES_CREATE_OR_UPDATE_FORM;
 	}
 
-	@PostMapping(value = "/purchases/new")
-	public String processCreationForm(@Valid Purchase purchase, BindingResult result, ModelMap model) {
+	@PostMapping(value = "/sales/new")
+	public String processCreationForm(@Valid Sale sale, BindingResult result, ModelMap model) {
 		System.out.println("result.hasErrors: " + result.hasErrors());
 		System.out.println("result: " + result);
-		System.out.println("productPurchases: " + purchase.getProductPurchases());
+		System.out.println("productSales: " + sale.getProductSales());
 		if (result.hasErrors()) {
-			model.put("purchase", purchase);
-			return VIEWS_PURCHASES_CREATE_OR_UPDATE_FORM;
+			model.put("sale", sale);
+			return VIEWS_SALES_CREATE_OR_UPDATE_FORM;
 		} else {
-			Double total = purchase.getProductPurchases().stream()
-					.mapToDouble(productPurchase -> productPurchase.getPrice() * productPurchase.getAmount())
+			Double total = sale.getProductSales().stream()
+					.mapToDouble(productSale -> productSale.getPrice() * productSale.getAmount())
 					.sum();
 			
-			purchase.setTotal(total + (total * purchase.getVat() / 100));
+			sale.setTotal(total + (total * sale.getVat() / 100));
 			
-			purchase.getProductPurchases().forEach(productPurchase -> productPurchase.setPurchase(purchase));
+			sale.getProductSales().forEach(productSale -> productSale.setSale(sale));
 			
-			this.productService.savePurchase(purchase);
-			return "redirect:/purchases";
+			this.productService.savePurchase(sale);
+			return "redirect:/sales";
 		}
 	}
 	
-	@GetMapping("/purchases/{purchaseId}")
-	public ModelAndView showTraining(@PathVariable("purchaseId") int purchaseId, Principal principal) {
-		Purchase purchase = this.productService.findPurchaseById(purchaseId);
-		System.out.println("purchase " + purchase);
+	@GetMapping("/sales/{saleId}")
+	public ModelAndView showTraining(@PathVariable("saleId") int saleId, Principal principal) {
+		Sale sale = this.productService.findSaleById(saleId);
+		System.out.println("ssale " + sale);
 		ModelAndView mav;
-		if (purchase == null) {
+		if (sale == null) {
 			mav = new ModelAndView(VIEWS_ERROR);
-			mav.addObject("exception", new Exception("La compra solicitada no existe"));
+			mav.addObject("exception", new Exception("La venta solicitada no existe"));
 		} else {
 			/*boolean allowed = hasAuthority(SecurityConfiguration.ADMIN);
 			System.out.println("is admin: " + allowed);
@@ -115,8 +113,8 @@ public class PurchaseController {
 				System.out.println("training owned by user: " + allowed);
 			}
 			if (allowed) {*/
-				mav = new ModelAndView(VIEWS_PURCHASES_DETAIL);
-				mav.addObject("purchase", purchase);
+				mav = new ModelAndView(VIEWS_SALES_DETAIL);
+				mav.addObject("sale", sale);
 			/*} else {
 				mav = new ModelAndView(VIEWS_ERROR);
 				mav.addObject("exception", new Exception("No tiene permiso para visualizar el entrenamiento"));

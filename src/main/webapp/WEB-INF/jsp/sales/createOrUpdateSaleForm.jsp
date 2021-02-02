@@ -6,16 +6,16 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="petclinic" tagdir="/WEB-INF/tags" %>
 
-<spring:url value="/purchases" var="purchasesList"></spring:url>
+<spring:url value="/sales" var="salesList"></spring:url>
 
-<petclinic:layout pageName="purchases">
+<petclinic:layout pageName="sales">
 	<jsp:attribute name="customScript">
         <script type="text/javascript">
         	$(function() {
             	var $date = $("input[name=date]");
             	$date.datepicker({language:'es'});
             	
-            	var rowTemplate = '<div class="card col mx-4 mt-4"><input type="hidden" name="productPurchases" value="#PRODUCT#;#AMOUNT#;#PRICE#" /><div class="card-body"><div class="card-title">#NAME#</div><p class="card-text">Amount: #AMOUNT#</p><p class="card-text">Price: #PRICE#</p><button class="btn btn-danger">Delete</button></div></div>';
+            	var rowTemplate = '<div class="card col mx-4 mt-4"><input type="hidden" name="productSales" value="#PRODUCT#;#AMOUNT#;#PRICE#" /><div class="card-body"><div class="card-title">#NAME#</div><p class="card-text">Amount: #AMOUNT#</p><p class="card-text">Price: #PRICE#</p><button class="btn btn-danger">Delete</button></div></div>';
 				console.log('rowTemplate', rowTemplate);
 				
 				$('.delete-btn').on('click', function click(evt) {
@@ -55,27 +55,27 @@
     </jsp:attribute>
     <jsp:body>
 	    <h2 class="mb-5">
-	        <c:if test="${purchase['new']}">New</c:if> Purchase
+	        <c:if test="${sale['new']}">New</c:if> Sale
 	    </h2>
 	    
-	    <form:form modelAttribute="purchase" class="form-horizontal" id="add-purchase-form">
+	    <form:form modelAttribute="sale" class="form-horizontal" id="add-sale-form">
 	        <div class="form-group has-feedback">
-	            <petclinic:inputField label="Purchase date" name="date"/>
+	            <petclinic:inputField label="Sale date" name="date"/>
 	            <petclinic:inputField label="VAT(%)" name="vat"/>
 	            
 	            <div class="row">
-	            	<c:forEach items="${purchase.productPurchases}" var="productPurchase">
+	            	<c:forEach items="${sale.productSales}" var="productSale">
 	            		<div class="card col mx-4 mt-4">
-	            			<input type="hidden" name="productPurchases" value="${productPurchase.product.id};${productPurchase.amount};${productPurchase.price};${productPurchase.id}" />
-	            			<div class="card-title"><c:out value="${productPurchase.product.name}" /></div>
+	            			<input type="hidden" name="productSales" value="${productSale.product.id};${productSale.amount};${productSale.price};${productSale.id}" />
+	            			<div class="card-title"><c:out value="${productSale.product.name}" /></div>
 	            			<div class="card-body">
-	            				<p>Amount: <c:out value="${productPurchase.amount}" /></p>
-	            				<p>Price: <c:out value="${productPurchase.price}" /></p>
+	            				<p>Amount: <c:out value="${productSale.amount}" /></p>
+	            				<p>Price: <c:out value="${productSale.price}" /></p>
 	            				<button class="btn btn-danger" type="button">Delete</button>
 	            			</div>
 	            		</div>
 	            	</c:forEach>
-	            	<!--  <input type="hidden" name="productPurchases" value="2;3;2.75" /> -->
+	            	<!--  <input type="hidden" name="productSales" value="2;3;2.75" /> -->
 		        </div>
 		        <div id="products" class="form-group has-feedback">
 		        	<div class="col col-sm-10 col-md-6 pl-0">
@@ -104,7 +104,7 @@
 	        <div class="form-group mt-5">
 	            <div class="col pl-0 ml-0">
 	                <c:choose>
-	                    <c:when test="${purchase['new']}">
+	                    <c:when test="${sale['new']}">
 	                        <button class="btn btn-default" type="submit">Create</button>
 	                    </c:when>
 	                    <c:otherwise>

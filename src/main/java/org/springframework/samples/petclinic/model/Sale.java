@@ -1,23 +1,15 @@
 package org.springframework.samples.petclinic.model;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
+import java.time.LocalDate;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
-import javax.validation.constraints.NotBlank;
-import javax.xml.bind.annotation.XmlElement;
 
-import org.springframework.beans.support.MutableSortDefinition;
-import org.springframework.beans.support.PropertyComparator;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -27,52 +19,18 @@ import lombok.Setter;
 @Entity
 @Table(name = "sale")
 public class Sale extends BaseEntity{
-	
-	private Date date;
-	
-	@NotBlank
+
+	@DateTimeFormat(pattern = "dd/MM/yyyy")
+	private LocalDate date;
+
 	private Double total;
-	
-	@NotBlank
-	private Double iva;
-	
-	@NotBlank
-	private Integer quantity;
-	
-	@ManyToMany(fetch = FetchType.EAGER)
-	@JoinTable(name = "sale_product", joinColumns = @JoinColumn(name = "product_id"),
-		inverseJoinColumns = @JoinColumn(name = "sale_id"))
-	private Set<Product> products;
-	
 
-	protected Set<Product> getProductsInternal() {
-		if (this.products == null) {
-			this.products = new HashSet<>();
-		}
-		return this.products;
-	}
-
-	protected void setProductsInternal(Set<Product> productsList) {
-		this.products = productsList;
-	}
-
-	@XmlElement
-	public List<Product> getProducts() {
-		List<Product> products = new ArrayList<>(getProductsInternal());
-		PropertyComparator.sort(products, new MutableSortDefinition("name", true, true));
-		return Collections.unmodifiableList(products);
-	}
-
+	private Double vat;
+	
+	@ManyToMany(fetch = FetchType.EAGER, cascade=CascadeType.ALL, mappedBy = "sale")
+	private Set<ProductSale> productSales;
+	
 	public int getProductsSize() {
-		return getProductsInternal().size();
+		return productSales.size();
 	}
-
-	public void addProduct(Product product) {
-		getProductsInternal().add(product);
-	}
-	
-	public void removeProduct(Product product) {
-		getProductsInternal().remove(product);
-	}
-
 }
