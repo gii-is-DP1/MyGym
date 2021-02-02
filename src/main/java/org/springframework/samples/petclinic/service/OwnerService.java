@@ -30,6 +30,7 @@ import org.springframework.samples.petclinic.repository.PetRepository;
 import org.springframework.samples.petclinic.repository.VetRepository;
 import org.springframework.samples.petclinic.repository.VisitRepository;
 import org.springframework.samples.petclinic.service.exceptions.DuplicatedPetNameException;
+import org.springframework.samples.petclinic.service.exceptions.StartDateAfterEndDateException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -71,7 +72,12 @@ public class OwnerService {
 		//creating owner
 		ownerRepository.save(owner);		
 		//creating user
-		userService.saveUser(owner.getUser());
+		try {
+			userService.save(owner.getUser());
+		} catch (StartDateAfterEndDateException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		//creating authorities
 		authoritiesService.saveAuthorities(owner.getUser().getUsername(), "owner");
 	}		

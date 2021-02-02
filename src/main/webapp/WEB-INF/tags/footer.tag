@@ -13,3 +13,15 @@
 <spring:url value="/webjars/mdbootstrap-bootstrap-material-design/4.5.3/js/mdb.min.js" var="mdbJs"/>
 <script src="${mdbJs}"></script>
 
+<spring:url value="/webjars/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" var="bootstrapDatepicker"/>
+<script src="${bootstrapDatepicker}"></script>
+
+<spring:url value="/webjars/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.es.min.js" var="bootstrapDatepickerLocale"/>
+<script src="${bootstrapDatepickerLocale}"></script>
+
+<spring:url value="/webjars/chartjs/2.9.3/Chart.bundle.min.js" var="chartjs"/>
+<script src="${chartjs}"></script>
+
+<spring:url value="/resources/js/petclinic.js" var="petclinicJS"/>
+<script src="${petclinicJS}"></script>
+

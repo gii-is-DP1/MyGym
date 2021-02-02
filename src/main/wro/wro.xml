@@ -1,6 +1,7 @@
 <groups xmlns="http://www.isdc.ro/wro">
   <group name="vendor">
     <css>classpath:META-INF/resources/webjars/mdbootstrap-bootstrap-material-design/4.5.3/css/bootstrap.min.css</css>
+    <css>classpath:META-INF/resources/webjars/chartjs/2.9.3/Chart.min.css</css>
   </group>
   
  
@@ -43,8 +44,12 @@
 
   <group name="petclinic">
   	<css>classpath:META-INF/resources/webjars/mdbootstrap-bootstrap-material-design/4.5.3/scss/core/_colors.scss</css>
-    <css>/petclinic.scss</css>
-    <css>/sidebar.scss</css>
-    <css>/navbar.scss</css>
+    <css>/scss/petclinic.scss</css>
+    <css>/scss/sidebar.scss</css>
+    <css>/scss/navbar.scss</css>
+    <css>/scss/image-field.scss</css>
+    
+    <js>/js/back-button.js</js>
+    <js>/js/file-upload.js</js>
    </group>
 </groups>
