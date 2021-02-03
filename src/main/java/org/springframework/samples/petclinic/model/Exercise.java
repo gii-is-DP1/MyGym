@@ -6,6 +6,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 import lombok.Data;
 
@@ -14,6 +16,7 @@ import lombok.Data;
 @Table(name = "exercise")
 public class Exercise extends BaseEntity {
 	
+	@NotBlank
 	String name;
 	
 	String description;
@@ -29,6 +32,7 @@ public class Exercise extends BaseEntity {
 	@Column(name = "is_generic")
 	Boolean isGeneric;
 	
+	@NotNull
 	@ManyToOne
 	@JoinColumn(name = "type")
 	private ExerciseType type;
