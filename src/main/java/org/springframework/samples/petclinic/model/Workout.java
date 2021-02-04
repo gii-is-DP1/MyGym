@@ -26,7 +26,7 @@ import lombok.Setter;
 @Getter
 @Entity
 @Table(name = "workout")
-public class Workout extends BaseEntity {
+public class Workout extends AuditableEntity {
 	
 	@NotEmpty
 	@Column
