@@ -13,6 +13,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlElement;
 
@@ -42,6 +43,9 @@ public class Training extends BaseEntity {
 	
 	@OneToMany(mappedBy = "training", fetch = FetchType.EAGER)
 	private Set<Memory> memories;
+	
+	@OneToOne(mappedBy = "training")
+	WorkoutTraining workoutTraining;
 	
 	protected Set<Memory> getMemoriesInternal() {
 		if (this.memories == null) {

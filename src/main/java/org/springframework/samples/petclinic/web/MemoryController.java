@@ -16,6 +16,7 @@
 package org.springframework.samples.petclinic.web;
 
 import java.security.Principal;
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Map;
@@ -30,7 +31,9 @@ import org.springframework.samples.petclinic.model.Memories;
 import org.springframework.samples.petclinic.model.Memory;
 import org.springframework.samples.petclinic.model.Training;
 import org.springframework.samples.petclinic.model.User;
+import org.springframework.samples.petclinic.model.Workout;
 import org.springframework.samples.petclinic.service.WorkoutService;
+import org.springframework.samples.petclinic.service.exceptions.MemoryOutOfTimeException;
 import org.springframework.samples.petclinic.util.MemoryValidator;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -98,7 +101,17 @@ public class MemoryController {
 		else {
 			Training training = this.workoutService.findTrainingById(trainingId);
 			memory.setTraining(training);
-			this.workoutService.saveMemory(memory);
+			try {
+				this.workoutService.saveMemory(memory);
+			} catch (MemoryOutOfTimeException e) {
+				Workout workout = training.getWorkoutTraining().getWorkout();
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("DD/MM/YYYY");
+				result.rejectValue("date", "outOfTime", 
+						"La fecha debe estar contenida dentro del periodo de la rutina (" 
+						+ formatter.format(workout.getStartDate()) + " - " 
+						+ formatter.format(workout.getEndDate()) + ")");
+				return VIEWS_CREATE_OR_UPDATE_MEMORY;
+			}
 			return "redirect:/trainings/{trainingId}";
 		}
 	}
@@ -118,7 +131,17 @@ public class MemoryController {
 		else {
 			Memory memoryToUpdate = this.workoutService.findMemoryById(memoryId);
 			BeanUtils.copyProperties(memory, memoryToUpdate, "id", "training");
-			this.workoutService.saveMemory(memoryToUpdate);
+			try {
+				this.workoutService.saveMemory(memoryToUpdate);
+			} catch (MemoryOutOfTimeException e) {
+				Workout workout = memoryToUpdate.getTraining().getWorkoutTraining().getWorkout();
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("DD/MM/YYYY");
+				result.rejectValue("date", "outOfTime", 
+						"La fecha debe estar contenida dentro del periodo de la rutina (" 
+						+ formatter.format(workout.getStartDate()) + " - " 
+						+ formatter.format(workout.getEndDate()) + ")");
+				return VIEWS_CREATE_OR_UPDATE_MEMORY;
+			}
 			return "redirect:/trainings/{trainingId}";
 		}
 	}
