@@ -1,5 +1,6 @@
 package org.springframework.samples.petclinic.web;
 
+import java.util.Collection;
 import java.util.Map;
 
 import javax.validation.Valid;
@@ -20,73 +21,76 @@ import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 public class ProductController {
-	
+
 	private static final String VIEWS_PRODUCTS_CREATE_OR_UPDATE_FORM = "products/createOrUpdateProductForm";
-	
-	private final ProductService service;
-	
+
+	private final ProductService productService;
+
 	@Autowired
-	public ProductController(ProductService service) {
-		this.service = service;
+	public ProductController(ProductService productService) {
+		this.productService = productService;
 	}
-	
+
 	@InitBinder("product")
 	public void initOwnerBinder(WebDataBinder dataBinder) {
 		dataBinder.setDisallowedFields("id");
 	}
-	
+
 	@GetMapping(value = "/products")
 	public String processFindForm(Product product, BindingResult result, Map<String, Object> model) {
+		
+		if (product == null) {
+			product = new Product();
+		}
+		
+		Collection<Product> results = this.productService.findProductByName(product.getName());
 
-		Iterable<Product> results = this.service.findAll();
-		
-			model.put("products", results);
-			return "products/productsList";
-		
+		model.put("products", results);
+		return "products/productsList";
+
 	}
-	
+
 	@GetMapping(value = "/products/new")
 	public String initCreationForm(Map<String, Object> model) {
 		Product product = new Product();
 		model.put("product", product);
 		return VIEWS_PRODUCTS_CREATE_OR_UPDATE_FORM;
 	}
-	
+
 	@PostMapping(value = "/products/new")
 	public String processCreationForm(@Valid Product product, BindingResult result, ModelMap model) {
 		if (result.hasErrors()) {
 			model.put("product", product);
 			return VIEWS_PRODUCTS_CREATE_OR_UPDATE_FORM;
 		} else {
-			this.service.save(product);
+			this.productService.saveProduct(product);
 			return "redirect:/products";
 		}
 	}
-	
+
 	@GetMapping("/products/{productId}")
 	public ModelAndView showSala(@PathVariable("productId") int productId) {
 		ModelAndView mav = new ModelAndView("products/productDetails");
-		mav.addObject(this.service.findById(productId));
+		mav.addObject(this.productService.findProductById(productId));
 		return mav;
-	}
-	
-	@GetMapping(value = "/products/{productId}/edit")
-	public String initUpdateForm(@PathVariable("productId") int productId, ModelMap model) {
-		Product product = this.service.findById(productId);
-		model.put("product", product);
-		return VIEWS_PRODUCTS_CREATE_OR_UPDATE_FORM;
 	}
 
 	@GetMapping(value = "/products/{productId}/delete")
 	public String deleteSala(@PathVariable("productId") int productId, ModelMap model) {
-		Product product = this.service.findById(productId);
+		Product product = this.productService.findProductById(productId);
 		if (product != null) {
-			this.service.delete(product);
+			this.productService.deleteProduct(product);
 		}
 		return "redirect:/products";
 	}
 
-	
+	@GetMapping(value = "/products/{productId}/edit")
+	public String initUpdateForm(@PathVariable("productId") int productId, ModelMap model) {
+		Product product = this.productService.findProductById(productId);
+		model.put("product", product);
+		return VIEWS_PRODUCTS_CREATE_OR_UPDATE_FORM;
+	}
+
 	@PostMapping(value = "/products/{productId}/edit")
 	public String processUpdateForm(@Valid Product product, BindingResult result,
 			@PathVariable("productId") int productId, ModelMap model) {
@@ -94,11 +98,11 @@ public class ProductController {
 			model.put("product", product);
 			return VIEWS_PRODUCTS_CREATE_OR_UPDATE_FORM;
 		} else {
-			Product productToUpdate = this.service.findById(productId);
+			Product productToUpdate = this.productService.findProductById(productId);
 			BeanUtils.copyProperties(product, productToUpdate, "id");
-			this.service.save(productToUpdate);
+			this.productService.saveProduct(productToUpdate);
 			return "redirect:/products";
 		}
 	}
-	
+
 }

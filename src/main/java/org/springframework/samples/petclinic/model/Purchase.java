@@ -1,31 +1,37 @@
 package org.springframework.samples.petclinic.model;
 
 
-import java.util.Date;
+import java.time.LocalDate;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
-import javax.validation.constraints.NotBlank;
 
-import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
-@Data
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 @Entity
 @Table(name = "purchase")
 public class Purchase extends BaseEntity{
-	
-	private Date date;
-	
-	@NotBlank
-	private Double total;
-	
-	@NotBlank
-	private Double iva;
-	
-	@NotBlank
-	private Integer quantity;
-	
-	@NotBlank
-	private Double purchasePrice;
 
+	@DateTimeFormat(pattern = "dd/MM/yyyy")
+	private LocalDate date;
+
+	private Double total;
+
+	private Double vat;
+	
+	@ManyToMany(fetch = FetchType.EAGER, cascade=CascadeType.ALL, mappedBy = "purchase")
+	private Set<ProductPurchase> productPurchases;
+	
+	public int getProductsSize() {
+		return productPurchases.size();
+	}
 }
