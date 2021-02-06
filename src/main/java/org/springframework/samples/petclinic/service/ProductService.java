@@ -7,9 +7,11 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.Product;
 import org.springframework.samples.petclinic.model.Purchase;
+import org.springframework.samples.petclinic.model.Sale;
 import org.springframework.samples.petclinic.repository.ProductPurchaseRepository;
 import org.springframework.samples.petclinic.repository.ProductRepository;
 import org.springframework.samples.petclinic.repository.PurchaseRepository;
+import org.springframework.samples.petclinic.repository.SaleRepository;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -20,6 +22,9 @@ public class ProductService {
 	
 	@Autowired
 	private PurchaseRepository purchaseRepository;
+	
+	@Autowired
+	private SaleRepository saleRepository;
 	
 	@Autowired
 	private ProductPurchaseRepository productPurchaseRepository;
@@ -69,6 +74,26 @@ public class ProductService {
 	@Transactional
 	public void deletePurchase(Purchase purchase) {
 		purchaseRepository.delete(purchase);
+	}
+	
+	@Transactional
+	public Sale findSaleById(int saleId) {
+		return saleRepository.findById(saleId);
+	}
+	
+	@Transactional
+	public Collection<Sale> findAllSales() {
+		return saleRepository.findAll();
+	}
+	
+	@Transactional
+	public void savePurchase(Sale sale) {
+		saleRepository.save(sale);
+	}
+	
+	@Transactional
+	public void deleteSale(Sale sale) {
+		saleRepository.delete(sale);
 	}
 	
 	@Transactional

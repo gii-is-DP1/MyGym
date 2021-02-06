@@ -6,18 +6,18 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="petclinic" tagdir="/WEB-INF/tags" %>
 
-<spring:url value="/purchases" var="purchasesList"></spring:url>
+<spring:url value="/sales" var="salesList"></spring:url>
 
-<petclinic:layout pageName="purchases">
+<petclinic:layout pageName="sales">
 	<jsp:attribute name="customScript">
         <script type="text/javascript">
         	$(function() {
             	var $date = $("input[name=date]");
             	$date.datepicker({language:'es'});
             	
-            	var rowTemplate = '<div class="col col-sm-6 col-lg-4 px-4 mt-4"><div class="card"><input type="hidden" name="productPurchases" value="#PRODUCT#;#AMOUNT#;#PRICE#" /><div class="card-title"><h5 class="px-3 pt-3">#NAME#</h5></div><div class="card-body"><p>Amount: #AMOUNT#</p><p>Price: #PRICE#</p><button type="button" class="btn btn-danger waves-effect waves-light">Delete</button></div></div></div>';
+            	var rowTemplate = '<div class="col col-sm-6 col-lg-4 px-4 mt-4"><div class="card"><input type="hidden" name="productSales" value="#PRODUCT#;#AMOUNT#;#PRICE#" /><div class="card-title"><h5 class="px-3 pt-3">#NAME#</h5></div><div class="card-body"><p>Amount: #AMOUNT#</p><p>Price: #PRICE#</p><button class="btn btn-danger waves-effect waves-light">Delete</button></div></div></div>';
 				
-				$('#add-purchase-form').on('click', '.btn-danger', function deleteItem(evt) {
+				$('#add-sale-form').on('click', '.btn-danger', function deleteItem(evt) {
 					evt.preventDefault();
 					var $item = $(evt.target).closest('.card').parent();
 					$item.remove();
@@ -31,10 +31,6 @@
 					var price = $('#price').val();
 					var productOption = $('#product > option:selected');
 
-					console.log('amount', amount);
-					console.log('price', price);					
-					console.log('productOption', productOption);
-					
 					var newEl = rowTemplate
 						.replace(new RegExp('#NAME#', 'ig'), productOption.text())
 						.replace(new RegExp('#AMOUNT#', 'ig'), amount)
@@ -48,19 +44,19 @@
 					var price = $('#price').val('');
 					
 					return false;
-				});
+				})
 				
         	});
         </script>
     </jsp:attribute>
     <jsp:body>
 	    <h2 class="mb-5">
-	        <c:if test="${purchase['new']}">New</c:if> Purchase
+	        <c:if test="${sale['new']}">New</c:if> Sale
 	    </h2>
 	    
-	    <form:form modelAttribute="purchase" class="form-horizontal" id="add-purchase-form">
+	    <form:form modelAttribute="sale" class="form-horizontal" id="add-sale-form">
 	        <div class="form-group has-feedback">
-	            <petclinic:inputField label="Purchase date" name="date"/>
+	            <petclinic:inputField label="Sale date" name="date"/>
 	            <petclinic:inputField label="VAT(%)" name="vat"/>
 	            
 		        <div id="products" class="form-group has-feedback">
@@ -85,30 +81,30 @@
 		        		<button class="btn btn-default" id="add-btn">Add product</button>
 		        	</div>
 		        </div>
-   	            <div id="products-container" class="row">
-	            	<c:forEach items="${purchase.productPurchases}" var="productPurchase">
+		        
+	            <div id="products-container" class="row">
+	            	<c:forEach items="${sale.productSales}" var="productSale">
 	            		<div class="col col-sm-6 col-lg-4 px-4 mt-4">
 		            		<div class="card">
-		            			<input type="hidden" name="productPurchases" value="${productPurchase.product.id};${productPurchase.amount};${productPurchase.price};${productPurchase.id}" />
+		            			<input type="hidden" name="productSales" value="${productSale.product.id};${productSale.amount};${productSale.price};${productSale.id}" />
 		            			<div class="card-title">
-		            				<h5 class="px-3 pt-3"><c:out value="${productPurchase.product.name}" /></h5>
+		            				<h5 class="px-3 pt-3"><c:out value="${productSale.product.name}" /></h5>
 		            			</div>
 		            			<div class="card-body">
-		            				<p>Amount: <c:out value="${productPurchase.amount}" /></p>
-		            				<p>Price: <c:out value="${productPurchase.price}" /></p>
+		            				<p>Amount: <c:out value="${productSale.amount}" /></p>
+		            				<p>Price: <c:out value="${productSale.price}" /></p>
 		            				<button class="btn btn-danger waves-effect waves-light" type="button">Delete</button>
 		            			</div>
 		            		</div>
 	            		</div>
 	            	</c:forEach>
-	            	<!--  <input type="hidden" name="productPurchases" value="2;3;2.75" /> -->
 		        </div>
 	        </div>
 	        
 	        <div class="form-group mt-5">
 	            <div class="col pl-0 ml-0">
 	                <c:choose>
-	                    <c:when test="${purchase['new']}">
+	                    <c:when test="${sale['new']}">
 	                        <button class="btn btn-default" type="submit">Create</button>
 	                    </c:when>
 	                    <c:otherwise>

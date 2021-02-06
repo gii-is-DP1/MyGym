@@ -4,14 +4,14 @@ import java.util.Collection;
 
 import org.springframework.beans.propertyeditors.CustomCollectionEditor;
 import org.springframework.samples.petclinic.model.Product;
-import org.springframework.samples.petclinic.model.ProductPurchase;
+import org.springframework.samples.petclinic.model.ProductSale;
 import org.springframework.samples.petclinic.service.ProductService;
 
-public class ProductPurchaseCollectionEditor extends CustomCollectionEditor {
+public class ProductSaleCollectionEditor extends CustomCollectionEditor {
 
 	private final ProductService productService;
 	
-	public ProductPurchaseCollectionEditor(Class<? extends Collection> collectionType, ProductService productService) {
+	public ProductSaleCollectionEditor(Class<? extends Collection> collectionType, ProductService productService) {
 		super(collectionType);
 		
 		this.productService = productService;
@@ -32,19 +32,19 @@ public class ProductPurchaseCollectionEditor extends CustomCollectionEditor {
 			
 			Product product = productService.findProductById(productId);
 			
-			ProductPurchase productPurchase = new ProductPurchase();
+			ProductSale productSale = new ProductSale();
 			
 			if (splitted.length >= 4) {
-				productPurchase.setId(new Integer(splitted[3]));
+				productSale.setId(new Integer(splitted[3]));
 			}
 			
-			productPurchase.setProduct(product);
-			productPurchase.setPrice(price);
-			productPurchase.setAmount(amount);
+			productSale.setProduct(product);
+			productSale.setPrice(price);
+			productSale.setAmount(amount);
 			
-			System.out.println("Build product purchase: " + productPurchase);
+			System.out.println("Build product sale: " + productSale);
 			
-			return productPurchase;
+			return productSale;
 		} catch (NumberFormatException e) {
 			return null;
 		}
