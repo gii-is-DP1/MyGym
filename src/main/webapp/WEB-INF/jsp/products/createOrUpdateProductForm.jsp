@@ -20,6 +20,7 @@
 	            <petclinic:inputField label="Description" name="description"/>
 	            <petclinic:inputField label="Stockage" name="stockage"/>
 	            <petclinic:inputField label="Price" name="price"/>
+	            <petclinic:imageField label="Imagen" name="image" />
 	            
 	        </div>
 	        <div class="form-group mt-5">

@@ -15,6 +15,7 @@
  */
 package org.springframework.samples.petclinic.web;
 
+import java.security.Principal;
 import java.util.Collection;
 import java.util.Map;
 
@@ -38,11 +39,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * @author Juergen Hoeller
  * @author Ken Krebs
  * @author Arjen Poutsma
  */
+@Slf4j
 @Controller
 public class ExerciseController {
 
@@ -119,13 +123,14 @@ public class ExerciseController {
 	}
 
 	@PostMapping(value = "/exercises/new")
-	public String processCreationForm(@Valid Exercise exercise, BindingResult result, ModelMap model) {
+	public String processCreationForm(@Valid Exercise exercise, BindingResult result, ModelMap model, Principal principal) {
 		if (result.hasErrors()) {
 			model.put("exercise", exercise);
 			return VIEWS_EXERCISES_CREATE_OR_UPDATE_FORM;
 		} else {
 			exercise.setIsGeneric(Boolean.TRUE);
 			this.workoutService.saveExercise(exercise);
+			log.info("exercise with ID=" + exercise.getId() + " has been created by " + principal.getName());
 			return "redirect:/exercises";
 		}
 	}
@@ -150,10 +155,11 @@ public class ExerciseController {
 	}
 
 	@GetMapping(value = "/exercises/{exerciseId}/delete")
-	public String deleteExercise(@PathVariable("exerciseId") int exerciseId, ModelMap model) {
+	public String deleteExercise(@PathVariable("exerciseId") int exerciseId, ModelMap model, Principal principal) {
 		Exercise exercise = this.workoutService.findExerciseById(exerciseId);
 		if (exercise != null) {
 			this.workoutService.deleteExercise(exercise);
+			log.info("exercise with ID=" + exerciseId + " has been deleted by " + principal.getName());
 		}
 		return "redirect:/exercises";
 	}
@@ -170,7 +176,7 @@ public class ExerciseController {
 	 */
 	@PostMapping(value = "/exercises/{exerciseId}/edit")
 	public String processUpdateForm(@Valid Exercise exercise, BindingResult result,
-			@PathVariable("exerciseId") int exerciseId, ModelMap model) {
+			@PathVariable("exerciseId") int exerciseId, ModelMap model, Principal principal) {
 		if (result.hasErrors()) {
 			model.put("exercise", exercise);
 			return VIEWS_EXERCISES_CREATE_OR_UPDATE_FORM;
@@ -178,6 +184,7 @@ public class ExerciseController {
 			Exercise exerciseToUpdate = this.workoutService.findExerciseById(exerciseId);
 			BeanUtils.copyProperties(exercise, exerciseToUpdate, "id", "isGeneric");
 			this.workoutService.saveExercise(exerciseToUpdate);
+			log.info("exercise with ID=" + exerciseId + " has been updated by " + principal.getName());
 			return "redirect:/exercises";
 		}
 	}

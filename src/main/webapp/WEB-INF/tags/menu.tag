@@ -82,9 +82,17 @@
 				</sec:authorize>
 			</petclinic:menuSection>
 			<sec:authorize access="hasAuthority('admin')">
-				<petclinic:menuItem active="${name eq 'products'}" url="/products" title="Products">
-					<span class="white-text"><i class="fa fa-pie-chart"></i>Products</span>
-				</petclinic:menuItem>
+				<petclinic:menuSection active="${name eq 'products' or name eq 'purchases' or name eq 'sales'}" title="Products">
+					<petclinic:menuItem active="${name eq 'products'}" url="/products" title="Workouts">
+						<i class="fa fa-pie-chart"></i>List
+					</petclinic:menuItem>
+					<petclinic:menuItem active="${name eq 'sales'}" url="/sales" title="Sales">
+						<i class="fa fa-stopwatch mr-3"></i>Sales
+					</petclinic:menuItem>
+					<petclinic:menuItem active="${name eq 'purchases'}" url="/purchases" title="Purchases">
+						<i class="fa fa-dumbbell mr-3"></i>Purchases
+					</petclinic:menuItem>
+				</petclinic:menuSection>
 			</sec:authorize>
 			<!--<petclinic:menuItem active="${name eq 'owners'}" url="/owners/find" title="Owners">
 				<span class="white-text"><i class="fa fa-pie-chart"></i>Owners</span>
