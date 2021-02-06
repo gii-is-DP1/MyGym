@@ -72,7 +72,7 @@
 	<sec:authorize access="hasAnyAuthority('admin', 'trainner')">
 	
 	    <spring:url value="{purchaseId}/edit" var="editUrl">
-	        <spring:param name="trainingId" value="${purchase.id}"/>
+	        <spring:param name="purchaseId" value="${purchase.id}"/>
 	    </spring:url>
 	    <a href="${fn:escapeXml(editUrl)}" class="btn btn-default">Editar</a>
 	

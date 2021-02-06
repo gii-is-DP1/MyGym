@@ -7,6 +7,7 @@ import java.util.Set;
 
 import javax.validation.Valid;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.configuration.SecurityConfiguration;
 import org.springframework.samples.petclinic.model.Product;
@@ -14,6 +15,7 @@ import org.springframework.samples.petclinic.model.Purchase;
 import org.springframework.samples.petclinic.model.Training;
 import org.springframework.samples.petclinic.model.User;
 import org.springframework.samples.petclinic.service.ProductService;
+import org.springframework.samples.petclinic.service.exceptions.NoNameException;
 import org.springframework.samples.petclinic.util.ProductPurchaseCollectionEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -123,6 +125,35 @@ public class PurchaseController {
 			}*/
 		}
 		return mav;
+	}
+	
+	@GetMapping(value = "/purchases/{purchaseId}/delete")
+	public String deleteTraining(@PathVariable("purchaseId") int purchaseId, ModelMap model) {
+		Purchase purchase = this.productService.findPurchaseById(purchaseId);
+		if (purchase != null) {
+			this.productService.deletePurchase(purchase);
+		}
+		return "redirect:/purchases";
+	}
+	
+	@GetMapping(value = "/purchases/{purchaseId}/edit")
+	public String initUpdateForm(@PathVariable("purchaseId") int purchaseId, ModelMap model) {
+		Purchase purchase = this.productService.findPurchaseById(purchaseId);
+		model.put("purchase", purchase);
+		return VIEWS_PURCHASES_CREATE_OR_UPDATE_FORM;
+	}
+	
+	@PostMapping(value = "/purchases/{purchaseId}/edit")
+	public String processUpdateForm(@Valid Purchase purchase, BindingResult result, @PathVariable("purchaseId") int purchaseId, ModelMap model) {
+		if (result.hasErrors()) {
+			model.put("purchase", purchase);
+			return VIEWS_PURCHASES_CREATE_OR_UPDATE_FORM;
+		} else {
+			Purchase purchaseToUpdate = this.productService.findPurchaseById(purchaseId);
+			BeanUtils.copyProperties(purchase, purchaseToUpdate, "id", "isGeneric");
+			this.productService.savePurchase(purchaseToUpdate);
+			return "redirect:/purchases/" + purchaseId;
+		}
 	}
 
 

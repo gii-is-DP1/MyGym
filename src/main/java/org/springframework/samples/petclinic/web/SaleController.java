@@ -7,6 +7,7 @@ import java.util.Set;
 
 import javax.validation.Valid;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.Product;
 import org.springframework.samples.petclinic.model.Purchase;
@@ -109,7 +110,7 @@ public class SaleController {
 				User user = new User();
 				user.setUsername(principal.getName());
 				Collection<Training> userTrainings = this.workoutService.findTrainingsByUser(user);
-				allowed = userTrainings.stream().anyMatch(t -> t.getId().equals(purchaseId));
+				allowed = userTrainings.stream().anyMatch(t -> t.getId().equals(saleId));
 				System.out.println("training owned by user: " + allowed);
 			}
 			if (allowed) {*/
@@ -121,6 +122,35 @@ public class SaleController {
 			}*/
 		}
 		return mav;
+	}
+	
+	@GetMapping(value = "/sales/{saleId}/delete")
+	public String deleteTraining(@PathVariable("saleId") int saleId, ModelMap model) {
+		Sale sale = this.productService.findSaleById(saleId);
+		if (sale != null) {
+			this.productService.deleteSale(sale);
+		}
+		return "redirect:/sales";
+	}
+	
+	@GetMapping(value = "/sales/{saleId}/edit")
+	public String initUpdateForm(@PathVariable("saleId") int saleId, ModelMap model) {
+		Sale sale = this.productService.findSaleById(saleId);
+		model.put("sale", sale);
+		return VIEWS_SALES_CREATE_OR_UPDATE_FORM;
+	}
+	
+	@PostMapping(value = "/sales/{saleId}/edit")
+	public String processUpdateForm(@Valid Sale sale, BindingResult result, @PathVariable("saleId") int saleId, ModelMap model) {
+		if (result.hasErrors()) {
+			model.put("sale", sale);
+			return VIEWS_SALES_CREATE_OR_UPDATE_FORM;
+		} else {
+			Sale saleToUpdate = this.productService.findSaleById(saleId);
+			BeanUtils.copyProperties(sale, saleToUpdate, "id", "isGeneric");
+			this.productService.savePurchase(saleToUpdate);
+			return "redirect:/sales/" + saleId;
+		}
 	}
 
 

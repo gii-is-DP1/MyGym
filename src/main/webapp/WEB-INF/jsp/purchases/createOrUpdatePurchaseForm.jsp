@@ -18,10 +18,12 @@
             	var rowTemplate = '<div class="card col mx-4 mt-4"><input type="hidden" name="productPurchases" value="#PRODUCT#;#AMOUNT#;#PRICE#" /><div class="card-body"><div class="card-title">#NAME#</div><p class="card-text">Amount: #AMOUNT#</p><p class="card-text">Price: #PRICE#</p><button class="btn btn-danger">Delete</button></div></div>';
 				console.log('rowTemplate', rowTemplate);
 				
-				$('.delete-btn').on('click', function click(evt) {
+				$(".btn-danger").on('click', function click(evt) {
+					evt.preventDefault();
+					console.log('eliminando!!!!');
 					var $item = $(evt.target).closest('.card');
 					$item.remove();
-				})
+				});
 				
 				$('#add-btn').on('click', function addItem(evt) {
 					evt.preventDefault();
@@ -48,7 +50,7 @@
 					var price = $('#price').val('');
 					
 					return false;
-				})
+				});
 				
         	});
         </script>
@@ -63,20 +65,6 @@
 	            <petclinic:inputField label="Purchase date" name="date"/>
 	            <petclinic:inputField label="VAT(%)" name="vat"/>
 	            
-	            <div class="row">
-	            	<c:forEach items="${purchase.productPurchases}" var="productPurchase">
-	            		<div class="card col mx-4 mt-4">
-	            			<input type="hidden" name="productPurchases" value="${productPurchase.product.id};${productPurchase.amount};${productPurchase.price};${productPurchase.id}" />
-	            			<div class="card-title"><c:out value="${productPurchase.product.name}" /></div>
-	            			<div class="card-body">
-	            				<p>Amount: <c:out value="${productPurchase.amount}" /></p>
-	            				<p>Price: <c:out value="${productPurchase.price}" /></p>
-	            				<button class="btn btn-danger" type="button">Delete</button>
-	            			</div>
-	            		</div>
-	            	</c:forEach>
-	            	<!--  <input type="hidden" name="productPurchases" value="2;3;2.75" /> -->
-		        </div>
 		        <div id="products" class="form-group has-feedback">
 		        	<div class="col col-sm-10 col-md-6 pl-0">
 		        		<label class="control-label">Amount</label>
@@ -98,6 +86,20 @@
 		        	<div>
 		        		<button class="btn btn-default" id="add-btn">Add product</button>
 		        	</div>
+		        </div>
+   	            <div class="row">
+	            	<c:forEach items="${purchase.productPurchases}" var="productPurchase">
+	            		<div class="card col mx-4 mt-4">
+	            			<input type="hidden" name="productPurchases" value="${productPurchase.product.id};${productPurchase.amount};${productPurchase.price};${productPurchase.id}" />
+	            			<div class="card-title"><c:out value="${productPurchase.product.name}" /></div>
+	            			<div class="card-body">
+	            				<p>Amount: <c:out value="${productPurchase.amount}" /></p>
+	            				<p>Price: <c:out value="${productPurchase.price}" /></p>
+	            				<button class="btn btn-danger" type="button">Delete</button>
+	            			</div>
+	            		</div>
+	            	</c:forEach>
+	            	<!--  <input type="hidden" name="productPurchases" value="2;3;2.75" /> -->
 		        </div>
 	        </div>
 	        

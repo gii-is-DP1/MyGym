@@ -92,7 +92,7 @@ public class ProductService {
 	}
 	
 	@Transactional
-	public void deletePurchase(Sale sale) {
+	public void deleteSale(Sale sale) {
 		saleRepository.delete(sale);
 	}
 	
