@@ -8,10 +8,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 
+import org.hibernate.envers.Audited;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import lombok.Data;
 
+@Audited
 @Data
 @Entity
 public class Fee extends BaseEntity{

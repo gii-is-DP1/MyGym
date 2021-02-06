@@ -5,14 +5,17 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.hibernate.envers.Audited;
+
 import lombok.Getter;
 import lombok.Setter;
 
+@Audited
 @Getter
 @Setter
 @Entity
 @Table(name = "product_purchase")
-public class ProductPurchase extends BaseEntity {
+public class ProductPurchase extends AuditableEntity {
 
 	private Integer amount;
 	

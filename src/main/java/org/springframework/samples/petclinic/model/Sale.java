@@ -16,17 +16,19 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.xml.bind.annotation.XmlElement;
 
+import org.hibernate.envers.Audited;
 import org.springframework.beans.support.MutableSortDefinition;
 import org.springframework.beans.support.PropertyComparator;
 
 import lombok.Getter;
 import lombok.Setter;
 
+@Audited
 @Getter
 @Setter
 @Entity
 @Table(name = "sale")
-public class Sale extends BaseEntity{
+public class Sale extends AuditableEntity {
 	
 	private Date date;
 	

@@ -69,9 +69,6 @@ class WorkoutServiceTests {
     
 	@Autowired
 	protected WorkoutService workoutService;
-        
-    @Autowired
-	protected OwnerService ownerService;
     
     @Test
 	void shouldFindExerciseWithCorrectId() {
