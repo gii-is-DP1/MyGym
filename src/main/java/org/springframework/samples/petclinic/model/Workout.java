@@ -50,7 +50,7 @@ public class Workout extends BaseEntity {
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	LocalDate endDate;
 	
-	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.REFRESH, mappedBy = "workout")
+	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "workout")
 	Set<WorkoutTraining> workoutTrainings;
 	
 	protected Set<WorkoutTraining> getWorkoutTrainingsInternal() {

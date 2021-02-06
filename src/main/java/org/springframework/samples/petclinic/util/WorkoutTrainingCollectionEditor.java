@@ -48,8 +48,9 @@ public class WorkoutTrainingCollectionEditor extends CustomCollectionEditor {
 		Training training = new Training();
 		BeanUtils.copyProperties(original, training, "id");
 		training.setIsGeneric(Boolean.FALSE);
+		training.setName(training.getName().concat(" (").concat("personalizado").concat(")"));
 		
-		training.getExercises().forEach(ex -> {
+		original.getExercises().forEach(ex -> {
 			Exercise exercise = new Exercise();
 			BeanUtils.copyProperties(ex, exercise, "id");
 			exercise.setIsGeneric(Boolean.FALSE);

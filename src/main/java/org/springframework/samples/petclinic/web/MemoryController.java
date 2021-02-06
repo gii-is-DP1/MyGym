@@ -97,7 +97,7 @@ public class MemoryController {
 
 	// Spring MVC calls method loadPetWithVisit(...) before processNewVisitForm is called
 	@PostMapping(value = "/trainings/{trainingId}/memories/new")
-	public String processNewMemoryForm(@PathVariable("trainingId") int trainingId, @Valid Memory memory, BindingResult result) {
+	public String processNewMemoryForm(@PathVariable("trainingId") int trainingId, @Valid Memory memory, BindingResult result, Principal principal) {
 		if (result.hasErrors()) {
 			return VIEWS_CREATE_OR_UPDATE_MEMORY;
 		}

@@ -197,4 +197,9 @@ public class WorkoutService {
 	public void deleteMemory(Memory memory) {
 		this.memoryRepository.delete(memory);
 	}
+	
+	@Transactional
+	public void deleteWorkoutTraining(WorkoutTraining workoutTraining) {
+		this.workoutTrainingRepository.delete(workoutTraining);
+	}
 }

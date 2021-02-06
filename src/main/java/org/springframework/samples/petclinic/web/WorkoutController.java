@@ -184,75 +184,21 @@ public class WorkoutController {
 	}
 
 	@PostMapping(value = "/workouts/assign")
-	public String processCreationForm(@Valid Workout workout, BindingResult result, ModelMap model, HttpServletRequest request) {
-		Set<WorkoutTraining> sentWorkoutTrainings = populateWorkoutTrainings(request);
-		if (!sentWorkoutTrainings.stream().anyMatch(wt -> wt.getTraining() != null)) {
+	public String processCreationForm(@Valid Workout workout, BindingResult result, ModelMap model, HttpServletRequest request, Principal principal) {
+		if (workout.getWorkoutTrainings().isEmpty()) {
 			result.rejectValue("workoutTrainings", "notEmpty", "Debe seleccionar algún entrenamiento para la rutina");
 		}
 		
 		if (result.hasErrors()) {
 			model.put("workout", workout);
 			return VIEWS_ASSIGN_WORKOUT;
-		} else {
-			
-			Collection<Training> trainings = this.populateTrainings(null);
-			Set<WorkoutTraining> workoutTrainings = workout.getWorkoutTrainings();
-			for (int i = 1; i <= 6; i++) {
-				final int weekday = i;
-				WorkoutTraining workoutTraining = workoutTrainings.stream()
-						.filter(wt -> wt.getWeekDay().equals(weekday))
-						.findFirst().orElse(null);
-				String tmpId = request.getParameter("wt-training-" + weekday);	
-				Training training = null;
-				if (tmpId != null && !tmpId.isEmpty()) {
-					Integer trainingId = new Integer(tmpId);
-					training = trainings.stream().filter(t -> t.getId().equals(trainingId)).findFirst().orElse(null);
-				}
-				
-				if (workoutTraining != null && training == null) {
-					workout.removeWorkoutTraining(workoutTraining);
-				} else if (training != null) {
-					if (workoutTraining == null) {
-						workoutTraining = new WorkoutTraining();
-						workoutTraining.setWeekDay(weekday);
-					}
-					Training trainingToAssign = new Training();
-					BeanUtils.copyProperties(training, trainingToAssign, "id");
-					trainingToAssign.setIsGeneric(Boolean.FALSE);
-
-					training.getExercises().forEach(ex -> {
-						Exercise exercise = new Exercise();
-						BeanUtils.copyProperties(ex, exercise, "id");
-						exercise.setIsGeneric(Boolean.FALSE);
-						
-						trainingToAssign.addExercise(exercise);
-					});
-					workoutTraining.setTraining(trainingToAssign);
-					workout.addWorkoutTraining(workoutTraining);
-				}
-			}
-			
+		} else {			
 			try {
-				workout.getWorkoutTrainings().forEach(wt -> {
-					Training training = wt.getTraining();
-					
-					training.getExercises().forEach(ex -> {
-						this.workoutService.saveExercise(ex);
-					});
-					
-					try {
-						this.workoutService.saveTraining(training);
-					} catch (NoNameException e) {
-						e.printStackTrace();
-					}
-				});
-				
 				this.workoutService.saveWorkout(workout);
 				
-				log.info("workout with ID " + workout.getId() + " was assigned to user " + workout.getUser().getUsername());
+				log.info("workout with ID " + workout.getId() + " has been created by user " + principal.getName());
 			} catch (ExistingWorkoutInDateRangeException e) {
-				log.error("error on workout assignment", e);
-				
+				log.error("error creating workout", e);
 				model.put("workout", workout);
 				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("DD/MM/YYYY");
 				
@@ -267,7 +213,7 @@ public class WorkoutController {
 				
                 return VIEWS_ASSIGN_WORKOUT;
 			}
-			return "redirect:/workouts";
+			return "redirect:/workouts?username=" + workout.getUser().getUsername();
 		}
 	}
 	
@@ -363,7 +309,7 @@ public class WorkoutController {
 				findByWeekday(workout.getWorkoutTrainings(), weekDay),
 				findByWeekday(newWorkoutTrainings, weekDay),
 			})
-			.filter(workoutTrainings -> workoutTrainings[0] != null && workoutTrainings[1] != null)
+			.filter(workoutTrainings -> workoutTrainings[0] != null || workoutTrainings[1] != null)
 			.forEach(workoutTrainings -> {
 				WorkoutTraining oldWorkoutTraining = workoutTrainings[0];
 				WorkoutTraining newWorkoutTraining = workoutTrainings[1];
@@ -371,11 +317,12 @@ public class WorkoutController {
 				if (oldWorkoutTraining == null) {
 					// new workoutTraining added
 					workout.addWorkoutTraining(newWorkoutTraining);
-				} else if (newWorkoutTraining != null) {
+				} else if (newWorkoutTraining != null && newWorkoutTraining.getTraining() != null) {
 					// update oldWorkoutTraining with new bounds
 					oldWorkoutTraining.setTraining(newWorkoutTraining.getTraining());
 				} else {
 					// remove oldTraining
+					this.workoutService.deleteWorkoutTraining(oldWorkoutTraining);
 					workout.removeWorkoutTraining(oldWorkoutTraining);
 				} 
 			});

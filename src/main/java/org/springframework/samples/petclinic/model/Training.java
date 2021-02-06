@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -36,7 +37,7 @@ public class Training extends BaseEntity {
 	@Column(name="is_generic")
 	Boolean isGeneric;
 	
-	@ManyToMany(fetch = FetchType.EAGER)
+	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@JoinTable(name = "training_exercises", joinColumns = @JoinColumn(name = "training_id"),
 		inverseJoinColumns = @JoinColumn(name = "exercise_id"))
 	private Set<Exercise> exercises;
