@@ -44,6 +44,8 @@ import org.springframework.samples.petclinic.service.UserService;
 import org.springframework.samples.petclinic.service.WorkoutService;
 import org.springframework.samples.petclinic.service.exceptions.ExistingWorkoutInDateRangeException;
 import org.springframework.samples.petclinic.service.exceptions.NoNameException;
+import org.springframework.samples.petclinic.util.ProductPurchaseCollectionEditor;
+import org.springframework.samples.petclinic.util.WorkoutTrainingCollectionEditor;
 import org.springframework.samples.petclinic.util.WorkoutValidator;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -99,16 +101,12 @@ public class WorkoutController {
 	 * @InitBinder("pet") public void initPetBinder(WebDataBinder dataBinder) {
 	 * dataBinder.setValidator(new PetValidator()); }
 	 */
-
-	@InitBinder("user")
-	public void initUserBinder(WebDataBinder dataBinder) {
-		dataBinder.setDisallowedFields("id");
-	}
 	
 	@InitBinder("workout")
 	public void initWorkoutBinder(WebDataBinder dataBinder) {
 		dataBinder.setDisallowedFields("id");
 		dataBinder.setValidator(new WorkoutValidator());
+		dataBinder.registerCustomEditor(Set.class, "workoutTrainings", new WorkoutTrainingCollectionEditor(Set.class, workoutService));
 	}
 
 
@@ -119,11 +117,21 @@ public class WorkoutController {
 
 
 	@ModelAttribute("trainings")
-	public Collection<Training> populateTrainings() {
-		Collection<Training> trainings = this.workoutService.findTrainingsByName(null);
+	public Collection<Training> populateTrainings(@PathVariable(name="workoutId", required=false) Integer workoutId) {
+		Workout workout = new Workout();
+		workout.setId(workoutId);
+		
+		Collection<Training> trainings = this.workoutService.findTrainingsGenericOrByworkout(workout);
 		return trainings.stream()
 				.filter(training -> training.getExercisesSize() > 0)
 				.collect(Collectors.toSet());
+	}
+	
+	public void extendTrainingsList(Collection<Training> trainingsList, Workout workout) {
+		trainingsList.addAll(workout.getWorkoutTrainings().stream()
+				.map(WorkoutTraining::getTraining)
+				.collect(Collectors.toSet())
+		);
 	}
 	
 	@GetMapping(value = "/workouts")
@@ -167,26 +175,17 @@ public class WorkoutController {
 	public String initCreationForm(Map<String, Object> model) {
 		Workout workout = new Workout();
 		model.put("workout", workout);
-		model.put("workoutTrainings", populateWorkoutTrainings(workout));
 		return VIEWS_ASSIGN_WORKOUT;
 	}
 
 	@PostMapping(value = "/workouts/assign")
 	public String processCreationForm(@Valid Workout workout, BindingResult result, ModelMap model, HttpServletRequest request) {
-		Set<WorkoutTraining> sentWorkoutTrainings = populateWorkoutTrainings(request);
-		if (!sentWorkoutTrainings.stream().anyMatch(wt -> wt.getTraining() != null)) {
-			result.rejectValue("workoutTrainings", "notEmpty", "Debe seleccionar algún entrenamiento para la rutina");
-		}
-		
-		System.out.println("Workout trainings = " + sentWorkoutTrainings);
-		
 		if (result.hasErrors()) {
 			model.put("workout", workout);
-			model.put("workoutTrainings", sentWorkoutTrainings);
 			return VIEWS_ASSIGN_WORKOUT;
 		} else {
 			
-			Collection<Training> trainings = this.populateTrainings();
+			Collection<Training> trainings = this.populateTrainings(null);
 			Set<WorkoutTraining> workoutTrainings = workout.getWorkoutTrainings();
 			for (int i = 1; i <= 6; i++) {
 				final int weekday = i;
@@ -243,7 +242,6 @@ public class WorkoutController {
 				this.workoutService.saveWorkout(workout);
 			} catch (ExistingWorkoutInDateRangeException e) {
 				model.put("workout", workout);
-				model.put("workoutTrainings", sentWorkoutTrainings);
 				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("DD/MM/YYYY");
 				
 				LocalDate wStartDate = workout.getStartDate();
@@ -261,42 +259,6 @@ public class WorkoutController {
 		}
 	}
 	
-
-	private Set<WorkoutTraining> populateWorkoutTrainings(Workout workout) {
-		return populateWorkoutTrainings(workout.getWorkoutTrainings().stream()
-				.collect(Collectors.toMap(
-						wt -> wt.getWeekDay().toString(),
-						wt -> wt.getTraining().getId()
-				)));
-	}
-	
-	private Set<WorkoutTraining> populateWorkoutTrainings(HttpServletRequest request) {
- 		return populateWorkoutTrainings(
- 			IntStream.rangeClosed(1, 6).boxed()
- 				.filter(weekday -> !StringUtils.isNullOrEmpty(request.getParameter("wt-training-" + weekday)))
- 				.collect(Collectors.toMap(
- 					weekday -> weekday.toString(),
- 					weekday -> new Integer(request.getParameter("wt-training-" + weekday))
- 		)));
-	}
-	
-	private Set<WorkoutTraining> populateWorkoutTrainings(Map<String, Integer> wtMap) {
-		Supplier<TreeSet<WorkoutTraining>> trainings = () -> new TreeSet<>(Comparator.comparing(WorkoutTraining::getWeekDay));
-		return IntStream.rangeClosed(1, 6).boxed()
-				.map(weekday -> {
-					WorkoutTraining workoutTraining = new WorkoutTraining();
-					workoutTraining.setWeekDay(weekday);
-					Integer trainingId = wtMap.get(String.valueOf(weekday));
-					
-					if (trainingId != null) {
-						Training t = new Training();
-						t.setId(trainingId);
-						workoutTraining.setTraining(t);
-					}
-					return workoutTraining;
-				})
-				.collect(Collectors.toCollection(trainings));
-	}
 
 	/**
 	 * Custom handler for displaying an owner.
@@ -326,7 +288,9 @@ public class WorkoutController {
 	public String initUpdateForm(@PathVariable("workoutId") int workoutId, ModelMap model, Principal principal) {
 		Workout workout = this.workoutService.findWorkoutById(workoutId);
 		model.put("workout", workout);
-		model.put("workoutTrainings", populateWorkoutTrainings(workout));
+		// on edition view we must load generic trainings (to assign new) and currently
+		// owned by user (to dont loose current trainings)
+		extendTrainingsList((Set<Training>) model.get("trainings"), workout);
 		return VIEWS_ASSIGN_WORKOUT;
 	}
 
@@ -340,66 +304,26 @@ public class WorkoutController {
 	}
 
 	@PostMapping(value = "/workouts/{workoutId}/edit")
-	public String processUpdateForm(@Valid Workout workout, BindingResult result, @PathVariable("workoutId") int workoutId, ModelMap model, HttpServletRequest request) {
-		Set<WorkoutTraining> sentWorkoutTrainings = populateWorkoutTrainings(request);
-		if (!sentWorkoutTrainings.stream().anyMatch(wt -> wt.getTraining() != null)) {
+	public String processUpdateForm(@Valid Workout workout, BindingResult result, @PathVariable("workoutId") int workoutId, ModelMap model, HttpServletRequest request, Principal principal) {
+		if (workout.getWorkoutTrainings().isEmpty()) {
 			result.rejectValue("workoutTrainings", "notEmpty", "Debe seleccionar algún entrenamiento para la rutina");
 		}
-				
+		
 		if (result.hasErrors()) {
 			model.put("workout", workout);
-			model.put("workoutTrainings", sentWorkoutTrainings);
 			return VIEWS_ASSIGN_WORKOUT;
 		} else {
 			Workout workoutToUpdate = this.workoutService.findWorkoutById(workoutId);
-			BeanUtils.copyProperties(workout, workoutToUpdate, "id");
+			BeanUtils.copyProperties(workout, workoutToUpdate, "id", "workoutTrainings");
 			
-			Collection<Training> trainings = this.populateTrainings();
-			Set<WorkoutTraining> workoutTrainings = workout.getWorkoutTrainings();
-			for (int i = 1; i <= 6; i++) {
-				final int weekday = i;
-				WorkoutTraining workoutTraining = workoutTrainings.stream()
-						.filter(wt -> wt.getWeekDay().equals(weekday))
-						.findFirst().orElse(null);
-				String tmpId = request.getParameter("wt-training-" + weekday);	
-				Training training = null;
-				if (tmpId != null && !tmpId.isEmpty()) {
-					Integer trainingId = new Integer(tmpId);
-					training = trainings.stream().filter(t -> t.getId().equals(trainingId)).findFirst().orElse(null);
-				}
-				
-				if (workoutTraining != null && training == null) {
-					// delete custom training
-					workoutTraining.getTraining().getExercises().forEach(ex -> this.workoutService.deleteExercise(ex));
-					this.workoutService.deleteTraining(workoutTraining.getTraining());
-					workoutToUpdate.removeWorkoutTraining(workoutTraining);
-				} else if (training != null) {
-					if (workoutTraining == null) {
-						workoutTraining = new WorkoutTraining();
-						workoutTraining.setWeekDay(weekday);
-					}
-					Training trainingToAssign = new Training();
-					BeanUtils.copyProperties(training, trainingToAssign, "id");
-					trainingToAssign.setIsGeneric(Boolean.FALSE);
-					
-					trainingToAssign.setExercises(
-						trainingToAssign.getExercises().stream().map(ex -> {
-							Exercise exercise = new Exercise();
-							BeanUtils.copyProperties(ex, exercise, "id");
-							exercise.setIsGeneric(Boolean.FALSE);
-							return exercise;
-						}).collect(Collectors.toSet())
-					);
-					workoutTraining.setTraining(trainingToAssign);
-					workoutToUpdate.addWorkoutTraining(workoutTraining);
-				}
-			}
+			updateWorkoutTrainingsList(workoutToUpdate, workout.getWorkoutTrainings());
 			
 			try {
 				this.workoutService.saveWorkout(workoutToUpdate);
+				
+				log.info("workout with ID " + workoutToUpdate.getId() + " has been updated by user " + principal.getName());
 			} catch (ExistingWorkoutInDateRangeException e) {
 				model.put("workout", workout);
-				model.put("workoutTrainings", sentWorkoutTrainings);
 				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("DD/MM/YYYY");
 				
 				LocalDate wStartDate = workout.getStartDate();
@@ -417,6 +341,37 @@ public class WorkoutController {
 		}
 	}
 	
+	
+	private void updateWorkoutTrainingsList(Workout workout, Set<WorkoutTraining> newWorkoutTrainings) {
+		IntStream.rangeClosed(1, 6).boxed()
+			.map(weekDay -> new WorkoutTraining[] { 
+				findByWeekday(workout.getWorkoutTrainings(), weekDay),
+				findByWeekday(newWorkoutTrainings, weekDay),
+			})
+			.filter(workoutTrainings -> workoutTrainings[0] != null && workoutTrainings[1] != null)
+			.forEach(workoutTrainings -> {
+				WorkoutTraining oldWorkoutTraining = workoutTrainings[0];
+				WorkoutTraining newWorkoutTraining = workoutTrainings[1];
+				
+				if (oldWorkoutTraining == null) {
+					// new workoutTraining added
+					workout.addWorkoutTraining(newWorkoutTraining);
+				} else if (newWorkoutTraining != null) {
+					// update oldWorkoutTraining with new bounds
+					oldWorkoutTraining.setTraining(newWorkoutTraining.getTraining());
+				} else {
+					// remove oldTraining
+					workout.removeWorkoutTraining(oldWorkoutTraining);
+				} 
+			});
+	}
+	
+	private WorkoutTraining findByWeekday(Collection<WorkoutTraining> workoutTrainings, Integer weekDay) {
+		return workoutTrainings.stream()
+				.filter(wt -> wt != null && wt.getWeekDay().equals(weekDay))
+				.findFirst().orElse(null);
+	}
+ 	
 	@SuppressWarnings("unchecked")
 	private boolean isAllowedTo(String permission) {
 		Collection<SimpleGrantedAuthority> authorities = (Collection<SimpleGrantedAuthority>) SecurityContextHolder.getContext().getAuthentication().getAuthorities();

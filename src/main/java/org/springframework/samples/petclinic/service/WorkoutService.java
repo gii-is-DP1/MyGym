@@ -118,6 +118,13 @@ public class WorkoutService {
 		return trainingRepository.findByUsername(user.getUsername());
 	}
 	
+	public Collection<Training> findTrainingsGenericOrByworkout(Workout workout) throws DataAccessException {
+		if (workout == null || workout.getId() == null) {
+			return trainingRepository.findByUsername(null);
+		}
+		return trainingRepository.findGenericOrByWorkout(workout.getId());
+	}
+	
 	public Collection<Training> findTrainingsByName(String name) {
 		if (name == null)
 			return trainingRepository.findByIsGenericTrue();
@@ -146,15 +153,6 @@ public class WorkoutService {
 		return workoutRepository.findByUser(username);
 	}
 
-	/* @Transactional()
-	public void savePet(Pet pet) throws DataAccessException, DuplicatedPetNameException {
-			Pet otherPet=pet.getOwner().getPetwithIdDifferent(pet.getName(), pet.getId());
-            if (StringUtils.hasLength(pet.getName()) &&  (otherPet!= null && otherPet.getId()!=pet.getId())) {            	
-            	throw new DuplicatedPetNameException();
-            }else
-                petRepository.save(pet);                
-	} */
-	
 	@Transactional(rollbackFor = ExistingWorkoutInDateRangeException.class)
 	public void saveWorkout(Workout workout) throws DataAccessException, ExistingWorkoutInDateRangeException {
 		
