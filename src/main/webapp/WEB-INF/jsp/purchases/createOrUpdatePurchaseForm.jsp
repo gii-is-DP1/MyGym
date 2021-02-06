@@ -15,13 +15,11 @@
             	var $date = $("input[name=date]");
             	$date.datepicker({language:'es'});
             	
-            	var rowTemplate = '<div class="card col mx-4 mt-4"><input type="hidden" name="productPurchases" value="#PRODUCT#;#AMOUNT#;#PRICE#" /><div class="card-body"><div class="card-title">#NAME#</div><p class="card-text">Amount: #AMOUNT#</p><p class="card-text">Price: #PRICE#</p><button class="btn btn-danger">Delete</button></div></div>';
-				console.log('rowTemplate', rowTemplate);
+            	var rowTemplate = '<div class="col col-sm-6 col-lg-4 px-4 mt-4"><div class="card col"><input type="hidden" name="productPurchases" value="#PRODUCT#;#AMOUNT#;#PRICE#" /><div class="card-title"><h5 class="px-3 pt-3">#NAME#</h5></div><div class="card-body"><p>Amount: #AMOUNT#</p><p>Price: #PRICE#</p><button type="button" class="btn btn-danger waves-effect waves-light">Delete</button></div></div></div>';
 				
-				$(".btn-danger").on('click', function click(evt) {
+				$('#add-purchase-form').on('click', '.btn-danger', function deleteItem(evt) {
 					evt.preventDefault();
-					console.log('eliminando!!!!');
-					var $item = $(evt.target).closest('.card');
+					var $item = $(evt.target).closest('.card').parent();
 					$item.remove();
 				});
 				
@@ -43,7 +41,7 @@
 						.replace(new RegExp('#PRICE#', 'ig'), price)
 						.replace(new RegExp('#PRODUCT#', 'ig'), productOption.attr('value'))
 						
-					$('#products').append(newEl)
+					$('#products-container').append(newEl)
 					
 
 					var amount = $('#amount').val('');
@@ -87,16 +85,20 @@
 		        		<button class="btn btn-default" id="add-btn">Add product</button>
 		        	</div>
 		        </div>
-   	            <div class="row">
+   	            <div id="products-container" class="row">
 	            	<c:forEach items="${purchase.productPurchases}" var="productPurchase">
-	            		<div class="card col mx-4 mt-4">
-	            			<input type="hidden" name="productPurchases" value="${productPurchase.product.id};${productPurchase.amount};${productPurchase.price};${productPurchase.id}" />
-	            			<div class="card-title"><c:out value="${productPurchase.product.name}" /></div>
-	            			<div class="card-body">
-	            				<p>Amount: <c:out value="${productPurchase.amount}" /></p>
-	            				<p>Price: <c:out value="${productPurchase.price}" /></p>
-	            				<button class="btn btn-danger" type="button">Delete</button>
-	            			</div>
+	            		<div class="col col-sm-6 col-lg-4 px-4 mt-4">
+		            		<div class="card">
+		            			<input type="hidden" name="productPurchases" value="${productPurchase.product.id};${productPurchase.amount};${productPurchase.price};${productPurchase.id}" />
+		            			<div class="card-title">
+		            				<h5 class="px-3 pt-3"><c:out value="${productPurchase.product.name}" /></h5>
+		            			</div>
+		            			<div class="card-body">
+		            				<p>Amount: <c:out value="${productPurchase.amount}" /></p>
+		            				<p>Price: <c:out value="${productPurchase.price}" /></p>
+		            				<button class="btn btn-danger" type="button">Delete</button>
+		            			</div>
+		            		</div>
 	            		</div>
 	            	</c:forEach>
 	            	<!--  <input type="hidden" name="productPurchases" value="2;3;2.75" /> -->
