@@ -10,7 +10,6 @@ import javax.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.Product;
-import org.springframework.samples.petclinic.model.Purchase;
 import org.springframework.samples.petclinic.model.Sale;
 import org.springframework.samples.petclinic.service.ProductService;
 import org.springframework.samples.petclinic.util.ProductSaleCollectionEditor;
@@ -82,11 +81,7 @@ public class SaleController {
 			model.put("sale", sale);
 			return VIEWS_SALES_CREATE_OR_UPDATE_FORM;
 		} else {
-			Double total = sale.getProductSales().stream()
-					.mapToDouble(productSale -> productSale.getPrice() * productSale.getAmount())
-					.sum();
-			
-			sale.setTotal(total + (total * sale.getVat() / 100));
+			sale.setTotal(getSaleTotal(sale));
 			
 			sale.getProductSales().forEach(productSale -> productSale.setSale(sale));
 			
@@ -147,11 +142,38 @@ public class SaleController {
 			return VIEWS_SALES_CREATE_OR_UPDATE_FORM;
 		} else {
 			Sale saleToUpdate = this.productService.findSaleById(saleId);
-			BeanUtils.copyProperties(sale, saleToUpdate, "id", "isGeneric");
+			
+			saleToUpdate.getProductSales().stream()
+				.filter(productSale -> sale.getProductSales().stream()
+						.allMatch(ps -> !productSale.getId().equals(ps.getId()))
+				)
+				.forEach(productSale -> productSale.setSale(null));
+			
+			
+			BeanUtils.copyProperties(sale, saleToUpdate, "id", "isGeneric", "productSales");
+			
+			sale.getProductSales().stream()
+				.filter(productSale -> productSale.getId() == null)
+				.forEach(productSale -> {
+					productSale.setSale(saleToUpdate);
+					saleToUpdate.getProductSales().add(productSale);
+				});
+
+			saleToUpdate.setTotal(getSaleTotal(saleToUpdate));
+			
 			this.productService.savePurchase(saleToUpdate);
 			return "redirect:/sales/" + saleId;
 		}
 	}
+	
+	private Double getSaleTotal(Sale sale) {
+		Double total = sale.getProductSales().stream()
+				.mapToDouble(productSale -> productSale.getPrice() * productSale.getAmount())
+				.sum();
+		
+		return total + (total * sale.getVat() / 100);
+	}
+
 
 
 }

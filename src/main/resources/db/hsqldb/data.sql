@@ -24,6 +24,13 @@ INSERT INTO products(id, name, description, stockage, price) VALUES (1, 'Barra d
 INSERT INTO products(id, name, description, stockage, price) VALUES (2, 'Batidito de Fresa', 'Esta to weno', 23, 3.50);
 INSERT INTO products(id, name, description, stockage, price) VALUES (3, 'Anacardos 50gr', 'Estan to wenos', 10, 3.00);
 
+-- purchase
+INSERT INTO purchase(id, date, total, vat) VALUES (1, '2021-01-01', 50, 4.0);
+
+-- product purchase
+INSERT INTO product_purchase(id, amount, price, product_id, purchase_id) VALUES (1, 2, 10.0, 1, 1);
+INSERT INTO product_purchase(id, amount, price, product_id, purchase_id) VALUES (2, 6, 5.0, 2, 1);
+
 -- user types
 
 -- rate

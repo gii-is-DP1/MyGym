@@ -15,13 +15,13 @@
             	var $date = $("input[name=date]");
             	$date.datepicker({language:'es'});
             	
-            	var rowTemplate = '<div class="card col mx-4 mt-4"><input type="hidden" name="productSales" value="#PRODUCT#;#AMOUNT#;#PRICE#" /><div class="card-body"><div class="card-title">#NAME#</div><p class="card-text">Amount: #AMOUNT#</p><p class="card-text">Price: #PRICE#</p><button class="btn btn-danger">Delete</button></div></div>';
-				console.log('rowTemplate', rowTemplate);
+            	var rowTemplate = '<div class="col col-sm-6 col-lg-4 px-4 mt-4"><div class="card"><input type="hidden" name="productSales" value="#PRODUCT#;#AMOUNT#;#PRICE#" /><div class="card-title"><h5 class="px-3 pt-3">#NAME#</h5></div><div class="card-body"><p>Amount: #AMOUNT#</p><p>Price: #PRICE#</p><button class="btn btn-danger waves-effect waves-light">Delete</button></div></div></div>';
 				
-				$('.delete-btn').on('click', function click(evt) {
-					var $item = $(evt.target).closest('.card');
+				$('#add-sale-form').on('click', '.btn-danger', function deleteItem(evt) {
+					evt.preventDefault();
+					var $item = $(evt.target).closest('.card').parent();
 					$item.remove();
-				})
+				});
 				
 				$('#add-btn').on('click', function addItem(evt) {
 					evt.preventDefault();
@@ -31,17 +31,13 @@
 					var price = $('#price').val();
 					var productOption = $('#product > option:selected');
 
-					console.log('amount', amount);
-					console.log('price', price);					
-					console.log('productOption', productOption);
-					
 					var newEl = rowTemplate
 						.replace(new RegExp('#NAME#', 'ig'), productOption.text())
 						.replace(new RegExp('#AMOUNT#', 'ig'), amount)
 						.replace(new RegExp('#PRICE#', 'ig'), price)
 						.replace(new RegExp('#PRODUCT#', 'ig'), productOption.attr('value'))
 						
-					$('#products').append(newEl)
+					$('#products-container').append(newEl)
 					
 
 					var amount = $('#amount').val('');
@@ -63,20 +59,6 @@
 	            <petclinic:inputField label="Sale date" name="date"/>
 	            <petclinic:inputField label="VAT(%)" name="vat"/>
 	            
-	            <div class="row">
-	            	<c:forEach items="${sale.productSales}" var="productSale">
-	            		<div class="card col mx-4 mt-4">
-	            			<input type="hidden" name="productSales" value="${productSale.product.id};${productSale.amount};${productSale.price};${productSale.id}" />
-	            			<div class="card-title"><c:out value="${productSale.product.name}" /></div>
-	            			<div class="card-body">
-	            				<p>Amount: <c:out value="${productSale.amount}" /></p>
-	            				<p>Price: <c:out value="${productSale.price}" /></p>
-	            				<button class="btn btn-danger" type="button">Delete</button>
-	            			</div>
-	            		</div>
-	            	</c:forEach>
-	            	<!--  <input type="hidden" name="productSales" value="2;3;2.75" /> -->
-		        </div>
 		        <div id="products" class="form-group has-feedback">
 		        	<div class="col col-sm-10 col-md-6 pl-0">
 		        		<label class="control-label">Amount</label>
@@ -98,6 +80,24 @@
 		        	<div>
 		        		<button class="btn btn-default" id="add-btn">Add product</button>
 		        	</div>
+		        </div>
+		        
+	            <div id="products-container" class="row">
+	            	<c:forEach items="${sale.productSales}" var="productSale">
+	            		<div class="col col-sm-6 col-lg-4 px-4 mt-4">
+		            		<div class="card">
+		            			<input type="hidden" name="productSales" value="${productSale.product.id};${productSale.amount};${productSale.price};${productSale.id}" />
+		            			<div class="card-title">
+		            				<h5 class="px-3 pt-3"><c:out value="${productSale.product.name}" /></h5>
+		            			</div>
+		            			<div class="card-body">
+		            				<p>Amount: <c:out value="${productSale.amount}" /></p>
+		            				<p>Price: <c:out value="${productSale.price}" /></p>
+		            				<button class="btn btn-danger waves-effect waves-light" type="button">Delete</button>
+		            			</div>
+		            		</div>
+	            		</div>
+	            	</c:forEach>
 		        </div>
 	        </div>
 	        

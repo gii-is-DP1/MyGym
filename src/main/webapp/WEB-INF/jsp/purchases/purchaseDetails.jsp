@@ -19,6 +19,10 @@
             <th>IVA</th>
             <td><c:out value="${purchase.vat}"/></td>
         </tr>
+        <tr>
+            <th>Total</th>
+            <td><c:out value="${purchase.total}"/></td>
+        </tr>
     </table>
     
     <c:if test="${not empty purchase.productPurchases}">

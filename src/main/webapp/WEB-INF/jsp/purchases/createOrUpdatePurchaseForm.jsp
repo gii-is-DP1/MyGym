@@ -15,7 +15,7 @@
             	var $date = $("input[name=date]");
             	$date.datepicker({language:'es'});
             	
-            	var rowTemplate = '<div class="col col-sm-6 col-lg-4 px-4 mt-4"><div class="card col"><input type="hidden" name="productPurchases" value="#PRODUCT#;#AMOUNT#;#PRICE#" /><div class="card-title"><h5 class="px-3 pt-3">#NAME#</h5></div><div class="card-body"><p>Amount: #AMOUNT#</p><p>Price: #PRICE#</p><button type="button" class="btn btn-danger waves-effect waves-light">Delete</button></div></div></div>';
+            	var rowTemplate = '<div class="col col-sm-6 col-lg-4 px-4 mt-4"><div class="card"><input type="hidden" name="productPurchases" value="#PRODUCT#;#AMOUNT#;#PRICE#" /><div class="card-title"><h5 class="px-3 pt-3">#NAME#</h5></div><div class="card-body"><p>Amount: #AMOUNT#</p><p>Price: #PRICE#</p><button type="button" class="btn btn-danger waves-effect waves-light">Delete</button></div></div></div>';
 				
 				$('#add-purchase-form').on('click', '.btn-danger', function deleteItem(evt) {
 					evt.preventDefault();
@@ -96,7 +96,7 @@
 		            			<div class="card-body">
 		            				<p>Amount: <c:out value="${productPurchase.amount}" /></p>
 		            				<p>Price: <c:out value="${productPurchase.price}" /></p>
-		            				<button class="btn btn-danger" type="button">Delete</button>
+		            				<button class="btn btn-danger waves-effect waves-light" type="button">Delete</button>
 		            			</div>
 		            		</div>
 	            		</div>

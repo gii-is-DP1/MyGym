@@ -85,11 +85,7 @@ public class PurchaseController {
 			model.put("purchase", purchase);
 			return VIEWS_PURCHASES_CREATE_OR_UPDATE_FORM;
 		} else {
-			Double total = purchase.getProductPurchases().stream()
-					.mapToDouble(productPurchase -> productPurchase.getPrice() * productPurchase.getAmount())
-					.sum();
-			
-			purchase.setTotal(total + (total * purchase.getVat() / 100));
+			purchase.setTotal(getPurchaseTotal(purchase));
 			
 			purchase.getProductPurchases().forEach(productPurchase -> productPurchase.setPurchase(purchase));
 			
@@ -150,11 +146,36 @@ public class PurchaseController {
 			return VIEWS_PURCHASES_CREATE_OR_UPDATE_FORM;
 		} else {
 			Purchase purchaseToUpdate = this.productService.findPurchaseById(purchaseId);
-			BeanUtils.copyProperties(purchase, purchaseToUpdate, "id", "isGeneric");
-			this.productService.savePurchase(purchaseToUpdate);
+			
+			purchaseToUpdate.getProductPurchases().stream()
+				.filter(productPurchase -> purchase.getProductPurchases().stream()
+						.allMatch(pp -> !productPurchase.getId().equals(pp.getId()))
+				)
+				.forEach(productPurchase -> productPurchase.setPurchase(null));
+			
+			BeanUtils.copyProperties(purchase, purchaseToUpdate, "id", "isGeneric", "productPurchases");
+			
+			purchase.getProductPurchases().stream()
+				.filter(productPurchase -> productPurchase.getId() == null)
+				.forEach(productPurchase -> {
+					productPurchase.setPurchase(purchaseToUpdate);
+					purchaseToUpdate.getProductPurchases().add(productPurchase);
+				});
+			
+			purchaseToUpdate.setTotal(getPurchaseTotal(purchaseToUpdate));
+			
+			this.productService.savePurchase(purchaseToUpdate);			
+			
 			return "redirect:/purchases/" + purchaseId;
 		}
 	}
-
+	
+	private Double getPurchaseTotal(Purchase purchase) {
+		Double total = purchase.getProductPurchases().stream()
+				.mapToDouble(productPurchase -> productPurchase.getPrice() * productPurchase.getAmount())
+				.sum();
+		
+		return total + (total * purchase.getVat() / 100);
+	}
 
 }

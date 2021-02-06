@@ -33,6 +33,11 @@ public class ProductPurchaseCollectionEditor extends CustomCollectionEditor {
 			Product product = productService.findProductById(productId);
 			
 			ProductPurchase productPurchase = new ProductPurchase();
+			
+			if (splitted.length >= 4) {
+				productPurchase.setId(new Integer(splitted[3]));
+			}
+			
 			productPurchase.setProduct(product);
 			productPurchase.setPrice(price);
 			productPurchase.setAmount(amount);

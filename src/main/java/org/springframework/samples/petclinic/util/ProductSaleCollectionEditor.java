@@ -33,6 +33,11 @@ public class ProductSaleCollectionEditor extends CustomCollectionEditor {
 			Product product = productService.findProductById(productId);
 			
 			ProductSale productSale = new ProductSale();
+			
+			if (splitted.length >= 4) {
+				productSale.setId(new Integer(splitted[3]));
+			}
+			
 			productSale.setProduct(product);
 			productSale.setPrice(price);
 			productSale.setAmount(amount);
