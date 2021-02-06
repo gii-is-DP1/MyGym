@@ -68,7 +68,33 @@
 				</petclinic:menuItem>
 			</petclinic:menuSection>
 			
-			<petclinic:menuItem active="${name eq 'owners'}" url="/owners/find" title="Owners">
+			<petclinic:menuSection active="${name eq 'workout' or name eq 'exercises' or name eq 'trainings'}" title="Exercises">
+				<petclinic:menuItem active="${name eq 'workout'}" url="/workouts" title="Workouts">
+					<i class="fa fa-calendar-alt mr-3"></i>Rutinas
+				</petclinic:menuItem>
+				<sec:authorize access="hasAnyAuthority('admin', 'trainer')">
+					<petclinic:menuItem active="${name eq 'trainings'}" url="/trainings" title="Trainings">
+						<i class="fa fa-stopwatch mr-3"></i>Entrenamientos
+					</petclinic:menuItem>
+					<petclinic:menuItem active="${name eq 'exercises'}" url="/exercises" title="Exercises">
+						<i class="fa fa-dumbbell mr-3"></i>Ejercicios
+					</petclinic:menuItem>
+				</sec:authorize>
+			</petclinic:menuSection>
+			<sec:authorize access="hasAuthority('admin')">
+				<petclinic:menuSection active="${name eq 'products' or name eq 'purchases' or name eq 'sales'}" title="Products">
+					<petclinic:menuItem active="${name eq 'products'}" url="/products" title="Workouts">
+						<i class="fa fa-pie-chart"></i>List
+					</petclinic:menuItem>
+					<petclinic:menuItem active="${name eq 'sales'}" url="/sales" title="Sales">
+						<i class="fa fa-stopwatch mr-3"></i>Sales
+					</petclinic:menuItem>
+					<petclinic:menuItem active="${name eq 'purchases'}" url="/purchases" title="Purchases">
+						<i class="fa fa-dumbbell mr-3"></i>Purchases
+					</petclinic:menuItem>
+				</petclinic:menuSection>
+			</sec:authorize>
+			<!--<petclinic:menuItem active="${name eq 'owners'}" url="/owners/find" title="Owners">
 				<span class="white-text"><i class="fa fa-pie-chart"></i>Owners</span>
 			</petclinic:menuItem>
 			
@@ -78,10 +104,20 @@
 			
 			<petclinic:menuItem active="${name eq 'error'}" url="/oups" title="Error">
 				<span class="white-text"><i class="fa fa-pie-chart"></i>Error</span>
-			</petclinic:menuItem>
+			</petclinic:menuItem>-->
 			
-			<petclinic:menuItem active="${name eq 'error'}" url="/usuarios" title="Usuarios">
-				<span class="white-text"><i class="fa fa-pie-chart"></i>Usuarios</span>
+			<sec:authorize access="hasAuthority('admin')">
+				<petclinic:menuItem active="${name eq 'error'}" url="/usuarios" title="Usuarios">
+					<span class="white-text"><i class="fa fa-pie-chart"></i>Usuarios</span>
+				</petclinic:menuItem>
+			</sec:authorize>
+			<sec:authorize access="hasAnyAuthority('admin', 'trainer')">
+				<petclinic:menuItem active="${name eq 'error'}" url="/salas" title="Salas">
+					<span class="white-text"><i class="fa fa-pie-chart"></i>Salas</span>
+				</petclinic:menuItem>
+			</sec:authorize>
+			<petclinic:menuItem active="${name eq 'error'}" url="/actividades" title="Actividades">
+				<span class="white-text"><i class="fa fa-pie-chart"></i>Actividades</span>
 			</petclinic:menuItem>
 		</ul>
 

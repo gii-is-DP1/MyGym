@@ -5,15 +5,24 @@
               description="Name of corresponding property in bean object" %>
 <%@ attribute name="label" required="true" rtexprvalue="true"
               description="Label appears in red color if input is considered as invalid after submission" %>
+<%@ attribute name="type" required="false" rtexprvalue="true"
+              description="Specifies the type of the input" %>
 
 <spring:bind path="${name}">
     <c:set var="cssGroup" value="form-group ${status.error ? 'has-error' : '' }"/>
     <c:set var="valid" value="${not status.error and not empty status.actualValue}"/>
     <div class="${cssGroup}">
-        <label class="col-sm-2 control-label">${label}</label>
+        <label class="control-label">${label}</label>
 
-        <div class="col-sm-10">
-            <form:input class="form-control" path="${name}"/>
+        <div class="col col-sm-10 col-md-6 pl-0">
+        	<c:choose>
+        		<c:when test="${not empty type}">
+            		<form:input class="form-control" path="${name}" type="${type}"/>        		
+        		</c:when>
+        		<c:otherwise>
+            		<form:input class="form-control" path="${name}"/>        		
+        		</c:otherwise>
+        	</c:choose>
             <c:if test="${valid}">
                 <span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true"></span>
             </c:if>
