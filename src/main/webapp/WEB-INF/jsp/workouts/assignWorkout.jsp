@@ -14,6 +14,7 @@
             	var $form = $('form#assign-workout-form');
             	var $startDate = $("input[name=startDate]");
             	var $endDate = $("input[name=endDate]");
+            	var $select = $("select#training-select")
             	
             	$startDate.datepicker({language:'es'});
             	$endDate.datepicker({language:'es'});
@@ -74,6 +75,16 @@
             		var valid = validateEndDate() && validateStartDate();
             		$form.find('button[type=submit]').prop('disabled', !valid);
             	});
+            	
+            	$select.on('change', function(evt) {
+            		var $parent = $(evt.target).closest('div');
+            		var $input = $parent.find('input[type=hidden]');
+            		var $selected = $parent.find('select > option:selected');
+            		
+            		var value = $input.val().split(';');
+            		value[1] = $selected.val() || '';
+            		$input.val(value.join(';'));            		
+            	})
             });
         </script>
     </jsp:attribute>
@@ -103,13 +114,24 @@
 	        		<div class="col">Sábado</div>
 	        	</div>
 	        	<div class="row mt-2">
-	        		<c:forEach items="${workoutTrainings}" var="workoutTraining" varStatus="loop">
+	        		<c:forEach begin="1" end="6" var="weekDay">
 	        		<div class="col">
-	        			<select name="wt-training-${workoutTraining.weekDay}" class="form-control">
+	        			
+       					<c:remove var="workoutTraining" />
+        				<c:forEach items="${workout.workoutTrainings}" var="wt">
+        					<c:if test="${wt.weekDay == weekDay}">
+	        					<c:set var="workoutTraining" value="${wt}" />
+	        				</c:if>
+	        			</c:forEach>
+	        		
+	        		
+	        			<input type="hidden" name="workoutTrainings" value="${weekDay};${workoutTraining.training.id};${workoutTraining.id}">
+	        			<select id="training-select" class="form-control">
 	        				<option value="">Descanso></option>
+	        				
 	        				<c:forEach items="${trainings}" var="training">
 	        					<c:choose>
-	        						<c:when test="${not empty workoutTraining.training and workoutTraining.training.id == training.id}">
+	        						<c:when test="${not empty workoutTraining and workoutTraining.training.id == training.id}">
 	        							<option value="${training.id}" selected>${training.name}</option>
 	        						</c:when>
 	        						<c:otherwise>
@@ -117,6 +139,7 @@
 	        						</c:otherwise>
 	        					</c:choose>
 	        				</c:forEach>
+	        				
 	        			</select>
 	        		</div>
 	        		</c:forEach>

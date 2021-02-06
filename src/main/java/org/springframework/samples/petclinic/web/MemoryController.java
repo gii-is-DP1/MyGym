@@ -106,6 +106,7 @@ public class MemoryController {
 			memory.setTraining(training);
 			try {
 				this.workoutService.saveMemory(memory);
+                log.info("added memory with ID=" + memory.getId() + " to training with ID=" + trainingId + " by " + principal.getName());
 			} catch (MemoryOutOfTimeException e) {
 				Workout workout = training.getWorkoutTraining().getWorkout();
 				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("DD/MM/YYYY");
@@ -137,6 +138,7 @@ public class MemoryController {
 			BeanUtils.copyProperties(memory, memoryToUpdate, "id", "training");
 			try {
 				this.workoutService.saveMemory(memoryToUpdate);
+                log.info("memory with ID=" + memoryId + " has been updated by " + principal.getName());
 			} catch (MemoryOutOfTimeException e) {
 				Workout workout = memoryToUpdate.getTraining().getWorkoutTraining().getWorkout();
 				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("DD/MM/YYYY");
