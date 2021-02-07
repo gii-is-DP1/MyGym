@@ -12,7 +12,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "product_sale")
-public class ProductSale extends BaseEntity {
+public class ProductSale extends AuditableEntity {
 
 	private Integer amount;
 	

@@ -13,7 +13,7 @@ public interface ProductPurchaseRepository extends Repository<ProductPurchase, I
 	
 	public Collection<ProductPurchase> findAll() throws DataAccessException;
 
-	public Collection<ProductPurchase> findByPurchase(Purchase Purchase);
+	public Collection<ProductPurchase> findByPurchase(Purchase purchase);
 
 	void save(ProductPurchase productPurchase) throws DataAccessException;
 	

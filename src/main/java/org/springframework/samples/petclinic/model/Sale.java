@@ -10,8 +10,8 @@ import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
 import org.hibernate.envers.Audited;
-import org.springframework.beans.support.MutableSortDefinition;
-import org.springframework.beans.support.PropertyComparator;
+import org.hibernate.envers.NotAudited;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -22,23 +22,6 @@ import lombok.Setter;
 @Entity
 @Table(name = "sale")
 public class Sale extends AuditableEntity {
-	
-	private Date date;
-	
-	@NotBlank
-	private Double total;
-	
-	@NotBlank
-	private Double iva;
-	
-	@NotBlank
-	private Integer quantity;
-	
-	@ManyToMany(fetch = FetchType.EAGER)
-	@JoinTable(name = "sale_product", joinColumns = @JoinColumn(name = "product_id"),
-		inverseJoinColumns = @JoinColumn(name = "sale_id"))
-	private Set<Product> products;
-	
 
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	private LocalDate date;
@@ -47,6 +30,7 @@ public class Sale extends AuditableEntity {
 
 	private Double vat;
 	
+	@NotAudited
 	@ManyToMany(fetch = FetchType.EAGER, cascade=CascadeType.ALL, mappedBy = "sale")
 	private Set<ProductSale> productSales;
 	
