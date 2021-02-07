@@ -19,7 +19,7 @@ public class ProductPurchase extends BaseEntity {
 	
 	private Double price;
 
-	@ManyToOne(cascade={ CascadeType.REFRESH, CascadeType.DETACH })
+	@ManyToOne(cascade= CascadeType.REFRESH)
 	@JoinColumn(name = "product_id")
 	private Product product;
 

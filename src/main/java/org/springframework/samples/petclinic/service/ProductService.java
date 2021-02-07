@@ -113,8 +113,13 @@ public class ProductService {
 			}
 			
 			if (!productPurchase.isNew()) {
-				ProductPurchase pp = getCurrentProductPurchase(productPurchase.getId());
-				product.setStockage(product.getStockage() - pp.getAmount());
+				ProductPurchase old = this.productPurchaseRepository.findAll()
+						.stream()
+						.filter(pp -> pp.getId().equals(productPurchase.getId()))
+						.findFirst().orElse(null);
+				
+				product.setStockage(product.getStockage() - old.getAmount());
+				
 			}
 			
 			product.setStockage(productPurchase.getAmount() + product.getStockage());
@@ -157,8 +162,12 @@ public class ProductService {
 			}
 			
 			if (!productSale.isNew()) {
-				ProductSale ps = getCurrentProductSale(productSale.getId());
-				product.setStockage(product.getStockage() + ps.getAmount());
+				ProductSale old = this.productSaleRepository.findAll()
+						.stream()
+						.filter(ps -> ps.getId().equals(productSale.getId()))
+						.findFirst().orElse(null);
+				
+				product.setStockage(product.getStockage() - old.getAmount());
 			}
 			
 			if (productSale.getAmount() > product.getStockage()) {
@@ -195,7 +204,7 @@ public class ProductService {
 		return purchaseRepository.findById(purchaseId);
 	}
 	
-	@Transactional
+	/*@Transactional
 	private ProductPurchase getCurrentProductPurchase(int id) {
 		Session session = entityManager.unwrap(Session.class);
 	    session.clear(); // clears session cache
@@ -209,6 +218,6 @@ public class ProductService {
 	    session.clear(); // clears session cache
 	    ProductSale currentDatabaseProductSale = session.get(ProductSale.class, id);
 		return currentDatabaseProductSale;
-	}
+	}*/
 	
 }
