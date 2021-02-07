@@ -4,18 +4,18 @@ import java.security.Principal;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.samples.petclinic.configuration.SecurityConfiguration;
 import org.springframework.samples.petclinic.model.Product;
+import org.springframework.samples.petclinic.model.ProductPurchase;
 import org.springframework.samples.petclinic.model.Purchase;
-import org.springframework.samples.petclinic.model.Training;
-import org.springframework.samples.petclinic.model.User;
 import org.springframework.samples.petclinic.service.ProductService;
-import org.springframework.samples.petclinic.service.exceptions.NoNameException;
+import org.springframework.samples.petclinic.service.exceptions.NoProductPurchaseAmountException;
+import org.springframework.samples.petclinic.service.exceptions.PurchaseWithoutProductsException;
 import org.springframework.samples.petclinic.util.ProductPurchaseCollectionEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -81,6 +81,9 @@ public class PurchaseController {
 
 	@PostMapping(value = "/purchases/new")
 	public String processCreationForm(@Valid Purchase purchase, BindingResult result, ModelMap model, Principal principal) {
+		if (purchase.getProductPurchases() == null || purchase.getProductPurchases().isEmpty()) {
+			result.rejectValue("productPurchases", "invalid", "Debe incluir al menos un producto");
+		}
 		if (result.hasErrors()) {
 			model.put("purchase", purchase);
 			return VIEWS_PURCHASES_CREATE_OR_UPDATE_FORM;
@@ -89,17 +92,25 @@ public class PurchaseController {
 			
 			purchase.getProductPurchases().forEach(productPurchase -> productPurchase.setPurchase(purchase));
 			
-			this.productService.savePurchase(purchase);
+			try {
+				this.productService.savePurchase(purchase);
+			    
+                log.info("purchase with ID=" + purchase.getId() + " has been created by " + principal.getName());
+				
+				return "redirect:/purchases";
+			} catch (PurchaseWithoutProductsException e) {
+				result.rejectValue("productPurchases", "invalid", "Debe incluir al menos un producto");
+			} catch (NoProductPurchaseAmountException e) {
+				result.rejectValue("productPurchases", "invalid", "Todos los productos deben incluir al menos una unidad");
+			}
 
-			log.info("purchase with ID=" + purchase.getId() + " has been created by " + principal.getName());
-			return "redirect:/purchases";
+			return VIEWS_PURCHASES_CREATE_OR_UPDATE_FORM;
 		}
 	}
 	
 	@GetMapping("/purchases/{purchaseId}")
 	public ModelAndView showTraining(@PathVariable("purchaseId") int purchaseId, Principal principal) {
 		Purchase purchase = this.productService.findPurchaseById(purchaseId);
-		System.out.println("purchase " + purchase);
 		ModelAndView mav;
 		if (purchase == null) {
 			mav = new ModelAndView(VIEWS_ERROR);
@@ -142,18 +153,24 @@ public class PurchaseController {
 	}
 	
 	@PostMapping(value = "/purchases/{purchaseId}/edit")
-	public String processUpdateForm(@Valid Purchase purchase, BindingResult result, @PathVariable("purchaseId") int purchaseId, ModelMap model) {
+	public String processUpdateForm(@Valid Purchase purchase, BindingResult result, @PathVariable("purchaseId") int purchaseId, ModelMap model, Principal principal) {
 		if (result.hasErrors()) {
 			model.put("purchase", purchase);
 			return VIEWS_PURCHASES_CREATE_OR_UPDATE_FORM;
 		} else {
 			Purchase purchaseToUpdate = this.productService.findPurchaseById(purchaseId);
 			
-			purchaseToUpdate.getProductPurchases().stream()
-				.filter(productPurchase -> purchase.getProductPurchases().stream()
-						.allMatch(pp -> !productPurchase.getId().equals(pp.getId()))
-				)
-				.forEach(productPurchase -> productPurchase.setPurchase(null));
+			Collection<ProductPurchase> entriesToBeRemoved = purchaseToUpdate.getProductPurchases().stream()
+					.filter(productPurchase -> purchase.getProductPurchases().stream()
+							.allMatch(pp -> !productPurchase.getId().equals(pp.getId()))
+					)
+					.collect(Collectors.toList());
+			
+			entriesToBeRemoved.forEach(productPurchase -> {
+					productPurchase.setPurchase(null);
+					productService.deleteProductPurchase(productPurchase);
+					purchaseToUpdate.getProductPurchases().remove(productPurchase);
+				});
 			
 			BeanUtils.copyProperties(purchase, purchaseToUpdate, "id", "isGeneric", "productPurchases");
 			
@@ -166,9 +183,19 @@ public class PurchaseController {
 			
 			purchaseToUpdate.setTotal(getPurchaseTotal(purchaseToUpdate));
 			
-			this.productService.savePurchase(purchaseToUpdate);			
+			try {
+				this.productService.savePurchase(purchaseToUpdate);
+
+                log.info("purchase with ID=" + purchase.getId() + " has been updated by " + principal.getName());
+
+				return "redirect:/purchases/" + purchaseId;
+			} catch (PurchaseWithoutProductsException e) {
+				result.rejectValue("productPurchases", "invalid", "Debe incluir al menos un producto");
+			} catch (NoProductPurchaseAmountException e) {
+				result.rejectValue("productPurchases", "invalid", "Todos los productos deben incluir al menos una unidad");
+			}	
 			
-			return "redirect:/purchases/" + purchaseId;
+			return "redirect:/purchases/";
 		}
 	}
 	

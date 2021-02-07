@@ -10,11 +10,9 @@ public interface ProductRepository extends Repository<Product, Integer> {
 	
 	public Product findById(int id);
 	
-	public Collection<Product> findAll() throws DataAccessException;
+	public Collection<Product> findAllByInactiveFalse() throws DataAccessException;
 
-	public Collection<Product> findByName(String name);
+	public Collection<Product> findByNameContainingAndInactiveFalse(String name);
 
 	void save(Product product) throws DataAccessException;
-	
-	void delete(Product product) throws DataAccessException;
 }

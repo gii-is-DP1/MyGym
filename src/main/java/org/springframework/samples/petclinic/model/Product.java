@@ -31,4 +31,6 @@ public class Product extends AuditableEntity {
 	
 	@Lob 
 	private String image;
+	
+	private Boolean inactive;
 }

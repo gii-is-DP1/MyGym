@@ -1,5 +1,6 @@
 package org.springframework.samples.petclinic.model;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -18,7 +19,7 @@ public class ProductSale extends AuditableEntity {
 	
 	private Double price;
 
-	@ManyToOne
+	@ManyToOne(cascade= { CascadeType.REFRESH, CascadeType.MERGE })
 	@JoinColumn(name = "product_id")
 	private Product product;
 

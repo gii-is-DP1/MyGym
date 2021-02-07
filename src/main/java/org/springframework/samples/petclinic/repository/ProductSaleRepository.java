@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.repository.Repository;
+import org.springframework.samples.petclinic.model.Product;
 import org.springframework.samples.petclinic.model.ProductPurchase;
 import org.springframework.samples.petclinic.model.ProductSale;
 import org.springframework.samples.petclinic.model.Sale;
@@ -15,6 +16,8 @@ public interface ProductSaleRepository extends Repository<ProductSale, Integer> 
 	public Collection<ProductSale> findAll() throws DataAccessException;
 
 	public Collection<ProductSale> findBySale(Sale sale);
+	
+	Collection<ProductSale> findByProduct(Product product);
 
 	void save(ProductSale productSale) throws DataAccessException;
 	
