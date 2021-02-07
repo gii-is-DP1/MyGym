@@ -17,8 +17,11 @@ package org.springframework.samples.petclinic.service;
 
 import java.util.Collection;
 
+import javax.persistence.EntityManager;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.samples.petclinic.model.Exercise;
 import org.springframework.samples.petclinic.model.ExerciseType;
 import org.springframework.samples.petclinic.model.Memory;
@@ -59,6 +62,9 @@ public class WorkoutService {
 	
 	private MemoryRepository memoryRepository;
 	
+	@Autowired
+	private EntityManager entityManager;
+	
  
 	@Autowired
 	public WorkoutService(ExerciseRepository exerciseRepository, TrainingRepository trainingRepository,
@@ -81,7 +87,7 @@ public class WorkoutService {
 		exerciseRepository.save(exercise);
 	}
 	
-	@Transactional
+	@Transactional(rollbackFor = DataIntegrityViolationException.class)
 	public void deleteExercise(Exercise exercise) throws DataAccessException {
 		exerciseRepository.delete(exercise);
 	}

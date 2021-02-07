@@ -29,6 +29,16 @@
     	</div>
     </c:if>
     
+    <c:if test="${not empty error}">
+    	<div class="card my-4">
+    		<div class="card-body">
+    			<p class="card-text">
+    				<c:out value="${error}" />
+    			</p>
+    		</div>
+    	</div>
+    </c:if>
+    
     <c:forEach items="${selections}" var="exercise">
     	<div class="row row-cols-1">
   			<div class="col mb-4">
