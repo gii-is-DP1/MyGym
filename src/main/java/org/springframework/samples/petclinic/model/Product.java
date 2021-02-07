@@ -28,4 +28,6 @@ public class Product extends BaseEntity {
 	
 	@Lob 
 	private String image;
+	
+	private Boolean inactive;
 }

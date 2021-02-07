@@ -11,9 +11,9 @@
 
 	<div
 		class="row no-gutters justify-content-between align-items-center mb-2">
-		<h2>Products</h2>
+		<h2>Productos</h2>
 		<c:if test="${not empty products}">
-			<a href="${addProduct}" class="btn btn-blue btn-md right">Create</a>
+			<a href="${addProduct}" class="btn btn-blue btn-md right">Crear</a>
 		</c:if>
 	</div>
 
@@ -21,11 +21,11 @@
 		<div class="card mt-4">
 			<div class="card-body">
 				<!--Title-->
-				<h4 class="card-title">¡No products!</h4>
+				<h4 class="card-title">¡No hay ningún producto!</h4>
 				<!--Text-->
-				<p class="card-text">Please crate a product.</p>
+				<p class="card-text">Crea un el primero</p>
 				<!-- Provides extra visual weight and identifies the primary action in a set of buttons -->
-				<a href="${addProduct}" class="btn btn-blue btn-md">Create</a>
+				<a href="${addProduct}" class="btn btn-blue btn-md">Crear</a>
 			</div>
 		</div>
 	</c:if>
@@ -60,19 +60,19 @@
 						<!--Text-->
 						<p class="card-text">
 							<b class="mr-2">Precio:</b><c:out value="${product.price}" />€
-							<b class="ml-4 mr-2">Stockage:</b><c:out value="${product.stockage}" />
+							<b class="ml-4 mr-2">Stock:</b><c:out value="${product.stockage}" />
 						</p>
 
 
 						<spring:url value="products/{productId}/edit" var="editUrl">
 							<spring:param name="productId" value="${product.id}" />
 						</spring:url>
-						<a href="${fn:escapeXml(editUrl)}" class="btn btn-default">Edit</a>
+						<a href="${fn:escapeXml(editUrl)}" class="btn btn-default">Editar</a>
 
 						<spring:url value="products/{productId}/delete" var="deleteUrl">
 							<spring:param name="productId" value="${product.id}" />
 						</spring:url>
-						<a href="${fn:escapeXml(deleteUrl)}" class="btn btn-default">Delete</a>
+						<a href="${fn:escapeXml(deleteUrl)}" class="btn btn-default">Borrar</a>
 			   		</div>
 				</div>
 			</div>
