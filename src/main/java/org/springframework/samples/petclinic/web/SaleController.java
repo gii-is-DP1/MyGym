@@ -12,6 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.Product;
 import org.springframework.samples.petclinic.model.Sale;
 import org.springframework.samples.petclinic.service.ProductService;
+import org.springframework.samples.petclinic.service.exceptions.NoProductSaleAmountException;
+import org.springframework.samples.petclinic.service.exceptions.OutOfStockException;
+import org.springframework.samples.petclinic.service.exceptions.SaleWithoutProductsException;
 import org.springframework.samples.petclinic.util.ProductSaleCollectionEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -74,9 +77,9 @@ public class SaleController {
 
 	@PostMapping(value = "/sales/new")
 	public String processCreationForm(@Valid Sale sale, BindingResult result, ModelMap model) {
-		System.out.println("result.hasErrors: " + result.hasErrors());
-		System.out.println("result: " + result);
-		System.out.println("productSales: " + sale.getProductSales());
+		if (sale.getProductSales() == null || sale.getProductSales().isEmpty()) {
+			result.rejectValue("productSales", "invalid", "Debe incluir al menos un producto");
+		}
 		if (result.hasErrors()) {
 			model.put("sale", sale);
 			return VIEWS_SALES_CREATE_OR_UPDATE_FORM;
@@ -85,15 +88,24 @@ public class SaleController {
 			
 			sale.getProductSales().forEach(productSale -> productSale.setSale(sale));
 			
-			this.productService.savePurchase(sale);
-			return "redirect:/sales";
+			try {
+				this.productService.saveSale(sale);
+				
+				return "redirect:/sales";
+			} catch (OutOfStockException e) {
+				result.rejectValue("productSales", "invalid", "No hay stock suficiente para el producto " + e.getProduct().getName() + " (stock actual = " + e.getProduct().getStockage() + ")");
+			} catch (NoProductSaleAmountException e) {
+				result.rejectValue("productSales", "invalid", "Todos los productos deben incluir al menos una unidad");
+			} catch (SaleWithoutProductsException e) {
+				result.rejectValue("productSales", "invalid", "Debe incluir al menos un producto");
+			}
+			return VIEWS_SALES_CREATE_OR_UPDATE_FORM;
 		}
 	}
 	
 	@GetMapping("/sales/{saleId}")
 	public ModelAndView showTraining(@PathVariable("saleId") int saleId, Principal principal) {
 		Sale sale = this.productService.findSaleById(saleId);
-		System.out.println("ssale " + sale);
 		ModelAndView mav;
 		if (sale == null) {
 			mav = new ModelAndView(VIEWS_ERROR);
@@ -137,6 +149,9 @@ public class SaleController {
 	
 	@PostMapping(value = "/sales/{saleId}/edit")
 	public String processUpdateForm(@Valid Sale sale, BindingResult result, @PathVariable("saleId") int saleId, ModelMap model) {
+		if (sale.getProductSales() == null || sale.getProductSales().isEmpty()) {
+			result.rejectValue("productSales", "invalid", "Debe incluir al menos un producto");
+		}
 		if (result.hasErrors()) {
 			model.put("sale", sale);
 			return VIEWS_SALES_CREATE_OR_UPDATE_FORM;
@@ -161,7 +176,16 @@ public class SaleController {
 
 			saleToUpdate.setTotal(getSaleTotal(saleToUpdate));
 			
-			this.productService.savePurchase(saleToUpdate);
+			try {
+				this.productService.saveSale(sale);
+				
+			} catch (OutOfStockException e) {
+				result.rejectValue("productSales", "invalid", "No hay stock suficiente para el producto " + e.getProduct().getName() + " (stock actual = " + e.getProduct().getStockage() + ")");
+			} catch (NoProductSaleAmountException e) {
+				result.rejectValue("productSales", "invalid", "Todos los productos deben incluir al menos una unidad");
+			} catch (SaleWithoutProductsException e) {
+				result.rejectValue("productSales", "invalid", "Debe incluir al menos un producto");
+			}
 			return "redirect:/sales/" + saleId;
 		}
 	}

@@ -51,36 +51,42 @@
     </jsp:attribute>
     <jsp:body>
 	    <h2 class="mb-5">
-	        <c:if test="${sale['new']}">New</c:if> Sale
+	        <c:if test="${sale['new']}">Nueva</c:if> Venta
 	    </h2>
 	    
 	    <form:form modelAttribute="sale" class="form-horizontal" id="add-sale-form">
 	        <div class="form-group has-feedback">
-	            <petclinic:inputField label="Sale date" name="date"/>
-	            <petclinic:inputField label="VAT(%)" name="vat"/>
+	            <petclinic:inputField label="Fecha de venta" name="date"/>
+	            <petclinic:inputField label="IVA(%)" name="vat"/>
 	            
-		        <div id="products" class="form-group has-feedback">
+		        <div class="card p-4">
+		        	<div class="card-title">Añadir producto</div>
 		        	<div class="col col-sm-10 col-md-6 pl-0">
-		        		<label class="control-label">Amount</label>
+		        		<label class="control-label">Cantidad</label>
 		        		<input class="form-control" type="number" id="amount">
 		        	</div>
 		        	<div class="col col-sm-10 col-md-6 pl-0">
-		        		<label class="control-label">Price</label>
+		        		<label class="control-label">Precio</label>
 		        		<input class="form-control" type="number" id="price">
 		        	</div>
 		        	<div class="col col-sm-10 col-md-6 pl-0">
 		        	<label class="control-label">Producto</label>
 			        	<select id="product" class="form-control">
-			        		<option value="" selected>Select product</option>
+			        		<option value="" selected>Seleccionar producto</option>
 			        		<c:forEach items="${products}" var="product">
 			        			<option value="${product.id}"><c:out value="${product.name}" /></option>
 			        		</c:forEach>		        		
 			        	</select>
 		        	</div>
 		        	<div>
-		        		<button class="btn btn-default" id="add-btn">Add product</button>
+		        		<button class="btn btn-default" id="add-btn">Añadir producto</button>
 		        	</div>
 		        </div>
+		        
+		        <c:set var="nameHasBindError">
+			        <form:errors path="productSales"/>
+			    </c:set>
+			    ${nameHasBindError}
 		        
 	            <div id="products-container" class="row">
 	            	<c:forEach items="${sale.productSales}" var="productSale">
@@ -91,9 +97,9 @@
 		            				<h5 class="px-3 pt-3"><c:out value="${productSale.product.name}" /></h5>
 		            			</div>
 		            			<div class="card-body">
-		            				<p>Amount: <c:out value="${productSale.amount}" /></p>
-		            				<p>Price: <c:out value="${productSale.price}" /></p>
-		            				<button class="btn btn-danger waves-effect waves-light" type="button">Delete</button>
+		            				<p>Cantidad: <c:out value="${productSale.amount}" /></p>
+		            				<p>Precio: <c:out value="${productSale.price}" /></p>
+		            				<button class="btn btn-danger waves-effect waves-light" type="button">Borrar</button>
 		            			</div>
 		            		</div>
 	            		</div>
@@ -105,14 +111,14 @@
 	            <div class="col pl-0 ml-0">
 	                <c:choose>
 	                    <c:when test="${sale['new']}">
-	                        <button class="btn btn-default" type="submit">Create</button>
+	                        <button class="btn btn-default" type="submit">Crear</button>
 	                    </c:when>
 	                    <c:otherwise>
-	                        <button class="btn btn-default" type="submit">Save changes</button>
+	                        <button class="btn btn-default" type="submit">Guardar cambios</button>
 	                    </c:otherwise>
 	                </c:choose>	          
 	                
-                    <a class="btn btn-default ml-2" data-back-btn>Back</a>      
+                    <a class="btn btn-default ml-2" data-back-btn>Volver</a>
 	            </div>
 	        </div>
 	    </form:form>

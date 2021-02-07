@@ -17,11 +17,11 @@
         </tr>
         <tr>
             <th>IVA</th>
-            <td><c:out value="${purchase.vat}"/></td>
+            <td><c:out value="${purchase.vat}"/>%</td>
         </tr>
         <tr>
             <th>Total</th>
-            <td><c:out value="${purchase.total}"/></td>
+            <td><c:out value="${purchase.total}"/>€</td>
         </tr>
     </table>
     
@@ -48,12 +48,16 @@
 					
 							<!--Title-->
 							<h4 class="card-title"><c:out value="${productPurchase.product.name}"/></h4>
+							
+							<c:if test="${not empty productPurchase.product.description}">
 							<!--Text-->
 							<p class="card-text"><c:out value="${productPurchase.product.description}"/></p>
+							</c:if>
 							<!--Text-->
-							<p class="card-text">cantidad:<c:out value="${productPurchase.amount}"/></p>
-							<!--Text-->
-							<p class="card-text">precio:<c:out value="${productPurchase.price}"/></p>
+							<p class="card-text">
+								<b class="mr-2">Precio de compra:</b><c:out value="${productPurchase.price}" />€
+								<b class="ml-4 mr-2">Cantidad:</b><c:out value="${productPurchase.amount}" />
+							</p>
 				   		</div>
 		       		</div>
 	       		</div>

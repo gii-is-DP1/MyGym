@@ -1,4 +1,4 @@
-<%@ page session="false" trimDirectiveWhitespaces="true"%>
+<%@ page contentType="text/html;charset=UTF-8" session="false" trimDirectiveWhitespaces="true"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
@@ -21,7 +21,7 @@
 		<div class="card mt-4">
 			<div class="card-body">
 				<!--Title-->
-				<h4 class="card-title">�No products!</h4>
+				<h4 class="card-title">¡No products!</h4>
 				<!--Text-->
 				<p class="card-text">Please crate a product.</p>
 				<!-- Provides extra visual weight and identifies the primary action in a set of buttons -->
@@ -50,12 +50,17 @@
 				    
 						<!--Title-->
 						<h4 class="card-title"><c:out value="${product.name}" /></h4>
+						
+						<c:if test="${not empty product.description}">
+							<p class="card-text">
+								<c:out value="${product.description}" />
+							</p>
+						</c:if>
+						
 						<!--Text-->
 						<p class="card-text">
-							<b class="mr-2">Precio:</b><c:out value="${product.price}" />
-						</p>
-						<p class="card-text">
-							<b class="mr-2">Stockage:</b><c:out value="${product.stockage}" />
+							<b class="mr-2">Precio:</b><c:out value="${product.price}" />€
+							<b class="ml-4 mr-2">Stockage:</b><c:out value="${product.stockage}" />
 						</p>
 
 

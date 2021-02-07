@@ -21,20 +21,24 @@ public class ProductSaleCollectionEditor extends CustomCollectionEditor {
 	protected Object convertElement(Object element) {
 		String value = (String) element;
 		
-		System.out.println("converting element: " + value);
-		
 		try {
 			String[] splitted = value.split(";");
 			
-			Integer productId = new Integer(splitted[0]);
-			Integer amount = new Integer(splitted[1]);
-			Double price = new Double(splitted[2]);
+			Integer productId = parseInt(splitted[0]);
+			Integer amount = 0;
+			if (splitted.length > 1) {
+				amount = parseInt(splitted[1]);
+			}
+			Double price = 0.0;
+			if (splitted.length > 2) {
+				price = parseDouble(splitted[2]);
+			}
 			
 			Product product = productService.findProductById(productId);
 			
 			ProductSale productSale = new ProductSale();
 			
-			if (splitted.length >= 4) {
+			if (splitted.length > 3) {
 				productSale.setId(new Integer(splitted[3]));
 			}
 			
@@ -42,9 +46,29 @@ public class ProductSaleCollectionEditor extends CustomCollectionEditor {
 			productSale.setPrice(price);
 			productSale.setAmount(amount);
 			
-			System.out.println("Build product sale: " + productSale);
-			
 			return productSale;
+		} catch (ArrayIndexOutOfBoundsException e) {
+			return null;
+		}
+	}
+	
+	private Integer parseInt(String s) {
+		if (s == null || s.trim().isEmpty()) {
+			return 0;
+		}
+		try {
+			return new Integer(s);
+		} catch (NumberFormatException e) {
+			return null;
+		}
+	}
+	
+	private Double parseDouble(String s) {
+		if (s == null || s.trim().isEmpty()) {
+			return 0.0;
+		}
+		try {
+			return new Double(s);
 		} catch (NumberFormatException e) {
 			return null;
 		}

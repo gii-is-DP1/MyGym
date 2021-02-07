@@ -16,6 +16,9 @@ import org.springframework.samples.petclinic.model.Training;
 import org.springframework.samples.petclinic.model.User;
 import org.springframework.samples.petclinic.service.ProductService;
 import org.springframework.samples.petclinic.service.exceptions.NoNameException;
+import org.springframework.samples.petclinic.service.exceptions.NoProductPurchaseAmountException;
+import org.springframework.samples.petclinic.service.exceptions.PurchaseWithoutProductsException;
+import org.springframework.samples.petclinic.service.exceptions.SaleWithoutProductsException;
 import org.springframework.samples.petclinic.util.ProductPurchaseCollectionEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -78,9 +81,9 @@ public class PurchaseController {
 
 	@PostMapping(value = "/purchases/new")
 	public String processCreationForm(@Valid Purchase purchase, BindingResult result, ModelMap model) {
-		System.out.println("result.hasErrors: " + result.hasErrors());
-		System.out.println("result: " + result);
-		System.out.println("productPurchases: " + purchase.getProductPurchases());
+		if (purchase.getProductPurchases() == null || purchase.getProductPurchases().isEmpty()) {
+			result.rejectValue("productPurchases", "invalid", "Debe incluir al menos un producto");
+		}
 		if (result.hasErrors()) {
 			model.put("purchase", purchase);
 			return VIEWS_PURCHASES_CREATE_OR_UPDATE_FORM;
@@ -89,15 +92,23 @@ public class PurchaseController {
 			
 			purchase.getProductPurchases().forEach(productPurchase -> productPurchase.setPurchase(purchase));
 			
-			this.productService.savePurchase(purchase);
-			return "redirect:/purchases";
+			try {
+				this.productService.savePurchase(purchase);
+				
+				return "redirect:/purchases";
+			} catch (PurchaseWithoutProductsException e) {
+				result.rejectValue("productPurchases", "invalid", "Debe incluir al menos un producto");
+			} catch (NoProductPurchaseAmountException e) {
+				result.rejectValue("productPurchases", "invalid", "Todos los productos deben incluir al menos una unidad");
+			}
+
+			return VIEWS_PURCHASES_CREATE_OR_UPDATE_FORM;
 		}
 	}
 	
 	@GetMapping("/purchases/{purchaseId}")
 	public ModelAndView showTraining(@PathVariable("purchaseId") int purchaseId, Principal principal) {
 		Purchase purchase = this.productService.findPurchaseById(purchaseId);
-		System.out.println("purchase " + purchase);
 		ModelAndView mav;
 		if (purchase == null) {
 			mav = new ModelAndView(VIEWS_ERROR);
@@ -151,7 +162,10 @@ public class PurchaseController {
 				.filter(productPurchase -> purchase.getProductPurchases().stream()
 						.allMatch(pp -> !productPurchase.getId().equals(pp.getId()))
 				)
-				.forEach(productPurchase -> productPurchase.setPurchase(null));
+				.forEach(productPurchase -> {
+					productPurchase.setPurchase(null);
+					productService.deleteProductPurchase(productPurchase);
+				});
 			
 			BeanUtils.copyProperties(purchase, purchaseToUpdate, "id", "isGeneric", "productPurchases");
 			
@@ -164,9 +178,17 @@ public class PurchaseController {
 			
 			purchaseToUpdate.setTotal(getPurchaseTotal(purchaseToUpdate));
 			
-			this.productService.savePurchase(purchaseToUpdate);			
+			try {
+				this.productService.savePurchase(purchase);
+
+				return "redirect:/purchases/" + purchaseId;
+			} catch (PurchaseWithoutProductsException e) {
+				result.rejectValue("productPurchases", "invalid", "Debe incluir al menos un producto");
+			} catch (NoProductPurchaseAmountException e) {
+				result.rejectValue("productPurchases", "invalid", "Todos los productos deben incluir al menos una unidad");
+			}	
 			
-			return "redirect:/purchases/" + purchaseId;
+			return "redirect:/purchases/";
 		}
 	}
 	

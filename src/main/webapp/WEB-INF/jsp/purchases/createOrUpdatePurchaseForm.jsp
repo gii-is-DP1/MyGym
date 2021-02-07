@@ -60,29 +60,30 @@
 	    
 	    <form:form modelAttribute="purchase" class="form-horizontal" id="add-purchase-form">
 	        <div class="form-group has-feedback">
-	            <petclinic:inputField label="Purchase date" name="date"/>
-	            <petclinic:inputField label="VAT(%)" name="vat"/>
+	            <petclinic:inputField label="Fecha de compra" name="date"/>
+	            <petclinic:inputField label="IVA(%)" name="vat"/>
 	            
-		        <div id="products" class="form-group has-feedback">
+	            <div class="card p-4">
+	            	<div class="card-title">Añadir producto</div>
 		        	<div class="col col-sm-10 col-md-6 pl-0">
-		        		<label class="control-label">Amount</label>
+		        		<label class="control-label">Cantidad</label>
 		        		<input class="form-control" type="number" id="amount">
 		        	</div>
 		        	<div class="col col-sm-10 col-md-6 pl-0">
-		        		<label class="control-label">Price</label>
+		        		<label class="control-label">Precio</label>
 		        		<input class="form-control" type="number" id="price">
 		        	</div>
 		        	<div class="col col-sm-10 col-md-6 pl-0">
 		        	<label class="control-label">Producto</label>
 			        	<select id="product" class="form-control">
-			        		<option value="" selected>Select product</option>
+			        		<option value="" selected>Selecionar producto</option>
 			        		<c:forEach items="${products}" var="product">
 			        			<option value="${product.id}"><c:out value="${product.name}" /></option>
 			        		</c:forEach>		        		
 			        	</select>
 		        	</div>
 		        	<div>
-		        		<button class="btn btn-default" id="add-btn">Add product</button>
+		        		<button class="btn btn-default" id="add-btn">Añadir producto</button>
 		        	</div>
 		        </div>
    	            <div id="products-container" class="row">
@@ -94,29 +95,32 @@
 		            				<h5 class="px-3 pt-3"><c:out value="${productPurchase.product.name}" /></h5>
 		            			</div>
 		            			<div class="card-body">
-		            				<p>Amount: <c:out value="${productPurchase.amount}" /></p>
-		            				<p>Price: <c:out value="${productPurchase.price}" /></p>
-		            				<button class="btn btn-danger waves-effect waves-light" type="button">Delete</button>
+		            				<p>Cantidad: <c:out value="${productPurchase.amount}" /></p>
+		            				<p>Precio: <c:out value="${productPurchase.price}" /></p>
+		            				<button class="btn btn-danger waves-effect waves-light" type="button">Borrar</button>
 		            			</div>
 		            		</div>
 	            		</div>
 	            	</c:forEach>
-	            	<!--  <input type="hidden" name="productPurchases" value="2;3;2.75" /> -->
-		        </div>
+		        </div>	
+		        <c:set var="nameHasBindError">
+			        <form:errors path="productPurchases"/>
+			    </c:set>
+			    ${nameHasBindError}		    
 	        </div>
 	        
 	        <div class="form-group mt-5">
 	            <div class="col pl-0 ml-0">
 	                <c:choose>
 	                    <c:when test="${purchase['new']}">
-	                        <button class="btn btn-default" type="submit">Create</button>
+	                        <button class="btn btn-default" type="submit">Crear</button>
 	                    </c:when>
 	                    <c:otherwise>
-	                        <button class="btn btn-default" type="submit">Save changes</button>
+	                        <button class="btn btn-default" type="submit">Guardar cambios</button>
 	                    </c:otherwise>
 	                </c:choose>	          
 	                
-                    <a class="btn btn-default ml-2" data-back-btn>Back</a>      
+                    <a class="btn btn-default ml-2" data-back-btn>Borrar</a>      
 	            </div>
 	        </div>
 	    </form:form>

@@ -99,7 +99,7 @@ public class ProductController {
 			return VIEWS_PRODUCTS_CREATE_OR_UPDATE_FORM;
 		} else {
 			Product productToUpdate = this.productService.findProductById(productId);
-			BeanUtils.copyProperties(product, productToUpdate, "id");
+			BeanUtils.copyProperties(product, productToUpdate, "id", "stockage");
 			this.productService.saveProduct(productToUpdate);
 			return "redirect:/products";
 		}

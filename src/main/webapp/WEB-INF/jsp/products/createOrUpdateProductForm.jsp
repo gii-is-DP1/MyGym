@@ -18,7 +18,6 @@
 	        <div class="form-group has-feedback">
 	            <petclinic:inputField label="Name" name="name"/>
 	            <petclinic:inputField label="Description" name="description"/>
-	            <petclinic:inputField label="Stockage" name="stockage"/>
 	            <petclinic:inputField label="Price" name="price"/>
 	            <petclinic:imageField label="Imagen" name="image" />
 	            
