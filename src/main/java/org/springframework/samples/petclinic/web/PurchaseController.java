@@ -179,7 +179,7 @@ public class PurchaseController {
 			purchaseToUpdate.setTotal(getPurchaseTotal(purchaseToUpdate));
 			
 			try {
-				this.productService.savePurchase(purchase);
+				this.productService.savePurchase(purchaseToUpdate);
 
 				return "redirect:/purchases/" + purchaseId;
 			} catch (PurchaseWithoutProductsException e) {
