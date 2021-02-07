@@ -1,18 +1,17 @@
 package org.springframework.samples.petclinic.model;
 
-import java.time.LocalDate;
-
 import javax.persistence.Entity;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 
-import org.springframework.format.annotation.DateTimeFormat;
+import org.hibernate.envers.Audited;
 
 import lombok.Data;
 
+@Audited
 @Data
 @Entity
-public class Sala extends BaseEntity{
+public class Sala extends AuditableEntity {
 
 	@NotBlank
 	String nombre;

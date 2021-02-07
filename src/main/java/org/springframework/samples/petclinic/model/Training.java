@@ -18,17 +18,19 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlElement;
 
+import org.hibernate.envers.Audited;
 import org.springframework.beans.support.MutableSortDefinition;
 import org.springframework.beans.support.PropertyComparator;
 
 import lombok.Getter;
 import lombok.Setter;
 
+@Audited
 @Setter
 @Getter
 @Entity
 @Table(name = "training")
-public class Training extends BaseEntity {
+public class Training extends AuditableEntity {
 	
 	String name;
 	

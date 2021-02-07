@@ -116,6 +116,7 @@ public class MemoryController {
 						+ formatter.format(workout.getEndDate()) + ")");
 				return VIEWS_CREATE_OR_UPDATE_MEMORY;
 			}
+			log.info("added memory with ID=" + memory.getId() + " to training with ID=" + trainingId + " by " + principal.getName());
 			return "redirect:/trainings/{trainingId}";
 		}
 	}
@@ -147,6 +148,7 @@ public class MemoryController {
 						+ formatter.format(workout.getEndDate()) + ")");
 				return VIEWS_CREATE_OR_UPDATE_MEMORY;
 			}
+			log.info("memory with ID=" + memoryId + " has been updated by " + principal.getName());
 			return "redirect:/trainings/{trainingId}";
 		}
 	}

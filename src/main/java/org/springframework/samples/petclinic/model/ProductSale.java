@@ -6,17 +6,14 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import org.hibernate.envers.Audited;
-
 import lombok.Getter;
 import lombok.Setter;
 
-@Audited
 @Getter
 @Setter
 @Entity
-@Table(name = "product_purchase")
-public class ProductPurchase extends AuditableEntity {
+@Table(name = "product_sale")
+public class ProductSale extends AuditableEntity {
 
 	private Integer amount;
 	
@@ -27,6 +24,6 @@ public class ProductPurchase extends AuditableEntity {
 	private Product product;
 
 	@ManyToOne
-	@JoinColumn(name = "purchase_id")
-	private Purchase purchase;
+	@JoinColumn(name = "sale_id")
+	private Sale sale;
 }

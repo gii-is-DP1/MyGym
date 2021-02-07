@@ -18,9 +18,12 @@ package org.springframework.samples.petclinic.model;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
+import org.hibernate.envers.Audited;
+
 /**
  * @author Juergen Hoeller Can be Cat, Dog, Hamster...
  */
+@Audited
 @Entity
 @Table(name = "exercise_type")
 public class ExerciseType extends NamedEntity {
