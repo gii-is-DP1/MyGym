@@ -4,12 +4,14 @@ import java.security.Principal;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.Product;
+import org.springframework.samples.petclinic.model.ProductSale;
 import org.springframework.samples.petclinic.model.Sale;
 import org.springframework.samples.petclinic.service.ProductService;
 import org.springframework.samples.petclinic.service.exceptions.NoProductSaleAmountException;
@@ -158,12 +160,17 @@ public class SaleController {
 		} else {
 			Sale saleToUpdate = this.productService.findSaleById(saleId);
 			
-			saleToUpdate.getProductSales().stream()
-				.filter(productSale -> sale.getProductSales().stream()
-						.allMatch(ps -> !productSale.getId().equals(ps.getId()))
-				)
-				.forEach(productSale -> productSale.setSale(null));
+			Collection<ProductSale> entriesToBeRemoved = saleToUpdate.getProductSales().stream()
+					.filter(productSale -> sale.getProductSales().stream()
+							.allMatch(ps -> !productSale.getId().equals(ps.getId()))
+					)
+					.collect(Collectors.toList());
 			
+			entriesToBeRemoved.forEach(productSale -> {
+				productSale.setSale(null);
+				productService.deleteProductSale(productSale);
+				saleToUpdate.getProductSales().remove(productSale);
+			});
 			
 			BeanUtils.copyProperties(sale, saleToUpdate, "id", "isGeneric", "productSales");
 			

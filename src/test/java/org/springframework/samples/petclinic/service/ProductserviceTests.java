@@ -371,15 +371,14 @@ public class ProductserviceTests {
 		
 		sale = this.service.findSaleById(sale.getId());
 		productSale = sale.getProductSales().iterator().next();
-		int currentStock = product.getStockage();
-		productSale.setAmount(1);
+		productSale.setAmount(3);
 		this.service.saveSale(sale);
 
 		products = this.service.findProductByName(product.getName());
 		Iterator<Product> itr = products.iterator();
 		product = itr.next();
 		
-		assertThat(product.getStockage()).isEqualTo(currentStock);
+		assertThat(product.getStockage()).isEqualTo(firstStock - 3);
 		
 		Collection<Product> tmp = this.service.findProductByName("Batido");
 		Product product2 = tmp.iterator().next();

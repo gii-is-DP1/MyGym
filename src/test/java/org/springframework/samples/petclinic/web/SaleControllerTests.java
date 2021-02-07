@@ -21,7 +21,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.samples.petclinic.configuration.SecurityConfiguration;
-import org.springframework.samples.petclinic.model.Purchase;
+import org.springframework.samples.petclinic.model.Sale;
 import org.springframework.samples.petclinic.service.ProductService;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -32,15 +32,15 @@ import org.springframework.test.web.servlet.MockMvc;
  *
  * @author Colin But
  */
-@WebMvcTest(controllers = PurchaseController.class,
+@WebMvcTest(controllers = SaleController.class,
 			excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = WebSecurityConfigurer.class),
 			excludeAutoConfiguration= SecurityConfiguration.class)
-class PurchaseControllerTests {
+class SaleControllerTests {
 
-	private static final int TEST_PURCHASE_ID = 1;
+	private static final int TEST_SALE_ID = 1;
 
 	@Autowired
-	private PurchaseController purchaseController;
+	private SaleController saleController;
 
 	@MockBean
 	private ProductService productService;
@@ -48,130 +48,130 @@ class PurchaseControllerTests {
 	@Autowired
 	private MockMvc mockMvc;
 	
-	private Purchase purchase;
+	private Sale sale;
 	
 	@BeforeEach
 	void setup() {
 		
-		purchase = new Purchase();
-		purchase.setId(TEST_PURCHASE_ID);
-		purchase.setDate(LocalDate.of(2021, 02, 20));
-		purchase.setTotal(10.5);
-		purchase.setVat(4.0);
-		purchase.setProductPurchases(Sets.newHashSet());
-		given(this.productService.findPurchaseById(TEST_PURCHASE_ID)).willReturn(purchase);
+		sale = new Sale();
+		sale.setId(TEST_SALE_ID);
+		sale.setDate(LocalDate.of(2021, 02, 20));
+		sale.setTotal(10.5);
+		sale.setVat(4.0);
+		sale.setProductSales(Sets.newHashSet());
+		given(this.productService.findSaleById(TEST_SALE_ID)).willReturn(sale);
 
 	}
 
     @WithMockUser(value = "spring")
     @Test
-	void testInitNewPurchaseForm() throws Exception {
-		mockMvc.perform(get("/purchases/new"))
+	void testInitNewSaleForm() throws Exception {
+		mockMvc.perform(get("/sales/new"))
 			.andExpect(status().isOk())
-			.andExpect(view().name("purchases/createOrUpdatePurchaseForm"));
+			.andExpect(view().name("sales/createOrUpdateSaleForm"));
 	}
 
 	@WithMockUser(value = "spring")
     @Test
 	void testProcessNewProductFormSuccess() throws Exception {
 		mockMvc.perform(
-				post("/purchases/new")
+				post("/sales/new")
 					.with(csrf())
 					.param("date", "26/02/2021")
 					.param("vat", "4.0")
 					.param("total", "10.5")
-					.param("productPurchases", "1;1;1")
+					.param("productSales", "1;1;1")
 				)
                 .andExpect(status().is3xxRedirection())
-				.andExpect(view().name("redirect:/purchases"));
+				.andExpect(view().name("redirect:/sales"));
 	}
 
 	@WithMockUser(value = "spring")
     @Test
-	void testProcessNewPurchaseFormHasErrors() throws Exception {
+	void testProcessNewSaleFormHasErrors() throws Exception {
 		mockMvc.perform(
-				post("/purchases/new")
+				post("/sales/new")
 					.with(csrf())
 				)
-				.andExpect(model().attributeHasErrors("purchase"))
-				.andExpect(model().attributeHasFieldErrors("purchase", "date"))
-				.andExpect(model().attributeHasFieldErrors("purchase", "vat"))
-				.andExpect(model().attributeHasFieldErrors("purchase", "productPurchases"))
+				.andExpect(model().attributeHasErrors("sale"))
+				.andExpect(model().attributeHasFieldErrors("sale", "date"))
+				.andExpect(model().attributeHasFieldErrors("sale", "vat"))
+				.andExpect(model().attributeHasFieldErrors("sale", "productSales"))
 				.andExpect(status().isOk())
-				.andExpect(view().name("purchases/createOrUpdatePurchaseForm"));
+				.andExpect(view().name("sales/createOrUpdateSaleForm"));
 	}
 
 	@WithMockUser(value = "spring")
     @Test
-	void testShowPurchases() throws Exception {
-		mockMvc.perform(get("/purchases"))
+	void testShowSales() throws Exception {
+		mockMvc.perform(get("/sales"))
 			.andExpect(status().isOk())
 			.andExpect(model().attributeExists("selections"))
-			.andExpect(view().name("purchases/purchasesList"));
+			.andExpect(view().name("sales/salesList"));
 	}
 
 	
 	@WithMockUser(value = "spring")
     @Test
-	void testEditPurchaseForm() throws Exception {
+	void testEditSaleForm() throws Exception {
 		
-		mockMvc.perform(get("/purchases/{id}/edit", TEST_PURCHASE_ID))
-			.andExpect(model().attributeExists("purchase"))
-			.andExpect(model().attribute("purchase", hasProperty("date", is(LocalDate.of(2021, 02, 20)))))
-			.andExpect(model().attribute("purchase", hasProperty("vat", is(4.0))))
-			.andExpect(model().attribute("purchase", hasProperty("total", is(10.5))))
+		mockMvc.perform(get("/sales/{id}/edit", TEST_SALE_ID))
+			.andExpect(model().attributeExists("sale"))
+			.andExpect(model().attribute("sale", hasProperty("date", is(LocalDate.of(2021, 02, 20)))))
+			.andExpect(model().attribute("sale", hasProperty("vat", is(4.0))))
+			.andExpect(model().attribute("sale", hasProperty("total", is(10.5))))
 			.andExpect(status().isOk())
-			.andExpect(view().name("purchases/createOrUpdatePurchaseForm"));
+			.andExpect(view().name("sales/createOrUpdateSaleForm"));
 	}
 	
 	@WithMockUser(value = "spring")
     @Test
-	void testEditPurchaseNotFoundForm() throws Exception {
-		given(this.productService.findPurchaseById(5)).willReturn(null);
+	void testEditSaleNotFoundForm() throws Exception {
+		given(this.productService.findSaleById(5)).willReturn(null);
 		
-		mockMvc.perform(get("/purchases/{id}/edit", 5))
+		mockMvc.perform(get("/sales/{id}/edit", 5))
 			.andExpect(status().isOk())
 			.andExpect(model().attributeDoesNotExist("purchase"))
-			.andExpect(view().name("purchases/createOrUpdatePurchaseForm"));
+			.andExpect(view().name("sales/createOrUpdateSaleForm"));
 	}
 
 	@WithMockUser(value = "spring")
     @Test
-	void testProcessEditPurchaseFormSuccess() throws Exception {		
+	void testProcessEditSaleFormSuccess() throws Exception {		
 		mockMvc.perform(
-				post("/purchases/{id}/edit", TEST_PURCHASE_ID)
+				post("/sales/{id}/edit", TEST_SALE_ID)
 					.with(csrf())
 					.param("date", "26/02/2021")
 					.param("vat", "5.0")
 					.param("total", "11.5")
-					.param("productPurchases", "1;1;1")
+					.param("productSales", "1;1;1")
 				)
                 .andExpect(status().is3xxRedirection())
-				.andExpect(view().name("redirect:/purchases/" + TEST_PURCHASE_ID));
+				.andExpect(view().name("redirect:/sales/" + TEST_SALE_ID));
 	}
 
 	@WithMockUser(value = "spring")
     @Test
-	void testProcessEditPurchaseFormError() throws Exception {		
+	void testProcessEditSaleFormError() throws Exception {		
 		mockMvc.perform(
-				post("/purchases/{id}/edit", TEST_PURCHASE_ID)
+				post("/sales/{id}/edit", TEST_SALE_ID)
 					.with(csrf())
 					.param("date", "")
 				)
-				.andExpect(model().attributeHasErrors("purchase"))
-				.andExpect(model().attributeHasFieldErrors("purchase", "date"))
+				.andExpect(model().attributeHasErrors("sale"))
+				.andExpect(model().attributeHasFieldErrors("sale", "date"))
 				.andExpect(status().isOk())
-				.andExpect(view().name("purchases/createOrUpdatePurchaseForm"));
+				.andExpect(view().name("sales/createOrUpdateSaleForm"));
 	}
 
 	@WithMockUser(value = "spring")
     @Test
-	void testViewPurchaseDetailSuccess() throws Exception {		
-		mockMvc.perform(get("/purchases/{id}", TEST_PURCHASE_ID))
-				.andExpect(model().attributeExists("purchase"))
-				.andExpect(model().attribute("purchase", hasProperty("id", is(TEST_PURCHASE_ID))))
+	void testViewSaleDetailSuccess() throws Exception {		
+		mockMvc.perform(get("/sales/{id}", TEST_SALE_ID))
+				.andExpect(model().attributeExists("sale"))
+				.andExpect(model().attribute("sale", hasProperty("id", is(TEST_SALE_ID))))
                 .andExpect(status().isOk())
-				.andExpect(view().name("purchases/purchaseDetails"));
+				.andExpect(view().name("sales/saleDetails"));
 	}
 
 

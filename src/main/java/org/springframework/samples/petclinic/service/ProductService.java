@@ -5,7 +5,6 @@ import java.util.Collection;
 import javax.persistence.EntityManager;
 
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.Product;
 import org.springframework.samples.petclinic.model.ProductPurchase;
@@ -113,11 +112,7 @@ public class ProductService {
 			}
 			
 			if (!productPurchase.isNew()) {
-				ProductPurchase old = this.productPurchaseRepository.findAll()
-						.stream()
-						.filter(pp -> pp.getId().equals(productPurchase.getId()))
-						.findFirst().orElse(null);
-				
+				ProductPurchase old = getCurrentProductPurchase(productPurchase.getId());				
 				product.setStockage(product.getStockage() - old.getAmount());
 				
 			}
@@ -128,6 +123,8 @@ public class ProductService {
 				product.setStockage(0);
 			}
 			
+			// clear session cache to force stock updating
+			// evict(Product.class, product.getId());
 			this.saveProduct(product);
 		}
 		
@@ -162,12 +159,8 @@ public class ProductService {
 			}
 			
 			if (!productSale.isNew()) {
-				ProductSale old = this.productSaleRepository.findAll()
-						.stream()
-						.filter(ps -> ps.getId().equals(productSale.getId()))
-						.findFirst().orElse(null);
-				
-				product.setStockage(product.getStockage() - old.getAmount());
+				ProductSale old = getCurrentProductSale(productSale.getId());	
+				product.setStockage(product.getStockage() + old.getAmount());
 			}
 			
 			if (productSale.getAmount() > product.getStockage()) {
@@ -204,7 +197,7 @@ public class ProductService {
 		return purchaseRepository.findById(purchaseId);
 	}
 	
-	/*@Transactional
+	@Transactional
 	private ProductPurchase getCurrentProductPurchase(int id) {
 		Session session = entityManager.unwrap(Session.class);
 	    session.clear(); // clears session cache
@@ -218,6 +211,12 @@ public class ProductService {
 	    session.clear(); // clears session cache
 	    ProductSale currentDatabaseProductSale = session.get(ProductSale.class, id);
 		return currentDatabaseProductSale;
-	}*/
+	}
+	
+	// Clears an instance from hibernate cache
+	/* private void evict(Class<?> clazz, Integer pKey) {
+		Cache cache = entityManager.getEntityManagerFactory().getCache();
+		cache.evict(clazz, pKey);
+	} */
 	
 }

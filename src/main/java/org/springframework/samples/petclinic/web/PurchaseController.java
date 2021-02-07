@@ -4,21 +4,18 @@ import java.security.Principal;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.samples.petclinic.configuration.SecurityConfiguration;
 import org.springframework.samples.petclinic.model.Product;
+import org.springframework.samples.petclinic.model.ProductPurchase;
 import org.springframework.samples.petclinic.model.Purchase;
-import org.springframework.samples.petclinic.model.Training;
-import org.springframework.samples.petclinic.model.User;
 import org.springframework.samples.petclinic.service.ProductService;
-import org.springframework.samples.petclinic.service.exceptions.NoNameException;
 import org.springframework.samples.petclinic.service.exceptions.NoProductPurchaseAmountException;
 import org.springframework.samples.petclinic.service.exceptions.PurchaseWithoutProductsException;
-import org.springframework.samples.petclinic.service.exceptions.SaleWithoutProductsException;
 import org.springframework.samples.petclinic.util.ProductPurchaseCollectionEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -158,13 +155,16 @@ public class PurchaseController {
 		} else {
 			Purchase purchaseToUpdate = this.productService.findPurchaseById(purchaseId);
 			
-			purchaseToUpdate.getProductPurchases().stream()
-				.filter(productPurchase -> purchase.getProductPurchases().stream()
-						.allMatch(pp -> !productPurchase.getId().equals(pp.getId()))
-				)
-				.forEach(productPurchase -> {
+			Collection<ProductPurchase> entriesToBeRemoved = purchaseToUpdate.getProductPurchases().stream()
+					.filter(productPurchase -> purchase.getProductPurchases().stream()
+							.allMatch(pp -> !productPurchase.getId().equals(pp.getId()))
+					)
+					.collect(Collectors.toList());
+			
+			entriesToBeRemoved.forEach(productPurchase -> {
 					productPurchase.setPurchase(null);
 					productService.deleteProductPurchase(productPurchase);
+					purchaseToUpdate.getProductPurchases().remove(productPurchase);
 				});
 			
 			BeanUtils.copyProperties(purchase, purchaseToUpdate, "id", "isGeneric", "productPurchases");
