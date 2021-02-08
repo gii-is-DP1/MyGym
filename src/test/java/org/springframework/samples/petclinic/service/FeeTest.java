@@ -107,7 +107,7 @@ public class FeeTest {
         }
 
 		Optional<User> searchResultUser = this.userService.findUser("pepeperez");
-		assertThat(searchResultUser.orElse(null)).isNotNull();
+		assertThat(searchResultUser.orElse(null)).isNull();
 	}
     
    
