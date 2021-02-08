@@ -10,14 +10,17 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.validation.constraints.NotBlank;
 
 import org.hibernate.envers.Audited;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 @Audited
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "users")
 public class User extends AuditableEntity {
@@ -29,9 +32,11 @@ public class User extends AuditableEntity {
 	
 	boolean enabled;
 	
+	@NotBlank
 	String nombre;
 	String apellidos;
 	String email;
+	@NotBlank
 	String dni;
 	
 	@DateTimeFormat(pattern = "dd/MM/yyyy")

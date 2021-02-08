@@ -95,8 +95,9 @@ public class UserController {
 	
 	@PostMapping(value = "/{userId}/edit")
 	public String processUpdateOwnerForm(@Valid User usuario, BindingResult result,
-			@PathVariable("userId") int userId, Principal principal) {
+			@PathVariable("userId") int userId, ModelMap model, Principal principal) {
 		if (result.hasErrors()) {
+			model.put("user", usuario);
 			return VIEWS_USUARIO_CREATE_OR_UPDATE_FORM;
 		}
 		else {
