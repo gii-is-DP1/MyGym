@@ -33,6 +33,7 @@ import org.springframework.samples.petclinic.model.ExerciseType;
 import org.springframework.samples.petclinic.model.Training;
 import org.springframework.samples.petclinic.model.User;
 import org.springframework.samples.petclinic.model.Workout;
+import org.springframework.samples.petclinic.model.WorkoutTraining;
 import org.springframework.samples.petclinic.service.exceptions.ExistingWorkoutInDateRangeException;
 import org.springframework.samples.petclinic.service.exceptions.NoNameException;
 import org.springframework.samples.petclinic.util.EntityUtils;
@@ -210,9 +211,43 @@ class WorkoutServiceTests {
 		assertThat(searchResultCollection.size()).isEqualTo(0);
 	}
 	
+	@Test
+	@Transactional
+	public void shouldDeleteTraining() throws DataAccessException, NoNameException {
+		Exercise exercise = this.workoutService.findExerciseById(1);
+		Collection<Training> trainings = this.workoutService.findTrainingsByName(null);
+		int currentSize = trainings.size();
+	
+		Training training = new Training();
+		training.setName("Rutina de iniciación");
+		training.setDescription("Circuito de iniciación para usuarios principiantes");
+		training.setIsGeneric(Boolean.TRUE);
+		training.addExercise(exercise);
+		
+		this.workoutService.saveTraining(training);
+
+		trainings = this.workoutService.findTrainingsByName(null);
+		assertThat(trainings.size()).isEqualTo(currentSize + 1);
+
+		this.workoutService.deleteTraining(training);
+
+		trainings = this.workoutService.findTrainingsByName(null);
+		assertThat(trainings.size()).isEqualTo(currentSize);
+	}
+	
     @Test
 	@Transactional
-	public void shouldFindWorkoutsByUser() throws DataAccessException, ExistingWorkoutInDateRangeException {
+	public void shouldFindWorkoutsByUser() {
+    	User user = userService.findUser("manoutbar").get();
+		
+		Collection<Workout> found = this.workoutService.findWorkoutsByUser(user);
+		
+		assertThat(found.size()).isGreaterThan(0);
+	}
+	
+    @Test
+	@Transactional
+	public void shouldAssignWorkout() throws DataAccessException, ExistingWorkoutInDateRangeException {
     	User user = userService.findUserById(3).get();
 		int currentSize = this.workoutService.findWorkoutsByUser(user).size();
     	
@@ -227,26 +262,63 @@ class WorkoutServiceTests {
 		this.workoutService.saveWorkout(workout);
 		
 		Collection<Workout> found = this.workoutService.findWorkoutsByUser(user);
-		
 		assertThat(found.size()).isEqualTo(currentSize + 1);
 	}
 	
     @Test
 	@Transactional
-	public void shouldAssignWorkout() {
-		// TODO 
+	public void shouldFailInsertingWorkoutIntoExistingRangeDate() throws DataAccessException, ExistingWorkoutInDateRangeException {
+    	User user = userService.findUserById(3).get();
+    	
+		Workout workout = new Workout();
+		workout.setStartDate(LocalDate.now());
+		workout.setEndDate(LocalDate.now().plusDays(30));
+		workout.setName("Rutina de iniciación");
+		workout.setDescription("Toma de contacto con todos los grupos musculares");
+		workout.setUser(user);
+		workout.setWorkoutTrainings(Sets.newHashSet());
+		
+		this.workoutService.saveWorkout(workout);
+		
+		Assertions.assertThrows(ExistingWorkoutInDateRangeException.class, () -> {
+			Workout workout2 = new Workout();
+			workout2.setStartDate(LocalDate.now().plusDays(29));
+			workout2.setEndDate(LocalDate.now().plusDays(40));
+			workout2.setName("Rutina de iniciación 2");
+			workout2.setUser(user);
+			workout2.setWorkoutTrainings(Sets.newHashSet());
+			
+			this.workoutService.saveWorkout(workout2);
+		});
 	}
-	
+    
     @Test
 	@Transactional
-	public void shouldFailInsertingWorkoutIntoExistingRangeDate() {
-		// TODO 
-	}
-	
+	public void shouldUpdateWorkout() throws DataAccessException, ExistingWorkoutInDateRangeException {
+    	Workout workout = this.workoutService.findWorkouts().iterator().next();
+    	workout.setEndDate(LocalDate.now().plusDays(30));
+    	LocalDate endDate = workout.getEndDate();
+    	
+    	this.workoutService.saveWorkout(workout);
+    	
+    	workout = this.workoutService.findWorkoutById(workout.getId());
+    	
+    	assertThat(workout.getEndDate()).isEqualTo(endDate);
+    }
+    
     @Test
 	@Transactional
-	public void shouldCreateWorkoutWithTrainingCopy() {
-		// TODO 
-	}
-
+	public void shouldDeleteWorkout() throws DataAccessException, ExistingWorkoutInDateRangeException {
+    	Collection<Workout> workouts = this.workoutService.findWorkouts();
+    	int currentSize = workouts.size();
+    	Workout workout = workouts.iterator().next();
+    	
+    	this.workoutService.deleteWorkout(workout);
+    	
+    	workouts = this.workoutService.findWorkouts();
+    	workout = this.workoutService.findWorkoutById(workout.getId());
+    	
+    	assertThat(workout).isNull();
+    	assertThat(workouts.size()).isEqualTo(currentSize - 1);
+    }
 }

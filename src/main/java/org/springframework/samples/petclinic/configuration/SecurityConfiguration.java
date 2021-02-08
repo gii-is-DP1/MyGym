@@ -69,10 +69,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 				.antMatchers("/exercises").hasAnyAuthority("admin", "trainer")
 				.antMatchers("/exercises/**").hasAnyAuthority("admin", "trainer")
 				// trainings
-				.antMatchers("/trainings").permitAll()
+				.antMatchers("/trainings").hasAnyAuthority("admin", "trainer")
 				.antMatchers("/trainings/{trainingId}").permitAll()
 				.antMatchers("/trainings/{trainingId}/new").hasAnyAuthority("admin", "trainer")
 				.antMatchers("/trainings/{trainingId}/edit").hasAnyAuthority("admin", "trainer")
+				.antMatchers("/trainings/{trainingId}/delete").hasAnyAuthority("admin", "trainer")
 				.antMatchers("/trainings/{trainingId}/addExercise/{exerciseId}").hasAnyAuthority("admin", "trainer")
 				.antMatchers("/trainings/**/memories").permitAll()
 				.antMatchers("/trainings/**/memories/**").permitAll()
