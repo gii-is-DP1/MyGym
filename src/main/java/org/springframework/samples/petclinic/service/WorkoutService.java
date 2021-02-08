@@ -125,7 +125,7 @@ public class WorkoutService {
 	
 	public Collection<Training> findTrainingsGenericOrByworkout(Workout workout) throws DataAccessException {
 		if (workout == null || workout.getId() == null) {
-			return trainingRepository.findByUsername(null);
+			return trainingRepository.findByIsGenericTrue();
 		}
 		return trainingRepository.findGenericOrByWorkout(workout.getId());
 	}

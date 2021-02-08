@@ -159,6 +159,13 @@ public class WorkoutController {
 		
 		final LocalDate today = LocalDate.now();
 		
+		
+		for (Workout workout2 : results) {
+			if (!today.isBefore(workout2.getStartDate()) && !today.isAfter(workout2.getEndDate())) {
+				Workout currentWorkouttest = workout2;
+			}
+		}
+		
 		Workout currentWorkout = results.stream().filter((wout) -> !today.isBefore(wout.getStartDate()) && !today.isAfter(wout.getEndDate())).findFirst().orElse(null);
 		
 		Collection<Workout> doneWorkouts = results.stream().filter((wout) -> today.isAfter(wout.getEndDate())).collect(Collectors.toSet());
@@ -169,6 +176,9 @@ public class WorkoutController {
 			
 			model.put("current", currentWorkout);
 			model.put("next", nextWorkouts);			
+		} else {
+			Collection<Workout> nextWorkouts = results.stream().filter((wout) -> today.isBefore(wout.getStartDate())).collect(Collectors.toSet());
+			model.put("next", nextWorkouts);
 		}
 		
 		log.info("workouts list [user=" + user.getUsername() + ", principal=" + principal.getName() + "]");
