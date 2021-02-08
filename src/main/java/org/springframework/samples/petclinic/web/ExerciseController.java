@@ -23,6 +23,7 @@ import javax.validation.Valid;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.samples.petclinic.model.Exercise;
 import org.springframework.samples.petclinic.model.ExerciseType;
 import org.springframework.samples.petclinic.model.Exercises;
@@ -36,6 +37,7 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -88,31 +90,16 @@ public class ExerciseController {
 	}
 	
 	@GetMapping(value = "/exercises")
-	public String processFindForm(Exercise exercise, BindingResult result, Map<String, Object> model) {
+	public String processFindForm(Exercise exercise, BindingResult result, @RequestParam(name = "error", required = false) String error, Map<String, Object> model) {
 
-		// allow parameterless GET request for /exercises to return all records
-		/* if (exercise.getName() == null) {
-			exercise.setName(""); // empty string signifies broadest possible search
-		} */
-
-		// find owners by last name
 		Collection<Exercise> results = this.workoutService.findExercises();
-		/* if (results.isEmpty()) {
-			// no exercises found
-			result.rejectValue("lastName", "notFound", "not found");
-			return "owners/findOwners";
+		model.put("selections", results);
+		
+		if (error != null && !error.isEmpty()) {
+			model.put("error", error);
 		}
-		else 
-		if (results.size() == 1) {
-			// 1 owner found
-			exercise = results.iterator().next();
-			return "redirect:/exercises/" + exercise.getId();
-		}
-		else {*/
-			// multiple owners found
-			model.put("selections", results);
-			return "exercises/exercisesList";
-		// }
+		
+		return "exercises/exercisesList";
 	}
 
 	@GetMapping(value = "/exercises/new")
@@ -155,13 +142,18 @@ public class ExerciseController {
 	}
 
 	@GetMapping(value = "/exercises/{exerciseId}/delete")
-	public String deleteExercise(@PathVariable("exerciseId") int exerciseId, ModelMap model, Principal principal) {
+	public ModelAndView deleteExercise(@PathVariable("exerciseId") int exerciseId, ModelMap model, Principal principal) {
+		ModelAndView mav = new ModelAndView("redirect:/exercises");
 		Exercise exercise = this.workoutService.findExerciseById(exerciseId);
 		if (exercise != null) {
-			this.workoutService.deleteExercise(exercise);
+			try {
+				this.workoutService.deleteExercise(exercise);
+			} catch (DataIntegrityViolationException e) {
+				mav.addObject("error", "No se puede eliminar el ejercicio debido a que se encuentra vinculado a uno o más entrenamientos");
+			}
 			log.info("exercise with ID=" + exerciseId + " has been deleted by " + principal.getName());
 		}
-		return "redirect:/exercises";
+		return mav;
 	}
 
 	/**
