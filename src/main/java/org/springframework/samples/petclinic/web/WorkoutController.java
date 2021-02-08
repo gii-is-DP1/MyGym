@@ -158,14 +158,7 @@ public class WorkoutController {
 		Collection<Workout> results = this.workoutService.findWorkoutsByUser(user.getUsername());
 		
 		final LocalDate today = LocalDate.now();
-		
-		
-		for (Workout workout2 : results) {
-			if (!today.isBefore(workout2.getStartDate()) && !today.isAfter(workout2.getEndDate())) {
-				Workout currentWorkouttest = workout2;
-			}
-		}
-		
+				
 		Workout currentWorkout = results.stream().filter((wout) -> !today.isBefore(wout.getStartDate()) && !today.isAfter(wout.getEndDate())).findFirst().orElse(null);
 		
 		Collection<Workout> doneWorkouts = results.stream().filter((wout) -> today.isAfter(wout.getEndDate())).collect(Collectors.toSet());

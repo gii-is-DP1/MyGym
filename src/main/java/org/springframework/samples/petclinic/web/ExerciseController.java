@@ -28,6 +28,7 @@ import org.springframework.samples.petclinic.model.Exercise;
 import org.springframework.samples.petclinic.model.ExerciseType;
 import org.springframework.samples.petclinic.model.Exercises;
 import org.springframework.samples.petclinic.service.WorkoutService;
+import org.springframework.samples.petclinic.util.ExerciseValidator;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -64,6 +65,7 @@ public class ExerciseController {
 	@InitBinder("exercise")
 	public void initOwnerBinder(WebDataBinder dataBinder) {
 		dataBinder.setDisallowedFields("id");
+		dataBinder.addValidators(new ExerciseValidator());
 	}
 
 

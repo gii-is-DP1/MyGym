@@ -64,53 +64,28 @@ public class TrainingController {
 	public TrainingController(WorkoutService workoutService) {
 		this.workoutService = workoutService;
 	}
-	
-	/* @ModelAttribute("training")
-	public Training findTraining(@PathVariable("trainingId") Integer trainingId) {
-		Training result = null; 
-		if (trainingId != null) {
-			result = this.workoutService.findTrainingById(trainingId);
-		} else {
-			result = new Training();
-		}
-		return result;
-	}*/
-
-	/* @InitBinder("training")
-	public void initTrainingBinder(WebDataBinder dataBinder) {
-		dataBinder.setDisallowedFields("id");
-	} */
-	
-	/* @GetMapping(value = "/trainings/find")
-	public String initFindForm(Map<String, Object> model) {
-		model.put("training", new Training());
-		return "trainings/trainingsList";
-	} */
 
 	@GetMapping(value = "/trainings")
 	public String processFindForm(Training training, BindingResult result, Map<String, Object> model) {
-		
-		String name = training != null && training.getName() != null ? training.getName() : "";
-		System.out.println("name = " + name);
+		if (training == null) {
+			training = new Training();
+		}
 		
 		// find owners by last name
-		Collection<Training> results = this.workoutService.findTrainingsByName(name);
-		System.out.println("results size: " + results.size());
-		if (results.isEmpty()) {
-			// no exercises found
-			result.rejectValue("name", "notFound", "not found");
-			return VIEWS_TRAININGS_LIST;
+		Collection<Training> results = this.workoutService.findTrainingsByName(training.getName());
+		
+		if (training.getName() != null && !training.getName().trim().isEmpty()) {
+			if (results.isEmpty()) {
+				// no exercises found
+				result.rejectValue("name", "notFound", "not found");
+				return VIEWS_TRAININGS_LIST;
+			} else if (results.size() == 1) {
+				Training found = results.iterator().next();
+				return "redirect:/trainings/" + found.getId();
+			}			
 		}
-		else if (!name.isEmpty() && results.size() == 1) {
-			// 1 owner found
-			Training uniqueFound = results.iterator().next();
-			return "redirect:/trainings/" + uniqueFound.getId();
-		}
-		else {
-			// multiple owners found
-			model.put("selections", results);			
-			return VIEWS_TRAININGS_LIST;
-		}
+		model.put("selections", results);			
+		return VIEWS_TRAININGS_LIST;
 	}
 
 	@GetMapping(value = "/trainings/new")
