@@ -216,7 +216,12 @@ public class WorkoutController {
 				
                 return VIEWS_ASSIGN_WORKOUT;
 			}
-			return "redirect:/workouts?username=" + workout.getUser().getUsername();
+			
+			String queryParam = "";
+			if (workout.getUser() != null && workout.getUser().getUsername() != null) {
+				queryParam = "?username=" + workout.getUser().getUsername();
+			}
+			return "redirect:/workouts" + queryParam;
 		}
 	}
 	
@@ -265,10 +270,10 @@ public class WorkoutController {
 		}
 		return "redirect:/workouts";
 	}
-
+	
 	@PostMapping(value = "/workouts/{workoutId}/edit")
 	public String processUpdateForm(@Valid Workout workout, BindingResult result, @PathVariable("workoutId") int workoutId, ModelMap model, HttpServletRequest request, Principal principal) {
-		if (workout.getWorkoutTrainings().isEmpty()) {
+		if (workout.getWorkoutTrainings().isEmpty() || workout.getWorkoutTrainings().stream().allMatch(v -> v == null)) {
 			result.rejectValue("workoutTrainings", "notEmpty", "Debe seleccionar algún entrenamiento para la rutina");
 		}
 		
@@ -301,7 +306,7 @@ public class WorkoutController {
 				
                 return VIEWS_ASSIGN_WORKOUT;
 			}
-			return "redirect:/workouts?username=" + workout.getUser().getUsername();
+			return "redirect:/workouts/" + workoutToUpdate.getId();
 		}
 	}
 	
