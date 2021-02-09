@@ -1,5 +1,6 @@
 package org.springframework.samples.petclinic.web;
 
+import java.security.Principal;
 import java.util.Collection;
 import java.util.Map;
 
@@ -19,6 +20,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Controller
 public class ProductController {
 
@@ -42,7 +46,8 @@ public class ProductController {
 		if (product == null) {
 			product = new Product();
 		}
-		
+
+		log.debug("getting products by name = " + product.getName());
 		Collection<Product> results = this.productService.findProductByName(product.getName());
 
 		model.put("products", results);
@@ -58,27 +63,29 @@ public class ProductController {
 	}
 
 	@PostMapping(value = "/products/new")
-	public String processCreationForm(@Valid Product product, BindingResult result, ModelMap model) {
+	public String processCreationForm(@Valid Product product, BindingResult result, ModelMap model, Principal principal) {
 		if (result.hasErrors()) {
 			model.put("product", product);
 			return VIEWS_PRODUCTS_CREATE_OR_UPDATE_FORM;
 		} else {
 			this.productService.saveProduct(product);
+			log.info("Product with ID = " + product.getId() + " created by " + principal.getName());
 			return "redirect:/products";
 		}
 	}
 
 	@GetMapping("/products/{productId}")
-	public ModelAndView showSala(@PathVariable("productId") int productId) {
+	public ModelAndView showProduct(@PathVariable("productId") int productId) {
 		ModelAndView mav = new ModelAndView("products/productDetails");
 		mav.addObject(this.productService.findProductById(productId));
 		return mav;
 	}
 
 	@GetMapping(value = "/products/{productId}/delete")
-	public String deleteSala(@PathVariable("productId") int productId, ModelMap model) {
+	public String deleteSala(@PathVariable("productId") int productId, ModelMap model, Principal principal) {
 		Product product = this.productService.findProductById(productId);
 		if (product != null) {
+			log.info("Product with ID = " + product.getId() + " deleted by " + principal.getName());
 			this.productService.deleteProduct(product);
 		}
 		return "redirect:/products";
@@ -93,7 +100,7 @@ public class ProductController {
 
 	@PostMapping(value = "/products/{productId}/edit")
 	public String processUpdateForm(@Valid Product product, BindingResult result,
-			@PathVariable("productId") int productId, ModelMap model) {
+			@PathVariable("productId") int productId, ModelMap model, Principal principal) {
 		if (result.hasErrors()) {
 			model.put("product", product);
 			return VIEWS_PRODUCTS_CREATE_OR_UPDATE_FORM;
@@ -101,6 +108,7 @@ public class ProductController {
 			Product productToUpdate = this.productService.findProductById(productId);
 			BeanUtils.copyProperties(product, productToUpdate, "id", "stockage");
 			this.productService.saveProduct(productToUpdate);
+			log.info("Product with ID = " + product.getId() + " updated by " + principal.getName());
 			return "redirect:/products";
 		}
 	}

@@ -29,6 +29,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Controller
 public class SaleController {
 
@@ -78,7 +81,7 @@ public class SaleController {
 	}
 
 	@PostMapping(value = "/sales/new")
-	public String processCreationForm(@Valid Sale sale, BindingResult result, ModelMap model) {
+	public String processCreationForm(@Valid Sale sale, BindingResult result, ModelMap model, Principal principal) {
 		if (sale.getProductSales() == null || sale.getProductSales().isEmpty()) {
 			result.rejectValue("productSales", "invalid", "Debe incluir al menos un producto");
 		}
@@ -92,7 +95,9 @@ public class SaleController {
 			
 			try {
 				this.productService.saveSale(sale);
-				
+
+                log.info("sale with ID=" + sale.getId() + " has been created by " + principal.getName());
+                
 				return "redirect:/sales";
 			} catch (OutOfStockException e) {
 				result.rejectValue("productSales", "invalid", "No hay stock suficiente para el producto " + e.getProduct().getName() + " (stock actual = " + e.getProduct().getStockage() + ")");
@@ -113,31 +118,18 @@ public class SaleController {
 			mav = new ModelAndView(VIEWS_ERROR);
 			mav.addObject("exception", new Exception("La venta solicitada no existe"));
 		} else {
-			/*boolean allowed = hasAuthority(SecurityConfiguration.ADMIN);
-			System.out.println("is admin: " + allowed);
-			if (!allowed) {
-				User user = new User();
-				user.setUsername(principal.getName());
-				Collection<Training> userTrainings = this.workoutService.findTrainingsByUser(user);
-				allowed = userTrainings.stream().anyMatch(t -> t.getId().equals(saleId));
-				System.out.println("training owned by user: " + allowed);
-			}
-			if (allowed) {*/
-				mav = new ModelAndView(VIEWS_SALES_DETAIL);
-				mav.addObject("sale", sale);
-			/*} else {
-				mav = new ModelAndView(VIEWS_ERROR);
-				mav.addObject("exception", new Exception("No tiene permiso para visualizar el entrenamiento"));
-			}*/
+			mav = new ModelAndView(VIEWS_SALES_DETAIL);
+			mav.addObject("sale", sale);
 		}
 		return mav;
 	}
 	
 	@GetMapping(value = "/sales/{saleId}/delete")
-	public String deleteTraining(@PathVariable("saleId") int saleId, ModelMap model) {
+	public String deleteTraining(@PathVariable("saleId") int saleId, ModelMap model, Principal principal) {
 		Sale sale = this.productService.findSaleById(saleId);
 		if (sale != null) {
 			this.productService.deleteSale(sale);
+            log.info("sale with ID=" + sale.getId() + " has been deleted by " + principal.getName());
 		}
 		return "redirect:/sales";
 	}
@@ -150,7 +142,7 @@ public class SaleController {
 	}
 	
 	@PostMapping(value = "/sales/{saleId}/edit")
-	public String processUpdateForm(@Valid Sale sale, BindingResult result, @PathVariable("saleId") int saleId, ModelMap model) {
+	public String processUpdateForm(@Valid Sale sale, BindingResult result, @PathVariable("saleId") int saleId, ModelMap model, Principal principal) {
 		if (sale.getProductSales() == null || sale.getProductSales().isEmpty()) {
 			result.rejectValue("productSales", "invalid", "Debe incluir al menos un producto");
 		}
@@ -185,6 +177,8 @@ public class SaleController {
 			
 			try {
 				this.productService.saveSale(saleToUpdate);
+
+                log.info("sale with ID=" + sale.getId() + " has been updated by " + principal.getName());
 				
 			} catch (OutOfStockException e) {
 				result.rejectValue("productSales", "invalid", "No hay stock suficiente para el producto " + e.getProduct().getName() + " (stock actual = " + e.getProduct().getStockage() + ")");

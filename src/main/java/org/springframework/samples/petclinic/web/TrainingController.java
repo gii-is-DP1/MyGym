@@ -129,6 +129,7 @@ public class TrainingController {
 		} else {
 			boolean allowed = hasAuthority(SecurityConfiguration.ADMIN);
 			if (!allowed) {
+				log.debug("user is not allowed to get other user trainings, retrieving trainings owned by logged user");
 				User user = new User();
 				user.setUsername(principal.getName());
 				Collection<Training> userTrainings = this.workoutService.findTrainingsByUser(user);

@@ -116,31 +116,18 @@ public class PurchaseController {
 			mav = new ModelAndView(VIEWS_ERROR);
 			mav.addObject("exception", new Exception("La compra solicitada no existe"));
 		} else {
-			/*boolean allowed = hasAuthority(SecurityConfiguration.ADMIN);
-			System.out.println("is admin: " + allowed);
-			if (!allowed) {
-				User user = new User();
-				user.setUsername(principal.getName());
-				Collection<Training> userTrainings = this.workoutService.findTrainingsByUser(user);
-				allowed = userTrainings.stream().anyMatch(t -> t.getId().equals(purchaseId));
-				System.out.println("training owned by user: " + allowed);
-			}
-			if (allowed) {*/
-				mav = new ModelAndView(VIEWS_PURCHASES_DETAIL);
-				mav.addObject("purchase", purchase);
-			/*} else {
-				mav = new ModelAndView(VIEWS_ERROR);
-				mav.addObject("exception", new Exception("No tiene permiso para visualizar el entrenamiento"));
-			}*/
+			mav = new ModelAndView(VIEWS_PURCHASES_DETAIL);
+			mav.addObject("purchase", purchase);
 		}
 		return mav;
 	}
 	
 	@GetMapping(value = "/purchases/{purchaseId}/delete")
-	public String deleteTraining(@PathVariable("purchaseId") int purchaseId, ModelMap model) {
+	public String deleteTraining(@PathVariable("purchaseId") int purchaseId, ModelMap model, Principal principal) {
 		Purchase purchase = this.productService.findPurchaseById(purchaseId);
 		if (purchase != null) {
 			this.productService.deletePurchase(purchase);
+            log.info("purchase with ID=" + purchase.getId() + " has been deleted by " + principal.getName());
 		}
 		return "redirect:/purchases";
 	}
