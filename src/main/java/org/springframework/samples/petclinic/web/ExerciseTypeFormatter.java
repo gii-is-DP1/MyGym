@@ -54,8 +54,8 @@ public class ExerciseTypeFormatter implements Formatter<ExerciseType> {
 	}
 
 	@Override
-	public String print(ExerciseType workoutService, Locale locale) {
-		return workoutService.getName();
+	public String print(ExerciseType exerciseType, Locale locale) {
+		return exerciseType.getName();
 	}
 
 	@Override

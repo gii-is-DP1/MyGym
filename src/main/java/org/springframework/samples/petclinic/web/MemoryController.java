@@ -161,13 +161,6 @@ public class MemoryController {
 	public @ResponseBody Memories getMemoriesList(Principal principal) {
 		Memories memories = new Memories();
 		
-		/*String name = null;
-		if (exercise != null) { 
-			name = exercise.getName();
-		}
-		
-		exercises.getExerciseList().addAll(this.workoutService.findExercises(name));*/
-		
 		User user = new User();
 		user.setUsername(principal.getName());
 		Collection<Training> userTrainings = this.workoutService.findTrainingsByUser(user);
@@ -181,11 +174,5 @@ public class MemoryController {
 		
 		return memories;
 	}
-	
-	/* @SuppressWarnings("unchecked")
-	private boolean isAllowedTo(String permission) {
-		Collection<SimpleGrantedAuthority> authorities = (Collection<SimpleGrantedAuthority>) SecurityContextHolder.getContext().getAuthentication().getAuthorities();
-		return SecurityConfiguration.isAllowedTo(permission, authorities);
-	} */
 
 }

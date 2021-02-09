@@ -16,6 +16,8 @@
 package org.springframework.samples.petclinic.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -27,14 +29,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.dao.DataAccessException;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.samples.petclinic.model.Exercise;
 import org.springframework.samples.petclinic.model.ExerciseType;
+import org.springframework.samples.petclinic.model.Memory;
 import org.springframework.samples.petclinic.model.Training;
 import org.springframework.samples.petclinic.model.User;
 import org.springframework.samples.petclinic.model.Workout;
-import org.springframework.samples.petclinic.model.WorkoutTraining;
 import org.springframework.samples.petclinic.service.exceptions.ExistingWorkoutInDateRangeException;
+import org.springframework.samples.petclinic.service.exceptions.MemoryOutOfTimeException;
 import org.springframework.samples.petclinic.service.exceptions.NoNameException;
 import org.springframework.samples.petclinic.util.EntityUtils;
 import org.springframework.stereotype.Service;
@@ -321,4 +323,70 @@ class WorkoutServiceTests {
     	assertThat(workout).isNull();
     	assertThat(workouts.size()).isEqualTo(currentSize - 1);
     }
+    
+    @Test
+	@Transactional
+	public void shouldCreateMemory() throws DataAccessException, MemoryOutOfTimeException {
+		Training training = this.workoutService.findTrainingById(2);
+		
+		Memory memory = new Memory();
+		memory.setDate(LocalDate.of(2021, 01, 10));
+		memory.setText("Texto de la memoria");
+		memory.setWeight(80.0);
+		memory.setTraining(training);
+		
+		this.workoutService.saveMemory(memory);
+		
+		Memory found = this.workoutService.findMemoryById(memory.getId());
+		
+		assertNotNull(found.getId());
+	}
+    
+    @Test
+	@Transactional
+	public void shouldThrowsMemoryOutOfTimeExceptionAtMemorySaving() throws DataAccessException {
+		Training training = this.workoutService.findTrainingById(2);
+		
+		Memory memory = new Memory();
+		memory.setDate(LocalDate.of(2020, 01, 10));
+		memory.setText("Texto de la memoria");
+		memory.setWeight(80.0);
+		memory.setTraining(training);
+		
+		Assertions.assertThrows(MemoryOutOfTimeException.class, () -> {
+			this.workoutService.saveMemory(memory);
+		});
+	}
+    
+    @Test
+	@Transactional
+	public void shouldDeleteMemory() throws DataAccessException, MemoryOutOfTimeException {
+		Training training = this.workoutService.findTrainingById(2);
+		
+		Memory memory = training.getMemories().get(0);
+
+		this.workoutService.deleteMemory(memory);
+		
+		memory = this.workoutService.findMemoryById(memory.getId());
+
+		assertNull(memory);
+	}
+    
+    @Test
+	@Transactional
+	public void shouldUpdateMemory() throws DataAccessException, MemoryOutOfTimeException {
+		Training training = this.workoutService.findTrainingById(2);
+		Memory memory = training.getMemories().get(0);
+		
+		memory.setWeight(90.0);
+		
+		this.workoutService.saveMemory(memory);
+		
+		training = this.workoutService.findTrainingById(2);
+		Memory postUpdateMemory = training.getMemories().stream()
+				.filter(m -> m.getId().equals(memory.getId()))
+				.findFirst().orElse(null);
+
+		assertThat(postUpdateMemory.getWeight()).isEqualTo(90.0);
+	}
 }

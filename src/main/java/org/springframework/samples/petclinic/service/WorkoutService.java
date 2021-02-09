@@ -48,7 +48,6 @@ import lombok.extern.slf4j.Slf4j;
  *
  * @author Michael Isvy
  */
-@Slf4j
 @Service
 public class WorkoutService {
 
@@ -103,18 +102,14 @@ public class WorkoutService {
 			throw new NoNameException();
 		}
 		trainingRepository.save(training);
-		log.info("saved training with ID = " + training.getId());
 	}
 	
 	@Transactional
 	public void deleteTraining(Training training) throws DataAccessException {
 		Collection<WorkoutTraining> workoutTrainings = workoutTrainingRepository.findByTraining(training);
-		workoutTrainings.forEach(wt -> {
-			System.out.println("deleting workout training " + wt);
-			workoutTrainingRepository.delete(wt);
-		});
-		
 		training.getMemories().forEach(m -> memoryRepository.delete(m));
+		workoutTrainings.forEach(wt -> workoutTrainingRepository.delete(wt));
+		
 		trainingRepository.delete(training);
 	}
 
@@ -125,7 +120,6 @@ public class WorkoutService {
 
 	@Transactional(readOnly = true)
 	public Collection<Training> findTrainingsByUser(User user) throws DataAccessException {
-		log.info("getting trainings for user " + user.getUsername());
 		return trainingRepository.findByUsername(user.getUsername());
 	}
 	
@@ -179,6 +173,13 @@ public class WorkoutService {
 	}
 	
 	public void deleteWorkout(Workout workout) {
+		
+		workout.getWorkoutTrainings().forEach(wt -> {
+			this.deleteTraining(wt.getTraining());
+			this.deleteWorkoutTraining(wt);
+		});
+			
+		
 		workoutRepository.delete(workout);
 	}
 
