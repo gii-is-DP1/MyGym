@@ -184,7 +184,7 @@ public class SaleController {
 			saleToUpdate.setTotal(getSaleTotal(saleToUpdate));
 			
 			try {
-				this.productService.saveSale(sale);
+				this.productService.saveSale(saleToUpdate);
 				
 			} catch (OutOfStockException e) {
 				result.rejectValue("productSales", "invalid", "No hay stock suficiente para el producto " + e.getProduct().getName() + " (stock actual = " + e.getProduct().getStockage() + ")");
