@@ -28,6 +28,13 @@ Or you can run it from Maven directly using the Spring Boot Maven plugin. If you
 ./mvnw spring-boot:run
 ```
 
+## Logs location
+Application logs can be accesed into maven target directory:
+```
+${workspace}/MyGym/target/logs/server.log.html
+```
+We recommend open log file with web browser.
+
 ## In case you find a bug/suggested improvement for Spring Petclinic
 Our issue tracker is available here: https://github.com/gii-is-DP1/spring-petclinic/issues
 
@@ -36,6 +43,7 @@ Our issue tracker is available here: https://github.com/gii-is-DP1/spring-petcli
 
 In its default configuration, Petclinic uses an in-memory database (H2) which
 gets populated at startup with data. 
+
 
 ## Working with Petclinic in your IDE
 
