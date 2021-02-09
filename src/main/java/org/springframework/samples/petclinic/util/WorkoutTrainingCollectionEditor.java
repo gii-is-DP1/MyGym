@@ -1,7 +1,6 @@
 package org.springframework.samples.petclinic.util;
 
 import java.util.Collection;
-import java.util.TreeSet;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.propertyeditors.CustomCollectionEditor;
