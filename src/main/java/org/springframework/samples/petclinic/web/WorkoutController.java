@@ -203,7 +203,7 @@ public class WorkoutController {
 			} catch (ExistingWorkoutInDateRangeException e) {
 				log.error("error creating workout", e);
 				model.put("workout", workout);
-				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("DD/MM/YYYY");
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/YYYY");
 				
 				LocalDate wStartDate = workout.getStartDate();
 				if (!e.getStartDate().isAfter(wStartDate) && !e.getEndDate().isBefore(wStartDate)) {
@@ -293,7 +293,7 @@ public class WorkoutController {
 			} catch (ExistingWorkoutInDateRangeException e) {
 				log.error("error updating workout", e);
 				model.put("workout", workout);
-				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("DD/MM/YYYY");
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/YYYY");
 				
 				LocalDate wStartDate = workout.getStartDate();
 				if (!e.getStartDate().isAfter(wStartDate) && !e.getEndDate().isBefore(wStartDate)) {
