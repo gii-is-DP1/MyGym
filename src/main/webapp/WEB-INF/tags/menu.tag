@@ -66,19 +66,23 @@
 				<span class="white-text"><i class="fa fa-home fa-fw mr-2"></i>Inicio</span>
 			</petclinic:menuItem>
 			
-			<petclinic:menuSection active="${name eq 'workout' or name eq 'exercises' or name eq 'trainings'}" title="Ejercicios">
-				<petclinic:menuItem active="${name eq 'workout'}" url="/workouts" title="Workouts">
-					<i class="fa fa-calendar-alt fa-fw mr-2"></i>Rutinas
-				</petclinic:menuItem>
-				<sec:authorize access="hasAnyAuthority('admin', 'trainer')">
-					<petclinic:menuItem active="${name eq 'trainings'}" url="/trainings" title="Trainings">
-						<i class="fa fa-stopwatch fa-fw mr-2"></i>Entrenamientos
+			
+			<sec:authorize access="isAuthenticated()">
+				<petclinic:menuSection active="${name eq 'workout' or name eq 'exercises' or name eq 'trainings'}" title="Ejercicios">
+					<petclinic:menuItem active="${name eq 'workout'}" url="/workouts" title="Workouts">
+						<i class="fa fa-calendar-alt fa-fw mr-2"></i>Rutinas
 					</petclinic:menuItem>
-					<petclinic:menuItem active="${name eq 'exercises'}" url="/exercises" title="Exercises">
-						<i class="fa fa-dumbbell fa-fw mr-2"></i>Ejercicios
-					</petclinic:menuItem>
-				</sec:authorize>
-			</petclinic:menuSection>
+					<sec:authorize access="hasAnyAuthority('admin', 'trainer')">
+						<petclinic:menuItem active="${name eq 'trainings'}" url="/trainings" title="Trainings">
+							<i class="fa fa-stopwatch fa-fw mr-2"></i>Entrenamientos
+						</petclinic:menuItem>
+						<petclinic:menuItem active="${name eq 'exercises'}" url="/exercises" title="Exercises">
+							<i class="fa fa-dumbbell fa-fw mr-2"></i>Ejercicios
+						</petclinic:menuItem>
+					</sec:authorize>
+				</petclinic:menuSection>
+			</sec:authorize>
+			
 			<sec:authorize access="hasAuthority('admin')">
 				<petclinic:menuSection active="${name eq 'products' or name eq 'purchases' or name eq 'sales'}" title="Productos">
 					<petclinic:menuItem active="${name eq 'products'}" url="/products" title="Productos">
@@ -114,9 +118,12 @@
 					<span class="white-text"><i class="fa fa-kaaba fa-fw mr-2"></i>Salas</span>
 				</petclinic:menuItem>
 			</sec:authorize>
-			<petclinic:menuItem active="${name eq 'error'}" url="/actividades" title="Actividades">
-				<span class="white-text"><i class="fa fa-running fa-fw mr-2"></i>Actividades</span>
-			</petclinic:menuItem>
+			
+			<sec:authorize access="isAuthenticated()">
+				<petclinic:menuItem active="${name eq 'error'}" url="/actividades" title="Actividades">
+					<span class="white-text"><i class="fa fa-running fa-fw mr-2"></i>Actividades</span>
+				</petclinic:menuItem>
+			</sec:authorize>
 		</ul>
 
 
