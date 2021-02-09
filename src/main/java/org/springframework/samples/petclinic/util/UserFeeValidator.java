@@ -3,7 +3,6 @@ package org.springframework.samples.petclinic.util;
 import java.time.LocalDate;
 import java.util.Collection;
 
-import org.h2.util.StringUtils;
 import org.springframework.samples.petclinic.model.Fee;
 import org.springframework.samples.petclinic.model.Rate;
 import org.springframework.samples.petclinic.model.User;
@@ -46,7 +45,7 @@ public class UserFeeValidator implements Validator {
 			errors.rejectValue("fee.end_date", "notEmpty", "No puede estar vacío");
 		}
 		
-		if (amount == null) {
+		if (amount == null || amount <= 0.0) {
 			errors.rejectValue("fee.amount", "required");
 		} 
 		
@@ -54,7 +53,9 @@ public class UserFeeValidator implements Validator {
 			errors.rejectValue("fee.rate", "required");
 		} else {
 			Collection<Rate> rates = userService.findRates();
-			rates.stream().anyMatch(r -> r.getName().equals(rate.getName()));
+			if (!rates.isEmpty() && !rates.stream().anyMatch(r -> r.getName().equals(rate.getName()))) {
+				errors.rejectValue("fee.rate", "invalid", "El tipo de cuota especificado no existe");
+			}
 		}
 		
 	}
