@@ -9,7 +9,7 @@
 
 ## Logs location
 Application logs can be accesed into maven target directory:
-${workspace}/MyGym/target/logs/server.log.html
 ```
+${workspace}/MyGym/target/logs/server.log.html
 ```
 We recommend open log file with web browser.
