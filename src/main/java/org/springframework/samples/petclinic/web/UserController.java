@@ -12,11 +12,14 @@ import org.springframework.samples.petclinic.model.User;
 import org.springframework.samples.petclinic.model.UserType;
 import org.springframework.samples.petclinic.service.UserService;
 import org.springframework.samples.petclinic.service.exceptions.StartDateAfterEndDateException;
+import org.springframework.samples.petclinic.util.UserFeeValidator;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,6 +38,12 @@ public class UserController {
 	
 	@Autowired
 	private UserService usuarioService;
+	
+	@InitBinder("user")
+	public void initOwnerBinder(WebDataBinder dataBinder) {
+		dataBinder.setDisallowedFields("id");
+		//dataBinder.addValidators(new UserFeeValidator(usuarioService));
+	}
 	
 	@GetMapping()
 	public String listadoUsers(ModelMap modelMap) {
@@ -96,6 +105,12 @@ public class UserController {
 	@PostMapping(value = "/{userId}/edit")
 	public String processUpdateOwnerForm(@Valid User usuario, BindingResult result,
 			@PathVariable("userId") int userId, ModelMap model, Principal principal) {
+		if (usuario.getFee() != null && (usuario.getFee().getStart_date() != null || usuario.getFee().getEnd_date() != null)) {
+			UserFeeValidator userFeeValidator = new UserFeeValidator(usuarioService);
+			userFeeValidator.validate(usuario, result);
+		} else {
+			usuario.setFee(null);
+		}
 		if (result.hasErrors()) {
 			model.put("user", usuario);
 			return VIEWS_USUARIO_CREATE_OR_UPDATE_FORM;

@@ -47,7 +47,7 @@ public class UserService {
 
 	@Transactional(rollbackFor =  StartDateAfterEndDateException.class)
 	public void save(User user) throws DataAccessException, StartDateAfterEndDateException {
-		if(user.getFee().getStart_date().isAfter(user.getFee().getEnd_date())) {
+		if(user.getFee() != null && user.getFee().getStart_date().isAfter(user.getFee().getEnd_date())) {
 			throw new StartDateAfterEndDateException();
 		}
 		user.setEnabled(true);

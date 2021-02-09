@@ -12,9 +12,12 @@ import org.hibernate.envers.Audited;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 @Audited
-@Data
+@Getter
+@Setter
 @Entity
 public class Fee extends AuditableEntity {
 
