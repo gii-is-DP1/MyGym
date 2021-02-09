@@ -1,3 +1,4 @@
+-- user types
 INSERT INTO user_type VALUES ('admin');
 INSERT INTO user_type VALUES ('trainer');
 INSERT INTO user_type VALUES ('client');
@@ -20,11 +21,23 @@ INSERT INTO exercise_type VALUES (1, 'temporary');
 INSERT INTO exercise_type VALUES (2, 'repetitive');
 
 -- products
-INSERT INTO products(id, name, description, stockage, price) VALUES (1, 'Barra de chocolate', 'Esta to wena', 10, 2.50);
-INSERT INTO products(id, name, description, stockage, price) VALUES (2, 'Batidito de Fresa', 'Esta to weno', 23, 3.50);
-INSERT INTO products(id, name, description, stockage, price) VALUES (3, 'Anacardos 50gr', 'Estan to wenos', 10, 3.00);
+INSERT INTO products(id, name, description, stockage, price, inactive) VALUES (1, 'Barra de chocolate', 'Barra energética para recuperar energía tras un entrenamiento', 10, 2.50, false);
+INSERT INTO products(id, name, description, stockage, price, inactive) VALUES (2, 'Batido de fresa', 'Batido proteico concentrado al 70%', 20, 3.50, false);
+INSERT INTO products(id, name, description, stockage, price, inactive) VALUES (3, 'Anacardos 50gr', 'Anacardos crudos para aportar grasa buena al cuerpo', 10, 3.00, false);
 
--- user types
+
+-- purchase
+INSERT INTO purchase(id, date, total, vat) VALUES (1, '2021-01-01', 109.2, 4.0);
+
+-- product purchase
+INSERT INTO product_purchase(id, amount, price, product_id, purchase_id) VALUES (1, 15, 2.0, 1, 1);
+INSERT INTO product_purchase(id, amount, price, product_id, purchase_id) VALUES (2, 20, 3.0, 2, 1);
+INSERT INTO product_purchase(id, amount, price, product_id, purchase_id) VALUES (3, 10, 2.5, 3, 1);
+
+-- sale
+INSERT INTO sale(id, date, total, vat) VALUES (1, '2021-01-10', 10.4, 4.0);
+-- product sale
+INSERT INTO product_sale(id, amount, price, product_id, sale_id) VALUES (1, 5, 2.0, 1, 1);
 
 -- rate
 INSERT INTO rate VALUES (1, 'daily');
@@ -41,8 +54,15 @@ INSERT INTO training (id,name,description,is_generic) VALUES (2,'Circuito metab�
 INSERT INTO training_exercises (training_id, exercise_id) VALUES (1, 1);
 INSERT INTO training_exercises (training_id, exercise_id) VALUES (2, 2);
 
+-- memories
+INSERT INTO memory (id,date,text,weight,training_id) VALUES (1,'2021-01-02','seguimiento de peso en entrenamiento',85.0,2);
+INSERT INTO memory (id,date,text,weight,training_id) VALUES (2,'2021-01-09','seguimiento de peso en entrenamiento',84.0,2);
+INSERT INTO memory (id,date,text,weight,training_id) VALUES (3,'2021-01-16','seguimiento de peso en entrenamiento',83.6,2);
+INSERT INTO memory (id,date,text,weight,training_id) VALUES (4,'2021-01-23','seguimiento de peso en entrenamiento',84.0,2);
+INSERT INTO memory (id,date,text,weight,training_id) VALUES (5,'2021-02-06','seguimiento de peso en entrenamiento',84.3,2);
+
 -- workouts
-INSERT INTO workout(id,name,description,start_date,end_date,user_id) VALUES (1,'Rutina de iniciación','Toma de contacto con todos los grupos musculares','2021-01-01','2021-01-31',5);
+INSERT INTO workout(id,name,description,start_date,end_date,user_id) VALUES (1,'Rutina de iniciación','Toma de contacto con todos los grupos musculares','2021-01-01','2021-02-28',5);
 
 -- workout trainings
 INSERT INTO workout_training(id,week_day,training_id,workout_id) VALUES (1,1,2,1);

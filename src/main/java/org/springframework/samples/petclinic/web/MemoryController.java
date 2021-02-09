@@ -16,6 +16,7 @@
 package org.springframework.samples.petclinic.web;
 
 import java.security.Principal;
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Map;
@@ -30,7 +31,9 @@ import org.springframework.samples.petclinic.model.Memories;
 import org.springframework.samples.petclinic.model.Memory;
 import org.springframework.samples.petclinic.model.Training;
 import org.springframework.samples.petclinic.model.User;
+import org.springframework.samples.petclinic.model.Workout;
 import org.springframework.samples.petclinic.service.WorkoutService;
+import org.springframework.samples.petclinic.service.exceptions.MemoryOutOfTimeException;
 import org.springframework.samples.petclinic.util.MemoryValidator;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -42,11 +45,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * @author Juergen Hoeller
  * @author Ken Krebs
  * @author Arjen Poutsma
  */
+@Slf4j
 @Controller
 public class MemoryController {
 
@@ -91,14 +97,26 @@ public class MemoryController {
 
 	// Spring MVC calls method loadPetWithVisit(...) before processNewVisitForm is called
 	@PostMapping(value = "/trainings/{trainingId}/memories/new")
-	public String processNewMemoryForm(@PathVariable("trainingId") int trainingId, @Valid Memory memory, BindingResult result) {
+	public String processNewMemoryForm(@PathVariable("trainingId") int trainingId, @Valid Memory memory, BindingResult result, Principal principal) {
 		if (result.hasErrors()) {
 			return VIEWS_CREATE_OR_UPDATE_MEMORY;
 		}
 		else {
 			Training training = this.workoutService.findTrainingById(trainingId);
 			memory.setTraining(training);
-			this.workoutService.saveMemory(memory);
+			try {
+				this.workoutService.saveMemory(memory);
+                log.info("added memory with ID=" + memory.getId() + " to training with ID=" + trainingId + " by " + principal.getName());
+			} catch (MemoryOutOfTimeException e) {
+				Workout workout = training.getWorkoutTraining().getWorkout();
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("DD/MM/YYYY");
+				result.rejectValue("date", "outOfTime", 
+						"La fecha debe estar contenida dentro del periodo de la rutina (" 
+						+ formatter.format(workout.getStartDate()) + " - " 
+						+ formatter.format(workout.getEndDate()) + ")");
+				return VIEWS_CREATE_OR_UPDATE_MEMORY;
+			}
+			log.info("added memory with ID=" + memory.getId() + " to training with ID=" + trainingId + " by " + principal.getName());
 			return "redirect:/trainings/{trainingId}";
 		}
 	}
@@ -111,14 +129,26 @@ public class MemoryController {
 
 	// Spring MVC calls method loadPetWithVisit(...) before processNewVisitForm is called
 	@PostMapping(value = "/trainings/{trainingId}/memories/{memoryId}/edit")
-	public String processEditMemoryForm(@PathVariable("memoryId") int memoryId, @Valid Memory memory, BindingResult result) {
+	public String processEditMemoryForm(@PathVariable("memoryId") int memoryId, @Valid Memory memory, BindingResult result, Principal principal) {
 		if (result.hasErrors()) {
 			return VIEWS_CREATE_OR_UPDATE_MEMORY;
 		}
 		else {
 			Memory memoryToUpdate = this.workoutService.findMemoryById(memoryId);
 			BeanUtils.copyProperties(memory, memoryToUpdate, "id", "training");
-			this.workoutService.saveMemory(memoryToUpdate);
+			try {
+				this.workoutService.saveMemory(memoryToUpdate);
+                log.info("memory with ID=" + memoryId + " has been updated by " + principal.getName());
+			} catch (MemoryOutOfTimeException e) {
+				Workout workout = memoryToUpdate.getTraining().getWorkoutTraining().getWorkout();
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("DD/MM/YYYY");
+				result.rejectValue("date", "outOfTime", 
+						"La fecha debe estar contenida dentro del periodo de la rutina (" 
+						+ formatter.format(workout.getStartDate()) + " - " 
+						+ formatter.format(workout.getEndDate()) + ")");
+				return VIEWS_CREATE_OR_UPDATE_MEMORY;
+			}
+			log.info("memory with ID=" + memoryId + " has been updated by " + principal.getName());
 			return "redirect:/trainings/{trainingId}";
 		}
 	}
@@ -130,13 +160,6 @@ public class MemoryController {
 	)
 	public @ResponseBody Memories getMemoriesList(Principal principal) {
 		Memories memories = new Memories();
-		
-		/*String name = null;
-		if (exercise != null) { 
-			name = exercise.getName();
-		}
-		
-		exercises.getExerciseList().addAll(this.workoutService.findExercises(name));*/
 		
 		User user = new User();
 		user.setUsername(principal.getName());
@@ -151,11 +174,5 @@ public class MemoryController {
 		
 		return memories;
 	}
-	
-	/* @SuppressWarnings("unchecked")
-	private boolean isAllowedTo(String permission) {
-		Collection<SimpleGrantedAuthority> authorities = (Collection<SimpleGrantedAuthority>) SecurityContextHolder.getContext().getAuthentication().getAuthorities();
-		return SecurityConfiguration.isAllowedTo(permission, authorities);
-	} */
 
 }

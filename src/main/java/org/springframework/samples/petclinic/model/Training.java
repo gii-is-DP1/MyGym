@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -13,21 +14,26 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlElement;
 
+import org.hibernate.envers.Audited;
 import org.springframework.beans.support.MutableSortDefinition;
 import org.springframework.beans.support.PropertyComparator;
 
 import lombok.Getter;
 import lombok.Setter;
 
+@Audited
 @Setter
 @Getter
 @Entity
 @Table(name = "training")
-public class Training extends BaseEntity {
+public class Training extends AuditableEntity {
 	
+	@NotNull
 	String name;
 	
 	String description;
@@ -35,13 +41,16 @@ public class Training extends BaseEntity {
 	@Column(name="is_generic")
 	Boolean isGeneric;
 	
-	@ManyToMany(fetch = FetchType.EAGER)
+	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@JoinTable(name = "training_exercises", joinColumns = @JoinColumn(name = "training_id"),
 		inverseJoinColumns = @JoinColumn(name = "exercise_id"))
 	private Set<Exercise> exercises;
 	
 	@OneToMany(mappedBy = "training", fetch = FetchType.EAGER)
 	private Set<Memory> memories;
+	
+	@OneToOne(mappedBy = "training")
+	WorkoutTraining workoutTraining;
 	
 	protected Set<Memory> getMemoriesInternal() {
 		if (this.memories == null) {

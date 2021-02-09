@@ -17,16 +17,18 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlElement;
 
+import org.hibernate.envers.Audited;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import lombok.Getter;
 import lombok.Setter;
 
+@Audited
 @Setter
 @Getter
 @Entity
 @Table(name = "workout")
-public class Workout extends BaseEntity {
+public class Workout extends AuditableEntity {
 	
 	@NotEmpty
 	@Column
@@ -50,7 +52,7 @@ public class Workout extends BaseEntity {
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	LocalDate endDate;
 	
-	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.REFRESH, mappedBy = "workout")
+	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "workout")
 	Set<WorkoutTraining> workoutTrainings;
 	
 	protected Set<WorkoutTraining> getWorkoutTrainingsInternal() {

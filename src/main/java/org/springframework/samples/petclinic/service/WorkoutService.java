@@ -17,8 +17,11 @@ package org.springframework.samples.petclinic.service;
 
 import java.util.Collection;
 
+import javax.persistence.EntityManager;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.samples.petclinic.model.Exercise;
 import org.springframework.samples.petclinic.model.ExerciseType;
 import org.springframework.samples.petclinic.model.Memory;
@@ -32,9 +35,12 @@ import org.springframework.samples.petclinic.repository.TrainingRepository;
 import org.springframework.samples.petclinic.repository.WorkoutRepository;
 import org.springframework.samples.petclinic.repository.WorkoutTrainingRepository;
 import org.springframework.samples.petclinic.service.exceptions.ExistingWorkoutInDateRangeException;
+import org.springframework.samples.petclinic.service.exceptions.MemoryOutOfTimeException;
 import org.springframework.samples.petclinic.service.exceptions.NoNameException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Mostly used as a facade for all Petclinic controllers Also a placeholder
@@ -54,6 +60,9 @@ public class WorkoutService {
 	private WorkoutRepository workoutRepository;
 	
 	private MemoryRepository memoryRepository;
+	
+	@Autowired
+	private EntityManager entityManager;
 	
  
 	@Autowired
@@ -77,7 +86,7 @@ public class WorkoutService {
 		exerciseRepository.save(exercise);
 	}
 	
-	@Transactional
+	@Transactional(rollbackFor = DataIntegrityViolationException.class)
 	public void deleteExercise(Exercise exercise) throws DataAccessException {
 		exerciseRepository.delete(exercise);
 	}
@@ -98,12 +107,9 @@ public class WorkoutService {
 	@Transactional
 	public void deleteTraining(Training training) throws DataAccessException {
 		Collection<WorkoutTraining> workoutTrainings = workoutTrainingRepository.findByTraining(training);
-		workoutTrainings.forEach(wt -> {
-			System.out.println("deleting workout training " + wt);
-			workoutTrainingRepository.delete(wt);
-		});
-		
 		training.getMemories().forEach(m -> memoryRepository.delete(m));
+		workoutTrainings.forEach(wt -> workoutTrainingRepository.delete(wt));
+		
 		trainingRepository.delete(training);
 	}
 
@@ -115,6 +121,13 @@ public class WorkoutService {
 	@Transactional(readOnly = true)
 	public Collection<Training> findTrainingsByUser(User user) throws DataAccessException {
 		return trainingRepository.findByUsername(user.getUsername());
+	}
+	
+	public Collection<Training> findTrainingsGenericOrByworkout(Workout workout) throws DataAccessException {
+		if (workout == null || workout.getId() == null) {
+			return trainingRepository.findByIsGenericTrue();
+		}
+		return trainingRepository.findGenericOrByWorkout(workout.getId());
 	}
 	
 	public Collection<Training> findTrainingsByName(String name) {
@@ -145,15 +158,6 @@ public class WorkoutService {
 		return workoutRepository.findByUser(username);
 	}
 
-	/* @Transactional()
-	public void savePet(Pet pet) throws DataAccessException, DuplicatedPetNameException {
-			Pet otherPet=pet.getOwner().getPetwithIdDifferent(pet.getName(), pet.getId());
-            if (StringUtils.hasLength(pet.getName()) &&  (otherPet!= null && otherPet.getId()!=pet.getId())) {            	
-            	throw new DuplicatedPetNameException();
-            }else
-                petRepository.save(pet);                
-	} */
-	
 	@Transactional(rollbackFor = ExistingWorkoutInDateRangeException.class)
 	public void saveWorkout(Workout workout) throws DataAccessException, ExistingWorkoutInDateRangeException {
 		
@@ -169,6 +173,13 @@ public class WorkoutService {
 	}
 	
 	public void deleteWorkout(Workout workout) {
+		
+		workout.getWorkoutTrainings().forEach(wt -> {
+			this.deleteTraining(wt.getTraining());
+			this.deleteWorkoutTraining(wt);
+		});
+			
+		
 		workoutRepository.delete(workout);
 	}
 
@@ -180,12 +191,22 @@ public class WorkoutService {
 		return memoryRepository.findById(memoryId);
 	}
 	
-	public void saveMemory(Memory memory) {
+	public void saveMemory(Memory memory) throws MemoryOutOfTimeException {
+		Workout workout = memory.getTraining().getWorkoutTraining().getWorkout();
+		
+		if (memory.getDate().isBefore(workout.getStartDate()) || memory.getDate().isAfter(workout.getEndDate())) {
+			throw new MemoryOutOfTimeException();
+		}
 		this.memoryRepository.save(memory);
 	}
 	
 	@Transactional
 	public void deleteMemory(Memory memory) {
 		this.memoryRepository.delete(memory);
+	}
+	
+	@Transactional
+	public void deleteWorkoutTraining(WorkoutTraining workoutTraining) {
+		this.workoutTrainingRepository.delete(workoutTraining);
 	}
 }

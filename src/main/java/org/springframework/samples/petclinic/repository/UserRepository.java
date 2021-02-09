@@ -23,5 +23,4 @@ public interface UserRepository extends CrudRepository<User, Integer>{
 	@Query("SELECT rate FROM Rate rate ORDER BY rate.name")
 	List<Rate> findRates() throws DataAccessException;
 
-	
 }

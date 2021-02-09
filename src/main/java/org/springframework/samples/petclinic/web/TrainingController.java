@@ -39,11 +39,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * @author Juergen Hoeller
  * @author Ken Krebs
  * @author Arjen Poutsma
  */
+@Slf4j
 @Controller
 public class TrainingController {
 
@@ -61,53 +64,28 @@ public class TrainingController {
 	public TrainingController(WorkoutService workoutService) {
 		this.workoutService = workoutService;
 	}
-	
-	/* @ModelAttribute("training")
-	public Training findTraining(@PathVariable("trainingId") Integer trainingId) {
-		Training result = null; 
-		if (trainingId != null) {
-			result = this.workoutService.findTrainingById(trainingId);
-		} else {
-			result = new Training();
-		}
-		return result;
-	}*/
-
-	/* @InitBinder("training")
-	public void initTrainingBinder(WebDataBinder dataBinder) {
-		dataBinder.setDisallowedFields("id");
-	} */
-	
-	/* @GetMapping(value = "/trainings/find")
-	public String initFindForm(Map<String, Object> model) {
-		model.put("training", new Training());
-		return "trainings/trainingsList";
-	} */
 
 	@GetMapping(value = "/trainings")
 	public String processFindForm(Training training, BindingResult result, Map<String, Object> model) {
-		
-		String name = training != null && training.getName() != null ? training.getName() : "";
-		System.out.println("name = " + name);
+		if (training == null) {
+			training = new Training();
+		}
 		
 		// find owners by last name
-		Collection<Training> results = this.workoutService.findTrainingsByName(name);
-		System.out.println("results size: " + results.size());
-		if (results.isEmpty()) {
-			// no exercises found
-			result.rejectValue("name", "notFound", "not found");
-			return VIEWS_TRAININGS_LIST;
+		Collection<Training> results = this.workoutService.findTrainingsByName(training.getName());
+		
+		if (training.getName() != null && !training.getName().trim().isEmpty()) {
+			if (results.isEmpty()) {
+				// no exercises found
+				result.rejectValue("name", "notFound", "not found");
+				return VIEWS_TRAININGS_LIST;
+			} else if (results.size() == 1) {
+				Training found = results.iterator().next();
+				return "redirect:/trainings/" + found.getId();
+			}			
 		}
-		else if (!name.isEmpty() && results.size() == 1) {
-			// 1 owner found
-			Training uniqueFound = results.iterator().next();
-			return "redirect:/trainings/" + uniqueFound.getId();
-		}
-		else {
-			// multiple owners found
-			model.put("selections", results);			
-			return VIEWS_TRAININGS_LIST;
-		}
+		model.put("selections", results);			
+		return VIEWS_TRAININGS_LIST;
 	}
 
 	@GetMapping(value = "/trainings/new")
@@ -118,7 +96,7 @@ public class TrainingController {
 	}
 
 	@PostMapping(value = "/trainings/new")
-	public String processCreationForm(@Valid Training training, BindingResult result, ModelMap model) {
+	public String processCreationForm(@Valid Training training, BindingResult result, ModelMap model, Principal principal) {
 		if (result.hasErrors()) {
 			model.put("training", training);
 			return VIEWS_TRAININGS_CREATE_OR_UPDATE_FORM;
@@ -126,7 +104,9 @@ public class TrainingController {
 			try {
 				training.setIsGeneric(Boolean.TRUE);
 				this.workoutService.saveTraining(training);
+				log.info("training with ID=" + training.getId() + " has been created by " + principal.getName());
 			} catch (NoNameException e) {
+				log.error("error creating training", e);
                 result.rejectValue("name", "required", "required field");
                 return VIEWS_TRAININGS_CREATE_OR_UPDATE_FORM;
 			}
@@ -142,25 +122,24 @@ public class TrainingController {
 	@GetMapping("/trainings/{trainingId}")
 	public ModelAndView showTraining(@PathVariable("trainingId") int trainingId, Principal principal) {
 		Training training = this.workoutService.findTrainingById(trainingId);
-		System.out.println("training " + training);
 		ModelAndView mav;
 		if (training == null) {
 			mav = new ModelAndView(VIEWS_ERROR);
 			mav.addObject("exception", new Exception("El entrenamiento solicitado no existe"));
 		} else {
 			boolean allowed = hasAuthority(SecurityConfiguration.ADMIN);
-			System.out.println("is admin: " + allowed);
 			if (!allowed) {
+				log.debug("user is not allowed to get other user trainings, retrieving trainings owned by logged user");
 				User user = new User();
 				user.setUsername(principal.getName());
 				Collection<Training> userTrainings = this.workoutService.findTrainingsByUser(user);
 				allowed = userTrainings.stream().anyMatch(t -> t.getId().equals(trainingId));
-				System.out.println("training owned by user: " + allowed);
 			}
 			if (allowed) {
 				mav = new ModelAndView(VIEWS_TRAININGS_DETAIL);
 				mav.addObject("training", training);
 			} else {
+				log.warn("rejected access to training with ID=" + trainingId + " for user " + principal.getName());
 				mav = new ModelAndView(VIEWS_ERROR);
 				mav.addObject("exception", new Exception("No tiene permiso para visualizar el entrenamiento"));
 			}
@@ -176,10 +155,11 @@ public class TrainingController {
 	}
 
 	@GetMapping(value = "/trainings/{trainingId}/delete")
-	public String deleteTraining(@PathVariable("trainingId") int trainingId, ModelMap model) {
+	public String deleteTraining(@PathVariable("trainingId") int trainingId, ModelMap model, Principal principal) {
 		Training training = this.workoutService.findTrainingById(trainingId);
 		if (training != null) {
 			this.workoutService.deleteTraining(training);
+			log.info("training with ID=" + trainingId + " has been deleted by " + principal.getName());
 		}
 		return "redirect:/trainings";
 	}
@@ -193,7 +173,7 @@ public class TrainingController {
 	 * @return
 	 */
 	@PostMapping(value = "/trainings/{trainingId}/edit")
-	public String processUpdateForm(@Valid Training training, BindingResult result, @PathVariable("trainingId") int trainingId, ModelMap model) {
+	public String processUpdateForm(@Valid Training training, BindingResult result, @PathVariable("trainingId") int trainingId, ModelMap model, Principal principal) {
 		if (result.hasErrors()) {
 			model.put("training", training);
 			return VIEWS_TRAININGS_CREATE_OR_UPDATE_FORM;
@@ -202,7 +182,9 @@ public class TrainingController {
 			BeanUtils.copyProperties(training, trainingToUpdate, "id", "isGeneric");
 			try {
 				this.workoutService.saveTraining(trainingToUpdate);
+				log.info("training with ID=" + trainingId + " has been updated by " + principal.getName());
 			} catch (NoNameException e) {
+				log.error("error updating training", e);
                 result.rejectValue("name", "required", "required field");
                 return VIEWS_TRAININGS_CREATE_OR_UPDATE_FORM;
 			}
@@ -230,7 +212,9 @@ public class TrainingController {
 				trainingToUpdate.addExercise(exercise);
 				try {
 					this.workoutService.saveTraining(trainingToUpdate);
+					log.info("exercise " + exercise.getName() + "(ID=" + exercise.getId() + ") added to training with ID=" + trainingId);
 				} catch (NoNameException e) {
+					log.error("error adding exercise to training with ID=" + trainingId, e);
 	                result.rejectValue("name", "required", "required field");
 	                return VIEWS_TRAININGS_CREATE_OR_UPDATE_FORM;
 				}
@@ -248,7 +232,7 @@ public class TrainingController {
 	 * @return
 	 */
 	@PostMapping(value = "/trainings/{trainingId}/deleteExercise/{exerciseId}")
-	public String processTrainingExerciseRemoval(@Valid Training training, BindingResult result, @PathVariable("trainingId") int trainingId, @PathVariable("exerciseId") int exerciseId, ModelMap model) {
+	public String processTrainingExerciseRemoval(@Valid Training training, BindingResult result, @PathVariable("trainingId") int trainingId, @PathVariable("exerciseId") int exerciseId, ModelMap model, Principal principal) {
 		if (result.hasErrors()) {
 			model.put("training", training);
 			return VIEWS_TRAININGS_CREATE_OR_UPDATE_FORM;
@@ -259,7 +243,9 @@ public class TrainingController {
 				trainingToUpdate.removeExercise(exercise);
 				try {
 					this.workoutService.saveTraining(trainingToUpdate);
+					log.info("exercise with ID=" + exerciseId + " has been deleted from training " + trainingId + " by " + principal.getName());
 				} catch (NoNameException e) {
+					log.error("error on training exercise deletion (training ID=" + trainingId + ", exercise ID=" + exerciseId + ")", e);
 	                result.rejectValue("name", "required", "required field");
 	                return VIEWS_TRAININGS_CREATE_OR_UPDATE_FORM;
 				}
@@ -274,11 +260,4 @@ public class TrainingController {
 		Collection<SimpleGrantedAuthority> authorities = (Collection<SimpleGrantedAuthority>) SecurityContextHolder.getContext().getAuthentication().getAuthorities();
 		return authorities.stream().anyMatch(auth -> auth.getAuthority().equals(authority));
 	}
-	
-	@SuppressWarnings("unchecked")
-	private boolean isAllowedTo(String permission) {
-		Collection<SimpleGrantedAuthority> authorities = (Collection<SimpleGrantedAuthority>) SecurityContextHolder.getContext().getAuthentication().getAuthorities();
-		return SecurityConfiguration.isAllowedTo(permission, authorities);
-	}
-
 }

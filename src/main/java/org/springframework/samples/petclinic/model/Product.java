@@ -6,17 +6,21 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-import lombok.Data;
+import org.hibernate.envers.Audited;
 
-@Data
+import lombok.Getter;
+import lombok.Setter;
+
+@Audited
+@Getter
+@Setter
 @Entity
 @Table(name = "products")
-public class Product extends BaseEntity {
+public class Product extends AuditableEntity {
 	
 	@NotBlank
 	private String name;
 	
-	@NotBlank
 	private String description;
 	
 	@NotNull
@@ -27,4 +31,6 @@ public class Product extends BaseEntity {
 	
 	@Lob 
 	private String image;
+	
+	private Boolean inactive;
 }

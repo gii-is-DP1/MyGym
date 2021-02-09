@@ -25,6 +25,8 @@ import org.springframework.samples.petclinic.model.ExerciseType;
 import org.springframework.samples.petclinic.service.WorkoutService;
 import org.springframework.stereotype.Component;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * Instructs Spring MVC on how to parse and print elements of type 'ExerciseType'. Starting
  * from Spring 3.0, Formatters have come as an improvement in comparison to legacy
@@ -40,6 +42,7 @@ import org.springframework.stereotype.Component;
  * @author Juergen Hoeller
  * @author Michael Isvy
  */
+@Slf4j
 @Component
 public class ExerciseTypeFormatter implements Formatter<ExerciseType> {
 
@@ -51,8 +54,8 @@ public class ExerciseTypeFormatter implements Formatter<ExerciseType> {
 	}
 
 	@Override
-	public String print(ExerciseType workoutService, Locale locale) {
-		return workoutService.getName();
+	public String print(ExerciseType exerciseType, Locale locale) {
+		return exerciseType.getName();
 	}
 
 	@Override
@@ -60,6 +63,7 @@ public class ExerciseTypeFormatter implements Formatter<ExerciseType> {
 		Collection<ExerciseType> findExerciseTypes = this.workoutService.findExerciseTypes();
 		for (ExerciseType type : findExerciseTypes) {
 			if (type.getName().equals(text)) {
+				log.debug("parsed ExerciseType from String=" + text + " to ExerciseType[ID=" + type.getId() + "]");
 				return type;
 			}
 		}

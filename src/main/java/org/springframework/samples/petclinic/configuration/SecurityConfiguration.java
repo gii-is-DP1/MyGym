@@ -11,6 +11,7 @@ import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -30,6 +31,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  * @author japarejo
  */
 @Configuration
+@EnableJpaAuditing
 @EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	
@@ -69,10 +71,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 				.antMatchers("/exercises").hasAnyAuthority("admin", "trainer")
 				.antMatchers("/exercises/**").hasAnyAuthority("admin", "trainer")
 				// trainings
-				.antMatchers("/trainings").permitAll()
+				.antMatchers("/trainings").hasAnyAuthority("admin", "trainer")
 				.antMatchers("/trainings/{trainingId}").permitAll()
 				.antMatchers("/trainings/{trainingId}/new").hasAnyAuthority("admin", "trainer")
 				.antMatchers("/trainings/{trainingId}/edit").hasAnyAuthority("admin", "trainer")
+				.antMatchers("/trainings/{trainingId}/delete").hasAnyAuthority("admin", "trainer")
+				.antMatchers("/trainings/{trainingId}/addExercise/{exerciseId}").hasAnyAuthority("admin", "trainer")
 				.antMatchers("/trainings/**/memories").permitAll()
 				.antMatchers("/trainings/**/memories/**").permitAll()
 				.antMatchers("/memories").authenticated()
@@ -83,6 +87,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 				
 				.antMatchers("/products").hasAnyAuthority("admin")
 				.antMatchers("/products/**").hasAnyAuthority("admin")
+				.antMatchers("/sales").hasAnyAuthority("admin")
+				.antMatchers("/sales/**").hasAnyAuthority("admin")
+				.antMatchers("/purchases").hasAnyAuthority("admin")
+				.antMatchers("/purchases/**").hasAnyAuthority("admin")
+				
 				.antMatchers("/usuarios/**").hasAnyAuthority("admin")
 				.antMatchers("/salas").permitAll()
 				.antMatchers("/salas/**").permitAll()

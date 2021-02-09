@@ -12,28 +12,28 @@
     </jsp:attribute>
     <jsp:body>
 	    <h2 class="mb-5">
-	        <c:if test="${product['new']}">Create</c:if> Product
+	        <c:if test="${product['new']}">Crear</c:if> Producto
 	    </h2>
 	    <form:form modelAttribute="product" class="form-horizontal" id="add-product-form">
 	        <div class="form-group has-feedback">
-	            <petclinic:inputField label="Name" name="name"/>
-	            <petclinic:inputField label="Description" name="description"/>
-	            <petclinic:inputField label="Stockage" name="stockage"/>
-	            <petclinic:inputField label="Price" name="price"/>
+	            <petclinic:inputField label="Nombre" name="name"/>
+	            <petclinic:inputField label="Descripción" name="description"/>
+	            <petclinic:inputField label="Precio" name="price"/>
+	            <petclinic:imageField label="Imagen" name="image" />
 	            
 	        </div>
 	        <div class="form-group mt-5">
 	            <div class="col pl-0 ml-0">
 	                <c:choose>
 	                    <c:when test="${product['new']}">
-	                        <button class="btn btn-default" type="submit">Create</button>
+	                        <button class="btn btn-default" type="submit">Crear</button>
 	                    </c:when>
 	                    <c:otherwise>
-	                        <button class="btn btn-default" type="submit">Update</button>
+	                        <button class="btn btn-default" type="submit">Actualizar</button>
 	                    </c:otherwise>
 	                </c:choose>	          
 	                
-                    <a class="btn btn-default ml-2" data-back-btn>Back</a>      
+                    <a class="btn btn-default ml-2" data-back-btn>Volver</a>      
 	            </div>
 	        </div>
 	    </form:form>
